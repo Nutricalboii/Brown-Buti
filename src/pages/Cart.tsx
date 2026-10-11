@@ -43,9 +43,8 @@ export default function Cart() {
       }));
       const checkoutUrl = await createShopifyCheckout(itemsPayload);
       window.location.href = checkoutUrl;
-    } catch (err) {
-      console.warn('Redirecting to Shopify checkout failed:', err);
-      setErrorMessage('Checkout is currently unavailable. Please try again later.');
+    } catch (error) {
+      setErrorMessage(error instanceof Error ? error.message : 'Shopify checkout is unavailable. Please try again.');
     } finally {
       setIsCheckingOut(false);
     }
@@ -202,10 +201,9 @@ export default function Cart() {
                       {shipping === 0 ? (
                         <span className="text-forest-600 font-medium">Free</span>
                       ) : (
-                        formatPrice(
-                          currency === 'USD' ? shipping * usdRate : shipping,
-                          currency === 'USD' ? shipping : Math.round(shipping / usdRate)
-                        )
+                        currency === 'USD'
+                          ? formatPrice(shipping * usdRate, shipping)
+                          : formatPrice(shipping)
                       )}
                     </span>
                   </div>
@@ -219,20 +217,9 @@ export default function Cart() {
                   )}
                 </div>
 
-                {/* Promo */}
-                <div className="flex gap-2 mb-8">
-                  <div className="flex items-center gap-2 flex-1 border-b border-mocha-300">
-                    <Tag size={14} className="text-mocha-400" strokeWidth={1.5} />
-                    <input
-                      type="text"
-                      placeholder="Gift card or promo code"
-                      className="flex-1 bg-transparent font-lora text-sm text-mocha-700 placeholder-mocha-400 outline-none py-2"
-                    />
-                  </div>
-                  <button className="font-cinzel text-xs tracking-[0.15em] uppercase text-mocha-600 hover:text-mocha-900 border border-mocha-300 px-3 py-2 hover:border-mocha-600 transition-colors">
-                    Apply
-                  </button>
-                </div>
+                <p className="font-lora text-xs text-mocha-400 mb-8">
+                  Gift cards and discount codes can be entered at Shopify checkout.
+                </p>
 
                 <div className="border-t border-mocha-200 pt-6 mb-8">
                   <div className="flex justify-between">

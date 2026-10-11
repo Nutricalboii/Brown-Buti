@@ -4,7 +4,7 @@
  */
 import { createContext, useContext, useState, useCallback, useEffect } from 'react';
 import type { ReactNode } from 'react';
-import type { Product } from '../data/products';
+import { products, type Product } from '../data/products';
 
 interface WishlistContextValue {
   items: Product[];
@@ -18,29 +18,35 @@ const WishlistContext = createContext<WishlistContextValue | null>(null);
 
 const STORAGE_KEY = 'mnm_wishlist';
 
+function readSavedWishlist(): Product[] {
+  try {
+    const stored: unknown = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+    if (!Array.isArray(stored)) return [];
+    const ids = new Set(stored.filter((id): id is string | number => typeof id === 'string' || typeof id === 'number'));
+    return products.filter((product) => ids.has(product.id));
+  } catch {
+    return [];
+  }
+}
+
 export function WishlistProvider({ children }: { children: ReactNode }) {
-  const [items, setItems] = useState<Product[]>(() => {
-    try {
-      const stored = localStorage.getItem(STORAGE_KEY);
-      return stored ? (JSON.parse(stored) as Product[]) : [];
-    } catch {
-      return [];
-    }
-  });
+  const [items, setItems] = useState<Product[]>(readSavedWishlist);
 
   // Sync to localStorage whenever items change
   useEffect(() => {
     try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(items.map((product) => product.id)));
     } catch {
       // Ignore storage quota errors
     }
   }, [items]);
 
   const toggleWishlist = useCallback((product: Product) => {
+    const canonicalProduct = products.find((candidate) => candidate.id === product.id);
+    if (!canonicalProduct) return;
     setItems((prev) => {
-      const exists = prev.find((p) => p.id === product.id);
-      return exists ? prev.filter((p) => p.id !== product.id) : [...prev, product];
+      const exists = prev.some((p) => p.id === canonicalProduct.id);
+      return exists ? prev.filter((p) => p.id !== canonicalProduct.id) : [...prev, canonicalProduct];
     });
   }, []);
 

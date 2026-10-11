@@ -1,106 +1,130 @@
 import { defineConfig, loadEnv } from 'vite';
+import type { Plugin, ViteDevServer } from 'vite';
 import react from '@vitejs/plugin-react';
-import crypto from 'crypto';
-import Razorpay from 'razorpay';
+import type { IncomingMessage, ServerResponse } from 'node:http';
+import { createOrderHandler, verifyPaymentHandler } from './server/razorpay.js';
 
-// Razorpay dev middleware — handles /api/create-order and /api/verify-payment
-// Runs inside Vite's Node.js process so env vars are available via process.env
-function razorpayDevApiPlugin(env: Record<string, string>) {
+const MAX_API_BODY_BYTES = 16 * 1024;
+const API_SECURITY_HEADERS = {
+  'X-Content-Type-Options': 'nosniff',
+  'X-Frame-Options': 'DENY',
+  'Referrer-Policy': 'no-referrer',
+};
+
+function razorpayDevApiPlugin(env: Record<string, string>): Plugin {
   return {
     name: 'razorpay-dev-api-plugin',
-    configureServer(server: any) {
-      server.middlewares.use(async (req: any, res: any, next: any) => {
-        const url = req.url || '';
-
-        if (!url.startsWith('/api/create-order') && !url.startsWith('/api/verify-payment')) {
+    configureServer(server: ViteDevServer) {
+      server.middlewares.use((req: IncomingMessage, res: ServerResponse, next) => {
+        let pathname: string;
+        try {
+          const hostHeader = req.headers.host;
+          const host = Array.isArray(hostHeader) ? hostHeader[0] : hostHeader || 'localhost';
+          pathname = new URL(req.url || '/', `http://${host}`).pathname;
+        } catch {
           return next();
         }
 
-        let bodyData = '';
-        req.on('data', (chunk: any) => { bodyData += chunk; });
+        const handler = pathname === '/api/create-order'
+          ? createOrderHandler
+          : pathname === '/api/verify-payment'
+            ? verifyPaymentHandler
+            : null;
+        if (!handler) return next();
+
+        let byteLength = 0;
+        let responded = false;
+        const chunks: Buffer[] = [];
+        const respond = (status: number, body: string) => {
+          if (responded) return;
+          responded = true;
+          res.statusCode = status;
+          res.setHeader('Content-Type', 'application/json; charset=utf-8');
+          res.setHeader('Cache-Control', 'no-store');
+          for (const [name, value] of Object.entries(API_SECURITY_HEADERS)) res.setHeader(name, value);
+          res.end(body);
+        };
+
+        const declaredLength = Number(req.headers['content-length']);
+        if (Number.isFinite(declaredLength) && declaredLength > MAX_API_BODY_BYTES) {
+          return respond(413, JSON.stringify({ error: 'Request too large.' }));
+        }
+
+        req.on('data', (chunk: Buffer) => {
+          byteLength += chunk.byteLength;
+          if (byteLength > MAX_API_BODY_BYTES) {
+            respond(413, JSON.stringify({ error: 'Request too large.' }));
+            req.destroy();
+            return;
+          }
+          chunks.push(chunk);
+        });
 
         req.on('end', async () => {
-          res.setHeader('Content-Type', 'application/json');
-
-          const key_id = env.RAZORPAY_KEY_ID || env.VITE_RAZORPAY_KEY_ID;
-          const key_secret = env.RAZORPAY_KEY_SECRET;
-
-          if (!key_id || !key_secret) {
-            res.statusCode = 401;
-            return res.end(JSON.stringify({ error: 'Razorpay credentials (RAZORPAY_KEY_ID and RAZORPAY_KEY_SECRET) are missing in .env file' }));
-          }
-
+          if (responded) return;
           try {
-            const body = bodyData ? JSON.parse(bodyData) : {};
-
-            // ── /api/create-order ──────────────────────────────────
-            if (url.startsWith('/api/create-order')) {
-              const { amount, currency = 'INR', receipt = `rcpt_${Date.now()}` } = body;
-
-              if (typeof amount !== 'number' || amount < 100) {
-                res.statusCode = 400;
-                return res.end(JSON.stringify({ error: 'Invalid amount. Minimum is 100 paise (₹1).' }));
-              }
-
-              const razorpay = new Razorpay({ key_id, key_secret });
-              const order = await razorpay.orders.create({ amount: Math.round(amount), currency, receipt });
-
-              res.statusCode = 200;
-              return res.end(JSON.stringify({
-                order_id: order.id,
-                amount: order.amount,
-                currency: order.currency,
-              }));
+            const requestHeaders = new Headers();
+            for (const [name, value] of Object.entries(req.headers)) {
+              if (value !== undefined) requestHeaders.set(name, Array.isArray(value) ? value.join(', ') : value);
             }
-
-            // ── /api/verify-payment ────────────────────────────────
-            if (url.startsWith('/api/verify-payment')) {
-              const { razorpay_order_id, razorpay_payment_id, razorpay_signature } = body;
-
-              if (!razorpay_order_id || !razorpay_payment_id || !razorpay_signature) {
-                res.statusCode = 400;
-                return res.end(JSON.stringify({ error: 'Missing required payment verification parameters' }));
-              }
-
-              const generatedSignature = crypto
-                .createHmac('sha256', key_secret)
-                .update(`${razorpay_order_id}|${razorpay_payment_id}`)
-                .digest('hex');
-
-              if (generatedSignature !== razorpay_signature) {
-                res.statusCode = 400;
-                return res.end(JSON.stringify({ success: false, error: 'Invalid payment signature' }));
-              }
-
-              res.statusCode = 200;
-              return res.end(JSON.stringify({
-                success: true,
-                message: 'Payment verified successfully',
-                order_id: razorpay_order_id,
-                payment_id: razorpay_payment_id,
-              }));
-            }
-
-          } catch (err: any) {
-            console.error('[Razorpay Dev API]', err);
-            res.statusCode = 500;
-            return res.end(JSON.stringify({ error: err.error?.description || err.message || 'Internal Server Error' }));
+            requestHeaders.set('x-forwarded-for', req.socket?.remoteAddress || '127.0.0.1');
+            const hostHeader = req.headers.host;
+            const host = Array.isArray(hostHeader) ? hostHeader[0] : hostHeader || 'localhost';
+            const request = new Request(new URL(req.url || '/', `http://${host}`), {
+              method: req.method,
+              headers: requestHeaders,
+              body: byteLength ? new Uint8Array(Buffer.concat(chunks)) : undefined,
+            });
+            const response = await handler(request, { env });
+            respond(response.status, await response.text());
+          } catch {
+            respond(500, JSON.stringify({ error: 'Internal server error.' }));
           }
         });
+
+        req.on('error', () => respond(400, JSON.stringify({ error: 'Invalid request.' })));
       });
     },
   };
 }
 
-// https://vitejs.dev/config/
+const contentSecurityPolicy = [
+  "default-src 'self'",
+  "base-uri 'self'",
+  "object-src 'none'",
+  "frame-ancestors 'none'",
+  "form-action 'self' https://checkout.razorpay.com",
+  "script-src 'self' https://checkout.razorpay.com https://www.googletagmanager.com https://connect.facebook.net",
+  "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+  "font-src 'self' https://fonts.gstatic.com data:",
+  "img-src 'self' data: blob: https://res.cloudinary.com https://www.facebook.com https://www.google-analytics.com https://*.razorpay.com",
+  "media-src 'self' https://res.cloudinary.com",
+  "connect-src 'self' https://lumberjack.razorpay.com https://api.razorpay.com https://*.myshopify.com https://mochamogra.com https://www.mochamogra.com https://*.supabase.co https://www.google-analytics.com https://region1.google-analytics.com https://www.facebook.com",
+  "frame-src 'self' https://api.razorpay.com https://checkout.razorpay.com",
+].join('; ');
+
+const securityHeaders = {
+  'Content-Security-Policy': contentSecurityPolicy,
+  'X-Content-Type-Options': 'nosniff',
+  'X-Frame-Options': 'DENY',
+  'Referrer-Policy': 'strict-origin-when-cross-origin',
+  'Permissions-Policy': 'camera=(), microphone=(), geolocation=()',
+};
+
 export default defineConfig(({ mode }) => {
-  // Load .env file into env object available at config time (Node.js process level)
   const env = loadEnv(mode, process.cwd(), '');
 
   return {
     plugins: [react(), razorpayDevApiPlugin(env)],
     optimizeDeps: {
       exclude: ['lucide-react'],
+    },
+    server: {
+      host: '127.0.0.1',
+    },
+    preview: {
+      host: '127.0.0.1',
+      headers: securityHeaders,
     },
   };
 });

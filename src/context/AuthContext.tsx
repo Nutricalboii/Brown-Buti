@@ -1,8 +1,8 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
-import { getCustomer } from '../lib/shopify-auth';
+import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import { getCustomer, type ShopifyCustomer } from '../lib/shopify-auth';
 
 interface AuthContextType {
-  user: any | null;
+  user: ShopifyCustomer | null;
   loading: boolean;
   accessToken: string | null;
   setAccessToken: (token: string | null) => void;
@@ -12,52 +12,69 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [accessToken, setAccessTokenState] = useState<string | null>(
-    localStorage.getItem('shopify_access_token')
-  );
-  const [user, setUser] = useState<any | null>(null);
+  const [accessToken, setAccessTokenState] = useState<string | null>(null);
+  const [user, setUser] = useState<ShopifyCustomer | null>(null);
   const [loading, setLoading] = useState(true);
 
-  const setAccessToken = (token: string | null) => {
-    if (token) {
-      localStorage.setItem('shopify_access_token', token);
-    } else {
+  useEffect(() => {
+    try {
       localStorage.removeItem('shopify_access_token');
+      sessionStorage.removeItem('shopify_access_token');
+    } catch {
+      // Ignore blocked browser storage.
     }
-    setAccessTokenState(token);
-  };
+  }, []);
 
-  const logout = () => {
-    setAccessToken(null);
+  const setAccessToken = useCallback((token: string | null) => {
+    try {
+      sessionStorage.removeItem('shopify_access_token');
+    } catch {
+      // Ignore blocked browser storage; the access token is never persisted.
+    }
+    try {
+      // Remove the previous persistent bearer token left by older builds.
+      localStorage.removeItem('shopify_access_token');
+    } catch {
+      // Ignore blocked local storage.
+    }
     setUser(null);
-  };
+    setLoading(Boolean(token));
+    setAccessTokenState(token);
+  }, []);
+
+  const logout = useCallback(() => setAccessToken(null), [setAccessToken]);
 
   useEffect(() => {
+    let active = true;
     async function fetchUser() {
       if (!accessToken) {
-        setUser(null);
-        setLoading(false);
+        if (active) {
+          setUser(null);
+          setLoading(false);
+        }
         return;
       }
 
       try {
         const customer = await getCustomer(accessToken);
+        if (!active) return;
         if (customer) {
           setUser(customer);
         } else {
-          // Token might be invalid or expired
-          logout();
+          setAccessToken(null);
         }
-      } catch (err) {
-        console.error('Failed to fetch customer:', err);
-        logout();
+      } catch {
+        if (active) setAccessToken(null);
       } finally {
-        setLoading(false);
+        if (active) setLoading(false);
       }
     }
 
     fetchUser();
-  }, [accessToken]);
+    return () => {
+      active = false;
+    };
+  }, [accessToken, setAccessToken]);
 
   return (
     <AuthContext.Provider value={{ user, loading, accessToken, setAccessToken, logout }}>

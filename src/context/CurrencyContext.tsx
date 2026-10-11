@@ -19,7 +19,12 @@ export function CurrencyProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     // Check saved preference first
-    const saved = localStorage.getItem('currency') as Currency;
+    let saved: string | null = null;
+    try {
+      saved = localStorage.getItem('currency');
+    } catch {
+      // Continue with timezone-based defaults when storage is unavailable.
+    }
     if (saved === 'INR' || saved === 'USD') {
       setCurrency(saved);
       return;
@@ -41,7 +46,11 @@ export function CurrencyProvider({ children }: { children: React.ReactNode }) {
 
   const handleSetCurrency = (c: Currency) => {
     setCurrency(c);
-    localStorage.setItem('currency', c);
+    try {
+      localStorage.setItem('currency', c);
+    } catch {
+      // Currency selection still applies for the current session.
+    }
   };
 
   const formatPrice = (inrAmount: number, usdAmount?: number) => {
