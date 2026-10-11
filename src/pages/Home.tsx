@@ -12,7 +12,7 @@ const fadeUp = {
   visible: (i: number) => ({
     opacity: 1,
     y: 0,
-    transition: { duration: 0.7, delay: i * 0.12, ease: [0.25, 0.1, 0.25, 1] },
+    transition: { duration: 0.7, delay: i * 0.12, ease: [0.25, 0.1, 0.25, 1] as const },
   }),
 };
 
@@ -50,8 +50,9 @@ export default function Home() {
       
       setSubscribeStatus('success');
       setEmail('');
-    } catch (err) {
-      console.error('Subscription error:', err);
+    } catch {
+      // Avoid logging provider details or request data in the browser console.
+      console.error('Newsletter signup failed.');
       setSubscribeStatus('error');
     } finally {
       setIsSubscribing(false);

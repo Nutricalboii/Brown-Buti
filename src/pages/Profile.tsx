@@ -3,12 +3,24 @@ import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { LogOut, Package, ArrowRight } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
-import { useCurrency } from '../context/CurrencyContext';
+
+function formatOrderPrice(amountText: string, currencyCode: string): string {
+  const amount = Number(amountText);
+  if (!Number.isFinite(amount)) return `${currencyCode} —`;
+  try {
+    return new Intl.NumberFormat(undefined, {
+      style: 'currency',
+      currency: currencyCode,
+      maximumFractionDigits: 2,
+    }).format(amount);
+  } catch {
+    return `${currencyCode} ${amount.toFixed(2)}`;
+  }
+}
 
 export default function Profile() {
   const { user, loading, logout } = useAuth();
   const navigate = useNavigate();
-  const { formatPrice } = useCurrency();
 
   useEffect(() => {
     if (!loading && !user) {
@@ -26,7 +38,7 @@ export default function Profile() {
 
   if (!user) return null;
 
-  const orders = user.orders?.edges?.map((edge: any) => edge.node) || [];
+  const orders = user.orders?.edges?.map(({ node }) => node) || [];
 
   const handleLogout = () => {
     logout();
@@ -78,7 +90,7 @@ export default function Profile() {
               </div>
             ) : (
               <div className="space-y-8">
-                {orders.map((order: any) => (
+                {orders.map((order) => (
                   <motion.div
                     key={order.id}
                     initial={{ opacity: 0, y: 10 }}
@@ -100,7 +112,7 @@ export default function Profile() {
                       </div>
                       <div className="text-right">
                         <p className="font-playfair text-lg text-mocha-900 mb-1">
-                          {formatPrice(parseFloat(order.totalPrice.amount))}
+                          {formatOrderPrice(order.totalPrice.amount, order.totalPrice.currencyCode)}
                         </p>
                         <span className="inline-block px-2 py-1 bg-mocha-50 text-mocha-700 font-cinzel text-[9px] tracking-wider uppercase">
                           {order.fulfillmentStatus || 'Processing'}
@@ -109,10 +121,10 @@ export default function Profile() {
                     </div>
 
                     <div className="space-y-4">
-                      {order.lineItems.edges.map((itemEdge: any, idx: number) => {
+                      {order.lineItems.edges.map((itemEdge) => {
                         const item = itemEdge.node;
                         return (
-                          <div key={idx} className="flex items-center gap-4">
+                          <div key={item.id} className="flex items-center gap-4">
                             <div className="w-16 h-20 bg-mocha-50 overflow-hidden flex-shrink-0">
                               {item.variant?.image?.url ? (
                                 <img src={item.variant.image.url} alt={item.title} className="w-full h-full object-cover" />

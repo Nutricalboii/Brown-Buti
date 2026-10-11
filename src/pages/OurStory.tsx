@@ -4,16 +4,8 @@ import { ArrowRight } from 'lucide-react';
 
 const fadeUp = {
   hidden: { opacity: 0, y: 30 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.8, ease: [0.25, 0.1, 0.25, 1] } },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.8, ease: [0.25, 0.1, 0.25, 1] as const } },
 };
-
-const values = [
-  { label: 'Story Before Trend', desc: 'Every piece begins with a narrative, not a mood board.' },
-  { label: 'Craft Before Mass Production', desc: 'We work slowly, deliberately, and with extraordinary skill.' },
-  { label: 'Quiet Luxury Over Loud Fashion', desc: 'The finest things whisper. They never shout.' },
-  { label: 'Contemporary Design Rooted in Indian Heritage', desc: 'We honor the past by reimagining it for the present.' },
-  { label: 'Pieces That Become Future Heirlooms', desc: "We make things that will matter to someone who hasn't been born yet." },
-];
 
 export default function OurStory() {
   const navigate = useNavigate();

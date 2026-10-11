@@ -11,12 +11,20 @@
  * Both are no-ops if the env vars are not set — safe for development.
  */
 
+type MetaPixelFunction = ((...args: unknown[]) => void) & {
+  callMethod?: (...args: unknown[]) => void;
+  queue: unknown[];
+  loaded: boolean;
+  version: string;
+  push: (...args: unknown[]) => void;
+};
+
 declare global {
   interface Window {
     dataLayer: unknown[];
-    gtag: (...args: unknown[]) => void;
-    fbq: ((...args: unknown[]) => void) & { callMethod?: (...args: unknown[]) => void; queue: unknown[]; loaded: boolean; version: string; push: (...args: unknown[]) => void };
-    _fbq: Window['fbq'];
+    gtag?: (...args: unknown[]) => void;
+    fbq?: MetaPixelFunction;
+    _fbq?: MetaPixelFunction;
   }
 }
 
@@ -66,32 +74,25 @@ export function trackEvent(
 // ─── Meta Pixel ──────────────────────────────────────────────────────────────
 
 function loadMetaPixel(pixelId: string) {
-  // Meta Pixel base code (condensed, no external dependencies)
-  (function (f, b, e, v, n?: () => void, t?: HTMLScriptElement, s?: Element | null) {
-    if (f.fbq) return;
-    n = f.fbq = function (...args: unknown[]) {
-      if (n!.callMethod) n!.callMethod(...args);
-      else n!.queue.push(args);
-    } as Window['fbq'];
-    if (!f._fbq) f._fbq = n;
-    n.push = n;
-    n.loaded = true;
-    n.version = '2.0';
-    n.queue = [];
-    t = b.createElement(e) as HTMLScriptElement;
-    t.async = true;
-    t.src = v as string;
-    s = b.getElementsByTagName(e)[0];
-    s!.parentNode!.insertBefore(t, s!);
-  })(window, document, 'script', 'https://connect.facebook.net/en_US/fbevents.js');
+  if (window.fbq) return;
+  const pixel = function (...args: unknown[]) {
+    if (pixel.callMethod) pixel.callMethod(...args);
+    else pixel.queue.push(args);
+  } as MetaPixelFunction;
+  pixel.push = pixel;
+  pixel.loaded = true;
+  pixel.version = '2.0';
+  pixel.queue = [];
+  window.fbq = pixel;
+  window._fbq ||= pixel;
+
+  const script = document.createElement('script');
+  script.async = true;
+  script.src = 'https://connect.facebook.net/en_US/fbevents.js';
+  document.head.appendChild(script);
 
   window.fbq('init', pixelId);
   window.fbq('track', 'PageView');
-
-  // No-script fallback image (optional, helps with accuracy)
-  const noscript = document.createElement('noscript');
-  noscript.innerHTML = `<img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id=${pixelId}&ev=PageView&noscript=1" />`;
-  document.body.insertBefore(noscript, document.body.firstChild);
 
   console.info(`[Analytics] Meta Pixel loaded: ${pixelId}`);
 }

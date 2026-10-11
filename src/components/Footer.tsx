@@ -29,8 +29,9 @@ export default function Footer() {
       
       setSubscribeStatus('success');
       setEmail('');
-    } catch (err) {
-      console.error('Subscription error:', err);
+    } catch {
+      // Avoid logging provider details or request data in the browser console.
+      console.error('Newsletter signup failed.');
       setSubscribeStatus('error');
     } finally {
       setIsSubscribing(false);

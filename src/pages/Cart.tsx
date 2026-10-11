@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Minus, Plus, X, ShoppingBag, ArrowRight, Tag, Loader2, CreditCard, ShieldCheck } from 'lucide-react';
+import { Minus, Plus, X, ShoppingBag, ArrowRight, Loader2, CreditCard, ShieldCheck } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import { createShopifyCheckout } from '../lib/shopify';
 import { useCurrency } from '../context/CurrencyContext';
@@ -13,6 +13,7 @@ export default function Cart() {
   const { items, removeItem, updateQuantity, subtotal, clearCart } = useCart();
   const { currency, formatPrice, usdRate } = useCurrency();
   const { user } = useAuth();
+  const razorpayEnabled = import.meta.env.VITE_RAZORPAY_CHECKOUT_ENABLED === 'true';
 
   const [isCheckingOut, setIsCheckingOut] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -30,15 +31,19 @@ export default function Cart() {
 
   // Razorpay Standard Checkout Handler
   const handleRazorpayCheckout = async () => {
+    if (currency !== 'INR') {
+      setErrorMessage('Razorpay checkout is available for INR orders. Use Shopify checkout for international orders.');
+      return;
+    }
     setErrorMessage(null);
     setIsCheckingOut(true);
 
     await initiateRazorpayPayment({
-      amount: total,
+      items: items.map((item) => ({ productId: item.product.id, quantity: item.quantity })),
       name: 'Mocha & Mogra',
       description: `Purchase of ${items.reduce((acc, item) => acc + item.quantity, 0)} item(s)`,
       prefill: {
-        name: user?.user_metadata?.full_name || '',
+        name: [user?.firstName, user?.lastName].filter(Boolean).join(' '),
         email: user?.email || '',
       },
       onSuccess: (response) => {
@@ -71,9 +76,8 @@ export default function Cart() {
       }));
       const checkoutUrl = await createShopifyCheckout(itemsPayload);
       window.location.href = checkoutUrl;
-    } catch (err) {
-      console.warn('Redirecting to Razorpay checkout:', err);
-      handleRazorpayCheckout();
+    } catch (error) {
+      setErrorMessage(error instanceof Error ? error.message : 'Shopify checkout is unavailable. Please try again.');
     } finally {
       setIsCheckingOut(false);
     }
@@ -227,7 +231,9 @@ export default function Cart() {
                       {shipping === 0 ? (
                         <span className="text-forest-600 font-medium">Free</span>
                       ) : (
-                        formatPrice(shipping * usdRate, shipping)
+                        currency === 'USD'
+                          ? formatPrice(shipping * usdRate, shipping)
+                          : formatPrice(shipping)
                       )}
                     </span>
                   </div>
@@ -241,20 +247,9 @@ export default function Cart() {
                   )}
                 </div>
 
-                {/* Promo */}
-                <div className="flex gap-2 mb-8">
-                  <div className="flex items-center gap-2 flex-1 border-b border-mocha-300">
-                    <Tag size={14} className="text-mocha-400" strokeWidth={1.5} />
-                    <input
-                      type="text"
-                      placeholder="Gift card or promo code"
-                      className="flex-1 bg-transparent font-lora text-sm text-mocha-700 placeholder-mocha-400 outline-none py-2"
-                    />
-                  </div>
-                  <button className="font-cinzel text-xs tracking-[0.15em] uppercase text-mocha-600 hover:text-mocha-900 border border-mocha-300 px-3 py-2 hover:border-mocha-600 transition-colors">
-                    Apply
-                  </button>
-                </div>
+                <p className="font-lora text-xs text-mocha-400 mb-8">
+                  Gift cards and discount codes can be entered at Shopify checkout.
+                </p>
 
                 <div className="border-t border-mocha-200 pt-6 mb-8">
                   <div className="flex justify-between">
@@ -267,25 +262,32 @@ export default function Cart() {
                   </div>
                 </div>
 
-                {/* Primary Button: Pay with Razorpay */}
-                <button
-                  onClick={handleRazorpayCheckout}
-                  disabled={isCheckingOut}
-                  className="w-full btn-primary-filled justify-center py-4 text-sm flex items-center gap-2 mb-3"
-                >
-                  {isCheckingOut ? (
-                    <>
-                      Processing Payment...
-                      <Loader2 size={14} className="animate-spin" strokeWidth={1.5} />
-                    </>
-                  ) : (
-                    <>
-                      <CreditCard size={16} strokeWidth={1.5} />
-                      Pay with Razorpay
-                      <ArrowRight size={14} strokeWidth={1.5} />
-                    </>
-                  )}
-                </button>
+                {/* Razorpay prices and settles INR only; USD carts go through Shopify. */}
+                {currency === 'INR' && razorpayEnabled && (
+                  <button
+                    onClick={handleRazorpayCheckout}
+                    disabled={isCheckingOut}
+                    className="w-full btn-primary-filled justify-center py-4 text-sm flex items-center gap-2 mb-3"
+                  >
+                    {isCheckingOut ? (
+                      <>
+                        Processing Payment...
+                        <Loader2 size={14} className="animate-spin" strokeWidth={1.5} />
+                      </>
+                    ) : (
+                      <>
+                        <CreditCard size={16} strokeWidth={1.5} />
+                        Pay with Razorpay
+                        <ArrowRight size={14} strokeWidth={1.5} />
+                      </>
+                    )}
+                  </button>
+                )}
+                {currency === 'INR' && !razorpayEnabled && (
+                  <p role="status" className="font-lora text-xs text-mocha-500 mb-3">
+                    Razorpay checkout is temporarily unavailable. Continue securely with Shopify checkout.
+                  </p>
+                )}
 
                 {/* Secondary Button: Shopify Checkout */}
                 <button
@@ -296,12 +298,14 @@ export default function Cart() {
                   Checkout via Shopify
                 </button>
 
-                <div className="flex items-center justify-center gap-2 text-mocha-400 mt-5">
-                  <ShieldCheck size={14} strokeWidth={1.5} />
-                  <p className="font-cinzel text-[9px] tracking-[0.2em] uppercase">
-                    256-Bit SSL Encrypted Razorpay Checkout
-                  </p>
-                </div>
+                {currency === 'INR' && (
+                  <div className="flex items-center justify-center gap-2 text-mocha-400 mt-5">
+                    <ShieldCheck size={14} strokeWidth={1.5} />
+                    <p className="font-cinzel text-[9px] tracking-[0.2em] uppercase">
+                      Secure Razorpay Checkout
+                    </p>
+                  </div>
+                )}
               </div>
             </div>
           </div>

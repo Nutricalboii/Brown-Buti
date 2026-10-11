@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { forwardRef, useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { SlidersHorizontal, X, Check, Heart } from 'lucide-react';
 import { products as localProducts } from '../data/products';
@@ -393,12 +393,16 @@ interface ProductCardProps {
   isWishlisted: boolean;
 }
 
-function ProductCard({ product, index, onSelect, formatPrice, onToggleWishlist, isWishlisted }: ProductCardProps) {
+const ProductCard = forwardRef<HTMLDivElement, ProductCardProps>(function ProductCard(
+  { product, index, onSelect, formatPrice, onToggleWishlist, isWishlisted },
+  ref,
+) {
   const [hovered, setHovered] = useState(false);
   const [inView, setInView] = useState(false);
 
   return (
     <motion.div
+      ref={ref}
       layout
       initial={{ opacity: 0, y: 30 }}
       whileInView={{ opacity: 1, y: 0 }}
@@ -419,6 +423,7 @@ function ProductCard({ product, index, onSelect, formatPrice, onToggleWishlist, 
           <ImageCarousel 
             media={product.images || [product.image]} 
             alt={product.name} 
+            priority={index === 0}
             className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
           />
         )}
@@ -457,4 +462,4 @@ function ProductCard({ product, index, onSelect, formatPrice, onToggleWishlist, 
       </div>
     </motion.div>
   );
-}
+});

@@ -36,8 +36,8 @@ export default function Auth() {
       } else {
         setError('Authentication failed. Please try again.');
       }
-    } catch (err: any) {
-      setError(err.message || 'An error occurred during authentication.');
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'An error occurred during authentication.');
     } finally {
       setLoading(false);
     }
