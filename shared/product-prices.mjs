@@ -1,4 +1,4 @@
-// Single authoritative INR catalog shared by the storefront and payment server.
+// Single authoritative INR catalog used by the storefront and Shopify cart experience.
 export const PRODUCT_PRICES_INR = Object.freeze({
   '1': 9500,
   '2': 9500,

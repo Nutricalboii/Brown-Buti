@@ -8,6 +8,7 @@ interface ImageCarouselProps {
   alt?: string;
   className?: string;
   priority?: boolean;
+  fullResolution?: boolean;
   sizes?: string;
 }
 
@@ -18,11 +19,14 @@ interface MediaSlideProps {
   priority: boolean;
   poster?: string;
   sizes: string;
+  fullResolution: boolean;
 }
 
-function MediaSlide({ src, alt, isVideo, priority, poster, sizes }: MediaSlideProps) {
+function MediaSlide({ src, alt, isVideo, priority, poster, sizes, fullResolution }: MediaSlideProps) {
   const [status, setStatus] = useState<'loading' | 'ready' | 'error'>('loading');
   const hasWebmFallback = src.toLowerCase().endsWith('.webm');
+  const [useMp4Fallback, setUseMp4Fallback] = useState(false);
+  const mp4FallbackSrc = hasWebmFallback ? src.replace(/\.webm$/i, '.mp4') : undefined;
 
   return (
     <div className="relative h-full w-full bg-mocha-50" aria-busy={status === 'loading'}>
@@ -43,6 +47,7 @@ function MediaSlide({ src, alt, isVideo, priority, poster, sizes }: MediaSlidePr
         </div>
       ) : isVideo ? (
         <video
+          key={useMp4Fallback ? mp4FallbackSrc : src}
           className="h-full w-full object-contain"
           poster={poster}
           autoPlay
@@ -51,17 +56,21 @@ function MediaSlide({ src, alt, isVideo, priority, poster, sizes }: MediaSlidePr
           playsInline
           preload="metadata"
           onLoadedData={() => setStatus('ready')}
-          onError={() => setStatus('error')}
+          onError={() => {
+            if (mp4FallbackSrc && !useMp4Fallback) {
+              setStatus('loading');
+              setUseMp4Fallback(true);
+            } else {
+              setStatus('error');
+            }
+          }}
         >
-          <source src={src} type={hasWebmFallback ? 'video/webm' : 'video/mp4'} />
-          {hasWebmFallback && (
-            <source src={src.replace(/\.webm$/i, '.mp4')} type="video/mp4" />
-          )}
+          <source src={useMp4Fallback && mp4FallbackSrc ? mp4FallbackSrc : src} type={useMp4Fallback || !hasWebmFallback ? 'video/mp4' : 'video/webm'} />
         </video>
       ) : (
         <img
           src={src}
-          srcSet={getResponsiveProductImageSrcSet(src)}
+          srcSet={fullResolution ? undefined : getResponsiveProductImageSrcSet(src)}
           sizes={sizes}
           alt={alt}
           className="h-full w-full object-contain"
@@ -76,7 +85,7 @@ function MediaSlide({ src, alt, isVideo, priority, poster, sizes }: MediaSlidePr
   );
 }
 
-export default function ImageCarousel({ media, alt = 'Product Image', className = '', priority = false, sizes = '(max-width: 768px) 100vw, 512px' }: ImageCarouselProps) {
+export default function ImageCarousel({ media, alt = 'Product Image', className = '', priority = false, fullResolution = false, sizes = '(max-width: 768px) 100vw, 512px' }: ImageCarouselProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
 
   const nextSlide = (e: React.MouseEvent) => {
@@ -116,6 +125,7 @@ export default function ImageCarousel({ media, alt = 'Product Image', className 
               priority={priority}
               poster={isVideo ? media.find((item) => !['.webm', '.mp4', '.mov', '.m4v'].some((extension) => item.toLowerCase().endsWith(extension))) : undefined}
               sizes={sizes}
+              fullResolution={fullResolution}
             />
           </motion.div>
         </AnimatePresence>

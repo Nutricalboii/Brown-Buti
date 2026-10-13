@@ -1,9 +1,9 @@
 const PRODUCT_MEDIA_PREFIX = '/product-media/';
 const RESPONSIVE_WIDTHS = [640, 960] as const;
 
-// All catalog photos are normalized to 1600px wide, except this portrait cover.
+// Most catalog photos are normalized to 1600px wide. This cover uses its original camera file.
 const ORIGINAL_WIDTH_OVERRIDES: Record<string, number> = {
-  '/product-media/pistachio/model-cover.webp': 1350,
+  '/product-media/pistachio/model-cover.webp': 1080,
 };
 
 export function getResponsiveProductImageSrcSet(src: string): string | undefined {

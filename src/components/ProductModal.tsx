@@ -146,7 +146,7 @@ export default function ProductModal({ product, onClose, onAddedToCart }: Produc
 
             <div className="relative px-10 pt-10">
               <div className="rounded-md w-full overflow-hidden bg-mocha-100" style={{ aspectRatio: '3/4' }}>
-                <ImageCarousel media={product.images} alt={product.name} className="w-full h-full object-cover" />
+                <ImageCarousel media={product.images} alt={product.name} className="w-full h-full object-cover" priority fullResolution />
               </div>
             </div>
 

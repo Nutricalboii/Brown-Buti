@@ -26,8 +26,8 @@
 |---|---|---|---|---|
 | **`react`** | `^18.3.1` | Core UI library for component rendering and hooks (`useState`, `useEffect`, `useCallback`, `useContext`). | Entire `src/` codebase | Essential core dependency. Implements React 18 concurrent rendering features. |
 | **`react-dom`** | `^18.3.1` | DOM-specific rendering adapter for React. | `src/main.tsx` | Provides `createRoot` entry point for web application mounting. |
-| **`react-router-dom`** | `^7.18.1` | Client-side routing framework for SPA navigation. | `src/App.tsx`, `Navbar.tsx`, `Cart.tsx`, `Checkout.tsx`, `Shop.tsx` | Handles declarative route rendering (`/`, `/shop`, `/cart`, `/checkout`, `/our-story`, `/contact`, `/wishlist`, etc.) and `useNavigate` / `useLocation` hooks. |
-| **`framer-motion`** | `^12.42.2` | Production-grade animation library for smooth UI transitions. | `SplashLanding.tsx`, `ProductModal.tsx`, `AddedToBagDrawer.tsx`, `Navbar.tsx`, `Cart.tsx`, `Checkout.tsx` | Powers backdrop blurs, slide-over drawers, page transitions, accordion collapse/expand effects, and modal entry/exit sequences. |
+| **`react-router-dom`** | `^7.18.1` | Client-side routing framework for SPA navigation. | `src/App.tsx`, `Navbar.tsx`, `Cart.tsx`, `Shop.tsx` | Handles declarative route rendering (`/`, `/shop`, `/cart`, `/our-story`, `/contact`, `/wishlist`, etc.) and `useNavigate` / `useLocation` hooks. Checkout is hosted by Shopify, not a local route. |
+| **`framer-motion`** | `^12.42.2` | Production-grade animation library for smooth UI transitions. | `SplashLanding.tsx`, `ProductModal.tsx`, `AddedToBagDrawer.tsx`, `Navbar.tsx`, `Cart.tsx` | Powers backdrop blurs, slide-over drawers, page transitions, accordion collapse/expand effects, and modal entry/exit sequences. |
 | **`lucide-react`** | `^0.344.0` | Lightweight SVG icon library. | Used across all components and pages | Renders clean, scalable luxury UI icons (`ShoppingBag`, `X`, `Check`, `ArrowRight`, `Globe`, `ChevronDown`, `Tag`, `Minus`, `Plus`, `Search`, `Heart`, `Filter`, `Sparkles`, `Lock`, etc.). |
 | **`zod`** | `^4.4.3` | TypeScript-first schema declaration and data validation library. | `src/lib/` data layer & future form validation | Used for runtime input validation and type safety. |
 | **`@supabase/supabase-js`** | `^2.112.4` | Isomorphic JavaScript client for Supabase backend. | `src/lib/supabase.ts` | Handles optional authentication and serverless function calls. Safe initialization prevents app crashes if environment variables are omitted. |
@@ -141,7 +141,7 @@ export function trackPixelEvent(eventName: string, params?: Record<string, strin
 2. `trackViewContent(productName, value, currency)`: Fired when a customer opens the `ProductModal`.
 3. `trackAddToCart(productName, value, currency)`: Fired when adding an item to the shopping bag.
 4. `trackInitiateCheckout(value, currency)`: Fired when clicking "Proceed to Checkout" or "Buy Now".
-5. `trackPurchase(orderId, value, currency)`: Fired on the `OrderConfirmation` page after a successful order.
+5. Purchase confirmation tracking must be configured on the Shopify-hosted checkout/thank-you flow; the storefront no longer has a local order-confirmation route.
 
 ---
 
@@ -179,41 +179,10 @@ function useJsonLd(id: string, data: object) {
 
 ### 2.4 Headless Shopify Integration Strategy (`shopify.ts`)
 
-The platform utilizes a **Headless Shopify Architecture**. The custom React frontend handles 100% of product discovery, storytelling, and UI interactions, while delegating checkout execution and order management to Shopify.
+The platform utilizes a **Headless Shopify Architecture**. The custom React frontend handles product discovery, storytelling, and cart interactions, while checkout, payment processing, and order management are handled by Shopify. There is no custom payment API or payment gateway running on the website.
 
-#### Direct Permastructure URL Generator (`createDirectShopifyCheckout`)
-When a customer initiates checkout, `src/lib/shopify.ts` evaluates the line items in the cart:
-
-```typescript
-export function createDirectShopifyCheckout(items: { variantId?: string | number; quantity: number }[]) {
-  if (!items || items.length === 0) {
-    return `https://${SHOPIFY_STORE_DOMAIN}/checkout`;
-  }
-
-  // Filter for real numeric Shopify Variant IDs (e.g. 4567890123 or gid://...)
-  const validVariantItems = items.filter(item => {
-    const id = String(item.variantId || '');
-    return id.length >= 8 || id.startsWith('gid://');
-  });
-
-  if (validVariantItems.length > 0) {
-    const cartItems = validVariantItems
-      .map(item => {
-        const cleanId = String(item.variantId).replace('gid://shopify/ProductVariant/', '');
-        return `${cleanId}:${item.quantity}`;
-      })
-      .join(',');
-    return `https://${SHOPIFY_STORE_DOMAIN}/cart/${cartItems}`;
-  }
-
-  // Fallback to Hosted Shopify Checkout page
-  return `https://${SHOPIFY_STORE_DOMAIN}/checkout`;
-}
-```
-
-#### Execution Paths
-1. **With Numeric Shopify Variant IDs**: Redirects the browser directly to `https://1fieuf-bz.myshopify.com/cart/4567890123:1`, which automatically populates Shopify's checkout drawer with exact quantities.
-2. **Catalog Fallback Mode**: Redirects the browser to `https://1fieuf-bz.myshopify.com/checkout`, opening Shopify's general checkout portal.
+#### Shopify-hosted Checkout Handoff
+The cart calls `createShopifyCheckout()` from `src/lib/shopify.ts`. When the Storefront API is configured, the helper creates a Shopify cart and validates that the returned checkout URL is HTTPS and belongs to Shopify or the approved store domains. If the Storefront API is unavailable, it falls back to a validated Shopify cart permalink. Empty or invalid carts are rejected. The website does not collect payment details, run a payment SDK, or expose a custom payment API; gateway configuration and payment completion remain in Shopify Admin and Shopify Checkout.
 
 ---
 
@@ -261,7 +230,7 @@ To protect customers against cross-site scripting (XSS), data injection, and mal
 ```
 
 #### Vercel SPA Routing Configuration (`vercel.json`)
-Configures universal single-page application route rewrites so deep page links (`/shop`, `/cart`, `/checkout`, `/our-story`) render `index.html` seamlessly without HTTP 404 errors:
+Configures universal single-page application route rewrites so deep page links (`/shop`, `/cart`, `/our-story`) render `index.html` seamlessly without HTTP 404 errors. Checkout is an external Shopify URL, not a local SPA route:
 
 ```json
 {
@@ -282,7 +251,7 @@ Configures universal single-page application route rewrites so deep page links (
 - [x] **Global State Engines**: Synchronized `CartContext`, `WishlistContext`, and `CurrencyContext` with automatic `localStorage` state persistence.
 - [x] **Dual Currency & Dynamic Shipping**: Real-time price formatting (`₹` INR vs. `$` USD) and dynamic threshold shipping rules across domestic and international regions.
 - [x] **Direct Headless Shopify Permalinks**: Permastructure cart URL generator built and integrated across `ProductModal`, `AddedToBagDrawer`, and `Cart` pages.
-- [x] **Standalone 3-Step Accordion Checkout**: Luxury fallback checkout UI (`1. Address` -> `2. Shipping` -> `3. Payment`) featuring Indian state dropdowns, international country selectors, and ZIP/PIN validation.
+- [x] **Shopify-hosted Checkout**: The storefront securely hands the cart to Shopify; all payment collection and payment gateways stay on Shopify.
 - [x] **SEO Schema.org Microdata**: Automated JSON-LD structured data generators for Organization, Product, Shop ItemList, and Breadcrumb List.
 - [x] **Analytics Integration Layer**: Dual event dispatchers for GA4 and Meta Pixel initialized with safety window checks.
 - [x] **Serverless Newsletter Subsystem**: Deno Edge Function script created and configured for Supabase & Mailchimp API integration.

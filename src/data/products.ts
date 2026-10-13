@@ -42,7 +42,7 @@ export const products: Product[] = [
       'The cage motif was my little way of playing with the idea of freedom — because what’s more fun than putting a cage on a saree and then wearing it exactly how you want?',
     wearFor: 'I see this one on the woman who likes her classics with a little bit of edge. Dinner dates, cocktails, gallery evenings — basically anywhere you want someone to stop and ask, “Wait, is that a cage on your saree?”',
     image: productMedia('sapphire-mogra', 'DSC08199.webp'),
-    images: [productMedia('sapphire-mogra', 'DSC08199.webp'), productMedia('sapphire-mogra', 'DSC08227.webp'), productMedia('sapphire-mogra', 'C5795.browser.mp4'), productMedia('sapphire-mogra', 'C5813.browser.mp4')],
+    images: [productMedia('sapphire-mogra', 'DSC08199.webp'), productMedia('sapphire-mogra', 'DSC08227.webp'), productMedia('sapphire-mogra', 'C5795.browser.webm'), productMedia('sapphire-mogra', 'C5813.browser.webm')],
     color: '#8898B8',
     shopifyVariantId: '48988074541305', // SAPPHIRE MOGRA
   },
@@ -61,7 +61,7 @@ export const products: Product[] = [
       'Can we talk about how butter yellow is having such a moment right now? Gen Z, millennials — everyone seems to be obsessed with it. And then there’s the pineapple. Somehow, the two together just made perfect sense to me. It gives this saree that fresh, playful energy without making it feel too young.',
     wearFor: 'Haldi? Absolutely. Brunch date? Of course. Day wedding? Take her. She’s basically made for happy occasions.',
     image: productMedia('butter-mogra', 'DSC08136.webp'),
-    images: [productMedia('butter-mogra', 'DSC08136.webp'), productMedia('butter-mogra', 'DSC08139(1).webp'), productMedia('butter-mogra', 'DSC08139.webp'), productMedia('butter-mogra', 'DSC08167.webp'), productMedia('butter-mogra', 'DSC08129.webp'), productMedia('butter-mogra', 'DSC08166.webp'), productMedia('butter-mogra', 'DSC08100.webp'), productMedia('butter-mogra', 'C5770.browser.mp4'), productMedia('butter-mogra', 'C5756.browser.mp4'), productMedia('butter-mogra', 'C5775.browser.mp4')],
+    images: [productMedia('butter-mogra', 'DSC08136.webp'), productMedia('butter-mogra', 'DSC08139(1).webp'), productMedia('butter-mogra', 'DSC08139.webp'), productMedia('butter-mogra', 'DSC08167.webp'), productMedia('butter-mogra', 'DSC08129.webp'), productMedia('butter-mogra', 'DSC08166.webp'), productMedia('butter-mogra', 'DSC08100.webp'), productMedia('butter-mogra', 'C5770.browser.webm'), productMedia('butter-mogra', 'C5756.browser.webm'), productMedia('butter-mogra', 'C5775.browser.webm')],
     color: '#D4C08A',
     shopifyVariantId: '48991334367481', // BUTTER MOGRA
   },
@@ -80,7 +80,7 @@ export const products: Product[] = [
       'I imagined Ruby Doe on the girl who has just become a bride — not in a heavy bridal saree, but in that beautiful new-bride phase where you want to wear colour, dress up and still feel like yourself. The little deer motif makes the red feel softer and more playful.',
     wearFor: 'Wear her to a wedding, a bridesmaid moment, an intimate dinner or that first wedding season after you say “I do.”',
     image: productMedia('ruby-doe', 'DSC07551.webp'),
-    images: [productMedia('ruby-doe', 'DSC07551.webp'), productMedia('ruby-doe', 'DSC07544.webp'), productMedia('ruby-doe', 'DSC07537.webp'), productMedia('ruby-doe', 'DSC07540.webp'), productMedia('ruby-doe', 'DSC07528.webp'), productMedia('ruby-doe', 'DSC07541.webp'), productMedia('ruby-doe', 'DSC07593.webp'), productMedia('ruby-doe', 'DSC07525.webp'), productMedia('ruby-doe', 'C5705.browser.mp4'), productMedia('ruby-doe', 'C5706.browser.mp4'), productMedia('ruby-doe', 'C5710.browser.mp4')],
+    images: [productMedia('ruby-doe', 'DSC07551.webp'), productMedia('ruby-doe', 'DSC07544.webp'), productMedia('ruby-doe', 'DSC07537.webp'), productMedia('ruby-doe', 'DSC07540.webp'), productMedia('ruby-doe', 'DSC07528.webp'), productMedia('ruby-doe', 'DSC07541.webp'), productMedia('ruby-doe', 'DSC07593.webp'), productMedia('ruby-doe', 'DSC07525.webp'), productMedia('ruby-doe', 'C5705.browser.webm'), productMedia('ruby-doe', 'C5706.browser.webm'), productMedia('ruby-doe', 'C5710.browser.webm')],
     color: '#B89090',
     shopifyVariantId: '48991348293881', // RUBY DOE
   },
@@ -99,7 +99,7 @@ export const products: Product[] = [
       'Think destination wedding by the sea. Barely-there breeze, cocktails at sunset, your hair doing its own thing — and a silk saree with tiny seahorses. This is exactly why I wanted the seahorse on it. It’s unexpected, but somehow feels completely at home.',
     wearFor: 'And honestly? This is the one I’d wear if I wanted people to ask me, “Where is that saree from?”',
     image: productMedia('jalparie', 'DSC01061.webp'),
-    images: [productMedia('jalparie', 'DSC01061.webp'), productMedia('jalparie', 'DSC01143.webp'), productMedia('jalparie', 'C9144.browser.mp4'), productMedia('jalparie', 'C9153.browser.mp4')],
+    images: [productMedia('jalparie', 'DSC01061.webp'), productMedia('jalparie', 'DSC01143.webp'), productMedia('jalparie', 'C9144.browser.webm'), productMedia('jalparie', 'C9153.browser.webm')],
     color: '#D4C5B0',
     shopifyVariantId: '48991392628985', // JALPARIE
   },
@@ -118,7 +118,7 @@ export const products: Product[] = [
       'I wanted something soft and feminine, but then I thought — why should pretty always mean predictable? So came the owl. A little unusual, a little mysterious and definitely not the motif you expect to find on a saree.',
     wearFor: 'I see this one at intimate dinners, date nights, sundowners and those occasions where you want to look pretty but still have something interesting going on.',
     image: productMedia('rose-mogra', 'DSC09558.webp'),
-    images: [productMedia('rose-mogra', 'DSC09558.webp'), productMedia('rose-mogra', 'DSC09557.webp'), productMedia('rose-mogra', 'DSC09572.webp'), productMedia('rose-mogra', 'C6947.browser.mp4'), productMedia('rose-mogra', 'C6972.browser.mp4'), productMedia('rose-mogra', 'C6981.browser.mp4')],
+    images: [productMedia('rose-mogra', 'DSC09558.webp'), productMedia('rose-mogra', 'DSC09557.webp'), productMedia('rose-mogra', 'DSC09572.webp'), productMedia('rose-mogra', 'C6947.browser.webm'), productMedia('rose-mogra', 'C6972.browser.webm'), productMedia('rose-mogra', 'C6981.browser.webm')],
     color: '#C9B5A8',
     shopifyVariantId: '48991405605113', // ROSÉ MOGRA
   },
@@ -156,7 +156,7 @@ export const products: Product[] = [
       'Two little fish swimming across a silk saree. I don’t know — I just loved the idea. There’s something about this one that feels like holiday energy. A sunset dinner, a beachside celebration, a long evening with nowhere to be.',
     wearFor: 'Basically, the saree equivalent of saying, “Let’s stay for one more drink.”',
     image: productMedia('sundowner-silk', 'DSC09621.webp'),
-    images: [productMedia('sundowner-silk', 'DSC09621.webp'), productMedia('sundowner-silk', 'DSC09619.webp'), productMedia('sundowner-silk', 'C6936.browser.mp4'), productMedia('sundowner-silk', 'C6987.browser.mp4')],
+    images: [productMedia('sundowner-silk', 'DSC09621.webp'), productMedia('sundowner-silk', 'DSC09619.webp'), productMedia('sundowner-silk', 'C6936.browser.webm'), productMedia('sundowner-silk', 'C6987.browser.webm')],
     color: '#C4A882',
     shopifyVariantId: '48996873732345', // SUNDOWNER SILK
   },
@@ -181,7 +181,7 @@ export const products: Product[] = [
       'A saree you can actually reach for often — not just save for special occasions.',
     ],
     image: productMedia('pistachio', 'model-cover.webp'),
-    images: [productMedia('pistachio', 'model-cover.webp'), productMedia('pistachio', 'C8907.browser.mp4'), productMedia('pistachio', 'C8919.browser.mp4'), productMedia('pistachio', 'C8925.browser.mp4')],
+    images: [productMedia('pistachio', 'model-cover.webp'), productMedia('pistachio', 'C8907.browser.webm'), productMedia('pistachio', 'C8919.browser.webm'), productMedia('pistachio', 'C8925.browser.webm')],
     color: '#B9C6A0',
   },
   {
@@ -223,7 +223,7 @@ export const products: Product[] = [
       'I wanted the saree to move. So I made the underskirt ridiculously flared. The kind that gives your saree that gorgeous swish when you walk, sit, twirl — basically whenever you feel like being a little dramatic.',
     wearFor: 'You won’t necessarily see Chaandini. But you’ll definitely notice what she does.',
     image: productMedia('chandini', 'DSC03169.webp'),
-    images: [productMedia('chandini', 'DSC03169.webp'), productMedia('chandini', 'C9236.browser.mp4'), productMedia('chandini', 'DSC03186.webp'), productMedia('chandini', 'DSC03155.webp'), productMedia('chandini', 'DSC03193.webp')],
+    images: [productMedia('chandini', 'DSC03169.webp'), productMedia('chandini', 'C9236.browser.webm'), productMedia('chandini', 'DSC03186.webp'), productMedia('chandini', 'DSC03155.webp'), productMedia('chandini', 'DSC03193.webp')],
     color: '#D8D0C4',
     shopifyVariantId: '48996875534585', // CHAANDINI
   },
@@ -276,7 +276,7 @@ export const products: Product[] = [
     modelSize: 'Small',
     sizes: ['XS', 'S', 'M', 'L', 'XL', 'XXL'],
     image: productMedia('tamara', 'BB012038-BE11-42CC-A53E-F99B9F0C9FF0.webp'),
-    images: [productMedia('tamara', 'BB012038-BE11-42CC-A53E-F99B9F0C9FF0.webp'), productMedia('tamara', 'DSC03596.webp'), productMedia('tamara', 'C9275.browser.mp4'), productMedia('tamara', 'C9274.browser.mp4'), productMedia('tamara', 'C9277.browser.mp4')],
+    images: [productMedia('tamara', 'BB012038-BE11-42CC-A53E-F99B9F0C9FF0.webp'), productMedia('tamara', 'DSC03596.webp'), productMedia('tamara', 'C9275.browser.webm'), productMedia('tamara', 'C9274.browser.webm'), productMedia('tamara', 'C9277.browser.webm')],
     color: '#A67340',
   },
 ];

@@ -14,7 +14,7 @@
 ### Priority 1 — Functional (Must-Haves)
 | Item | Status | Notes |
 |------|--------|-------|
-| Real payment gateway | ❌ | Shopify Payments or Razorpay needed |
+| Hosted checkout payments | Configure in Shopify | The website hands off to Shopify checkout; no payment processor runs on the storefront. |
 | Shopify backend connected | ❌ | See guide below |
 | Order management system | ❌ | Comes with Shopify |
 | Email confirmation on order | ❌ | Shopify handles automatically |
@@ -207,7 +207,7 @@ Shopify handles this natively — it has built-in fraud analysis and bot detecti
 ## 📦 Recommended Launch Order
 
 ```
-Month 1  →  Shopify live + Razorpay + your own website
+Month 1  →  Shopify live + Shopify-hosted checkout + your own website
 Month 2  →  Add legal pages, Google Analytics, Meta Pixel
 Month 2  →  Apply to Nykaa Fashion (easier entry)
 Month 3  →  Apply to Myntra (needs more inventory + photos)

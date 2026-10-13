@@ -106,8 +106,6 @@ graph LR
         PageBarrel --> OurStory[OurStory]
         PageBarrel --> Contact[Contact]
         PageBarrel --> Cart[Cart]
-        PageBarrel --> Checkout[Checkout]
-        PageBarrel --> OrderConfirmation[OrderConfirmation]
         PageBarrel --> Policies[Privacy / Terms / Shipping / Return]
     end
 
@@ -131,11 +129,7 @@ sequenceDiagram
 
     Customer->>UI: Clicks "Buy Now" or "Checkout Now"
     UI->>Helper: Passes items [{ variantId, quantity }]
-    alt Valid Shopify Variant ID Present
-        Helper-->>UI: Generates https://1fieuf-bz.myshopify.com/cart/{variantId}:{qty}
-    else Local Catalog ID (Fallback)
-        Helper-->>UI: Generates https://1fieuf-bz.myshopify.com/checkout
-    end
+    Helper-->>UI: Returns Shopify checkout URL from Storefront API or safe cart permalink fallback
     UI->>Shopify: Redirects window.location.href to Shopify
     Customer->>Shopify: Enters Shipping Address & Completes Payment (UPI / Cards / NetBanking)
     Shopify->>OrderSystem: Creates Order & Deducts Inventory Automatically
@@ -180,10 +174,9 @@ graph TD
     Main --> R3["/our-story (Brand Heritage)"]
     Main --> R4["/contact (Atelier Support)"]
     Main --> R5["/cart (Curated Bag)"]
-    Main --> R6["/checkout (3-Step Checkout)"]
-    Main --> R7["/order-confirmation (Success Screen)"]
-    Main --> R8["/wishlist (Saved Collection)"]
-    Main --> R9["Legal & Information Pages"]
+    Main --> R6["Shopify Hosted Checkout (external)"]
+    Main --> R7["/wishlist (Saved Collection)"]
+    Main --> R8["Legal & Information Pages"]
 ```
 
 ---
@@ -234,10 +227,8 @@ Mocha_And_Mogra_Website/
 │   └── pages/                   # Application Page Views
 │       ├── index.ts             # Central barrel export for all application pages
 │       ├── Cart.tsx             # Curated shopping cart page with order summary
-│       ├── Checkout.tsx         # Standalone 3-step luxury accordion checkout page
 │       ├── Contact.tsx          # Brand atelier contact page with validation
 │       ├── Home.tsx             # Homepage hero, brand narrative & featured sarees
-│       ├── OrderConfirmation.tsx# Post-purchase order success page
 │       ├── OurStory.tsx         # Brand heritage & artisanal philosophy page
 │       ├── Privacy.tsx          # Privacy policy legal document
 │       ├── ReturnPolicy.tsx     # Return & exchange policy legal document
@@ -269,16 +260,16 @@ Mocha_And_Mogra_Website/
 - **Interactive Search Engine**: Instant keyboard-accessible modal overlay filtering products in real time across titles, motifs, and descriptions.
 
 ### 2. Dual Currency Engine (INR / USD $)
-- Global currency switcher in `Navbar` updating prices across all catalog views, product modals, bag drawers, and checkout pages.
+- Global currency switcher in `Navbar` updating prices across all catalog views, product modals, and bag drawers.
 - Dynamic complimentary shipping calculation: Complimentary shipping across India for orders above 5,000; international threshold dynamically adjusted according to live exchange rates.
 
 ### 3. Headless Shopify Integration
 - Direct 1-click cart permalinks (`/cart/variant_id:qty`) linking straight into Shopify's checkout engine.
-- Fallback checkout mechanism ensuring smooth redirection even when numeric variant IDs are not present.
+- Shopify Storefront API checkout URL with a validated cart-permalink fallback; invalid variant IDs are rejected with a clear error.
 
 ### 4. Enterprise SEO & Analytics
 - Dynamic `JSON-LD` microdata injection (`Organization`, `Product`, `ItemList`, `BreadcrumbList`).
-- Dual event dispatching to Google Analytics 4 (`gtag`) and Meta Pixel (`fbq`) for `view_item`, `add_to_cart`, `initiate_checkout`, and `purchase`.
+- Dual event dispatching to Google Analytics 4 (`gtag`) and Meta Pixel (`fbq`) for product views, add-to-cart, and checkout initiation. Payment processing stays on Shopify.
 
 ---
 
@@ -334,11 +325,11 @@ The application utilizes Shopify's **Cart Permalink Format**. When a customer cl
 // Example constructed URL for real variant IDs:
 https://1fieuf-bz.myshopify.com/cart/4567890123:1,4567890124:2
 
-// Fallback URL for catalog items:
-https://1fieuf-bz.myshopify.com/checkout
+// The storefront API-unavailable fallback uses the same Shopify cart permalink format.
+https://1fieuf-bz.myshopify.com/cart/4567890123:1
 ```
 
-This bypasses custom payment gateway maintenance on the React side while retaining 100% of Shopify's native checkout capabilities (PCI compliance, Razorpay/Stripe, UPI, credit cards, automated order receipts).
+The React storefront contains no payment gateway or payment API. Checkout, payment gateway configuration (if enabled), order receipts, and order management are handled by Shopify.
 
 ### 2. Supabase + Mailchimp Newsletter Subsystem
 Newsletter subscriptions submitted in `Footer.tsx` trigger the Supabase Edge Function located at `supabase/functions/subscribe-mailchimp/index.ts`:
