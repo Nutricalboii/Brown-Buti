@@ -206,6 +206,7 @@ export default function Home() {
                       muted
                       loop
                       playsInline
+                      controls={false}
                     />
                   )}
                 </motion.div>
@@ -229,6 +230,7 @@ export default function Home() {
                       muted
                       loop
                       playsInline
+                      controls={false}
                     />
                   )}
                 </motion.div>
@@ -253,6 +255,7 @@ export default function Home() {
                       muted
                       loop
                       playsInline
+                      controls={false}
                     />
                   )}
                 </motion.div>

@@ -64,7 +64,7 @@ function Layout() {
         </Suspense>
       )}
       <Navbar onSearchOpen={() => setSearchOpen(true)} />
-      <main className="flex-1">
+      <main className="flex-1 overflow-x-clip">
         <Suspense fallback={<RouteLoading />}>
           <Routes>
             <Route path="/" element={<Home />} />

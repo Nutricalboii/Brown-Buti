@@ -54,8 +54,12 @@ function MediaSlide({ src, alt, isVideo, priority, poster, sizes, fullResolution
           muted
           loop
           playsInline
+          controls={false}
           preload="metadata"
-          onLoadedData={() => setStatus('ready')}
+          onCanPlay={(event) => {
+            setStatus('ready');
+            void event.currentTarget.play().catch(() => undefined);
+          }}
           onError={() => {
             if (mp4FallbackSrc && !useMp4Fallback) {
               setStatus('loading');
@@ -136,14 +140,14 @@ export default function ImageCarousel({ media, alt = 'Product Image', className 
           {/* Navigation Arrows (visible on hover for desktop) */}
           <button
             onClick={prevSlide}
-            className="absolute left-2 top-1/2 -translate-y-1/2 w-8 h-8 flex items-center justify-center bg-white/60 hover:bg-white text-mocha-900 rounded-full md:opacity-0 md:group-hover:opacity-100 transition-opacity z-10 shadow-sm"
+            className="absolute left-2 top-1/2 -translate-y-1/2 w-11 h-11 flex items-center justify-center bg-white/70 hover:bg-white text-mocha-900 rounded-full md:opacity-0 md:group-hover:opacity-100 transition-opacity z-10 shadow-sm"
             aria-label="Previous image"
           >
             <ChevronLeft size={16} />
           </button>
           <button
             onClick={nextSlide}
-            className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 flex items-center justify-center bg-white/60 hover:bg-white text-mocha-900 rounded-full md:opacity-0 md:group-hover:opacity-100 transition-opacity z-10 shadow-sm"
+            className="absolute right-2 top-1/2 -translate-y-1/2 w-11 h-11 flex items-center justify-center bg-white/70 hover:bg-white text-mocha-900 rounded-full md:opacity-0 md:group-hover:opacity-100 transition-opacity z-10 shadow-sm"
             aria-label="Next image"
           >
             <ChevronRight size={16} />

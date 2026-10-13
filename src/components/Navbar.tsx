@@ -39,7 +39,7 @@ export default function Navbar({ onSearchOpen }: NavbarProps) {
   return (
     <>
       <header
-        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
+        className={`fixed top-0 left-0 right-0 z-50 safe-top safe-left safe-right transition-all duration-500 ${
           scrolled
             ? 'bg-[#FFFEF7]/95 backdrop-blur-md shadow-sm border-b border-mocha-100'
             : 'bg-transparent'
@@ -60,7 +60,7 @@ export default function Navbar({ onSearchOpen }: NavbarProps) {
             </NavLink>
 
             {/* Desktop Nav */}
-            <nav className="hidden md:flex items-center gap-8">
+            <nav className="hidden lg:flex items-center gap-8">
               {navLinks.map((link) => (
                 <NavLink
                   key={link.path}
@@ -88,7 +88,7 @@ export default function Navbar({ onSearchOpen }: NavbarProps) {
             <div className="flex items-center gap-3 sm:gap-5">
               {/* Currency Toggle */}
               {location.pathname === '/shop' && (
-                <div className="flex items-center gap-1 font-cinzel text-[10px] tracking-[0.1em] text-mocha-600 bg-mocha-50/50 rounded-full px-2 py-1 border border-mocha-200">
+                <div className="hidden md:flex items-center gap-1 font-cinzel text-[10px] tracking-[0.1em] text-mocha-600 bg-mocha-50/50 rounded-full px-2 py-1 border border-mocha-200">
                 <button
                   onClick={() => setCurrency('INR')}
                   className={`px-2 py-1 rounded-full transition-colors ${currency === 'INR' ? 'bg-mocha-800 text-gold-200' : 'hover:bg-mocha-100'}`}
@@ -141,7 +141,7 @@ export default function Navbar({ onSearchOpen }: NavbarProps) {
               </button>
               <button
                 aria-label="Toggle menu"
-                className="md:hidden text-mocha-700 hover:text-mocha-900 transition-colors"
+                className="lg:hidden text-mocha-700 hover:text-mocha-900 transition-colors"
                 onClick={() => setMenuOpen((v) => !v)}
               >
                 {menuOpen ? <X size={20} strokeWidth={1.5} /> : <Menu size={20} strokeWidth={1.5} />}
@@ -159,7 +159,7 @@ export default function Navbar({ onSearchOpen }: NavbarProps) {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
             transition={{ duration: 0.25 }}
-            className="fixed inset-0 z-40 bg-[#FFFEF7] pt-20 px-8 md:hidden"
+            className="fixed inset-0 z-40 safe-top safe-bottom safe-left safe-right bg-[#FFFEF7] pt-20 px-8 lg:hidden"
           >
             <nav className="flex flex-col gap-6 mt-8">
               {navLinks.map((link) => (
