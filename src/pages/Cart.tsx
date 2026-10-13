@@ -5,6 +5,7 @@ import { Minus, Plus, X, ShoppingBag, ArrowRight, Loader2, ShieldCheck } from 'l
 import { useCart } from '../context/CartContext';
 import { createShopifyCheckout } from '../lib/shopify';
 import { useCurrency } from '../context/CurrencyContext';
+import { getResponsiveProductImageSrcSet } from '../lib/responsive-product-image';
 
 import AgePrivacyPopup from '../components/AgePrivacyPopup';
 
@@ -88,6 +89,8 @@ export default function Cart() {
                         {item.product.image ? (
                           <img
                             src={item.product.image}
+                            srcSet={getResponsiveProductImageSrcSet(item.product.image)}
+                            sizes="(min-width: 768px) 112px, 96px"
                             alt={item.product.name}
                             className="w-full h-full object-cover"
                           />

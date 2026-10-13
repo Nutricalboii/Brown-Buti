@@ -6,6 +6,7 @@ import { products } from '../data/products';
 import { OrganizationJsonLd } from '../lib/jsonld';
 import { supabase } from '../lib/supabase';
 import { useCurrency } from '../context/CurrencyContext';
+import { getResponsiveProductImageSrcSet } from '../lib/responsive-product-image';
 
 const fadeUp = {
   hidden: { opacity: 0, y: 30 },
@@ -146,6 +147,7 @@ export default function Home() {
                     src="/images/covermain.webp"
                     alt="Hero Saree"
                     className="absolute inset-0 w-full h-full object-cover"
+                    fetchPriority="high"
                   />
                 </div>
                 {/* Floating tag */}
@@ -316,6 +318,8 @@ export default function Home() {
                 >
                   <img
                     src={product.image}
+                    srcSet={getResponsiveProductImageSrcSet(product.image)}
+                    sizes="(max-width: 767px) 90vw, 30vw"
                     alt={product.name}
                     className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                     loading="lazy"

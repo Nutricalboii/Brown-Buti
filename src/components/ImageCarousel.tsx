@@ -1,12 +1,14 @@
 import { useState } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { getResponsiveProductImageSrcSet } from '../lib/responsive-product-image';
 
 interface ImageCarouselProps {
   media: string[];
   alt?: string;
   className?: string;
   priority?: boolean;
+  sizes?: string;
 }
 
 interface MediaSlideProps {
@@ -14,15 +16,17 @@ interface MediaSlideProps {
   alt: string;
   isVideo: boolean;
   priority: boolean;
+  poster?: string;
+  sizes: string;
 }
 
-function MediaSlide({ src, alt, isVideo, priority }: MediaSlideProps) {
+function MediaSlide({ src, alt, isVideo, priority, poster, sizes }: MediaSlideProps) {
   const [status, setStatus] = useState<'loading' | 'ready' | 'error'>('loading');
   const hasWebmFallback = src.toLowerCase().endsWith('.webm');
 
   return (
     <div className="relative h-full w-full bg-mocha-50" aria-busy={status === 'loading'}>
-      {status === 'loading' && (
+      {status === 'loading' && !isVideo && (
         <div
           aria-hidden="true"
           className="absolute inset-0 z-10 animate-pulse bg-mocha-100 motion-reduce:animate-none"
@@ -40,6 +44,7 @@ function MediaSlide({ src, alt, isVideo, priority }: MediaSlideProps) {
       ) : isVideo ? (
         <video
           className="h-full w-full object-contain"
+          poster={poster}
           autoPlay
           muted
           loop
@@ -56,10 +61,13 @@ function MediaSlide({ src, alt, isVideo, priority }: MediaSlideProps) {
       ) : (
         <img
           src={src}
+          srcSet={getResponsiveProductImageSrcSet(src)}
+          sizes={sizes}
           alt={alt}
           className="h-full w-full object-contain"
           loading={priority ? 'eager' : 'lazy'}
           decoding="async"
+          fetchPriority={priority ? 'high' : 'auto'}
           onLoad={() => setStatus('ready')}
           onError={() => setStatus('error')}
         />
@@ -68,7 +76,7 @@ function MediaSlide({ src, alt, isVideo, priority }: MediaSlideProps) {
   );
 }
 
-export default function ImageCarousel({ media, alt = 'Product Image', className = '', priority = false }: ImageCarouselProps) {
+export default function ImageCarousel({ media, alt = 'Product Image', className = '', priority = false, sizes = '(max-width: 768px) 100vw, 512px' }: ImageCarouselProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
 
   const nextSlide = (e: React.MouseEvent) => {
@@ -106,6 +114,8 @@ export default function ImageCarousel({ media, alt = 'Product Image', className 
               alt={`${alt} - ${currentIndex + 1}`}
               isVideo={isVideo}
               priority={priority}
+              poster={isVideo ? media.find((item) => !['.webm', '.mp4', '.mov', '.m4v'].some((extension) => item.toLowerCase().endsWith(extension))) : undefined}
+              sizes={sizes}
             />
           </motion.div>
         </AnimatePresence>

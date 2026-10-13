@@ -5,6 +5,7 @@ import { useCart } from '../context/CartContext';
 import { createDirectShopifyCheckout } from '../lib/shopify';
 import { useCurrency } from '../context/CurrencyContext';
 import type { Product } from '../data/products';
+import { getResponsiveProductImageSrcSet } from '../lib/responsive-product-image';
 import { useState } from 'react';
 import AgePrivacyPopup from './AgePrivacyPopup';
 
@@ -77,6 +78,8 @@ export default function AddedToBagDrawer({ product, size, onClose }: AddedToBagD
                 {product.image ? (
                   <img
                     src={product.image}
+                    srcSet={getResponsiveProductImageSrcSet(product.image)}
+                    sizes="96px"
                     alt={product.name}
                     className="w-24 h-32 object-cover rounded-md flex-shrink-0 bg-mocha-50"
                   />
@@ -133,6 +136,8 @@ export default function AddedToBagDrawer({ product, size, onClose }: AddedToBagD
                           <img
                             key={item.product.id}
                             src={item.product.image}
+                            srcSet={getResponsiveProductImageSrcSet(item.product.image)}
+                            sizes="48px"
                             alt={item.product.name}
                             className="w-12 h-16 object-cover rounded border border-mocha-200 flex-shrink-0"
                           />

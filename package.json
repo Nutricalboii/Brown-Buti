@@ -9,6 +9,7 @@
     "test": "node --test server/*.test.js",
     "lint": "eslint .",
     "preview": "vite preview",
+    "media:responsive": "node scripts/generate-responsive-product-media.mjs",
     "typecheck": "tsc --noEmit -p tsconfig.app.json"
   },
   "dependencies": {
