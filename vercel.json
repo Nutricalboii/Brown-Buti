@@ -1,4 +1,19 @@
 {
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        {
+          "key": "Content-Security-Policy",
+          "value": "default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'none'; form-action 'self' https://checkout.razorpay.com; script-src 'self' https://checkout.razorpay.com https://www.googletagmanager.com https://connect.facebook.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob: https://res.cloudinary.com https://www.facebook.com https://www.google-analytics.com https://*.razorpay.com; media-src 'self' https://res.cloudinary.com; connect-src 'self' https://lumberjack.razorpay.com https://api.razorpay.com https://*.myshopify.com https://mochamogra.com https://www.mochamogra.com https://*.supabase.co https://www.google-analytics.com https://region1.google-analytics.com https://www.facebook.com; frame-src 'self' https://api.razorpay.com https://checkout.razorpay.com"
+        },
+        { "key": "X-Content-Type-Options", "value": "nosniff" },
+        { "key": "X-Frame-Options", "value": "DENY" },
+        { "key": "Referrer-Policy", "value": "strict-origin-when-cross-origin" },
+        { "key": "Permissions-Policy", "value": "camera=(), microphone=(), geolocation=()" }
+      ]
+    }
+  ],
   "rewrites": [
     { "source": "/(.*)", "destination": "/index.html" }
   ]

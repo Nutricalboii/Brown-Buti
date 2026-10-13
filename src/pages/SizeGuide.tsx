@@ -1,6 +1,9 @@
+import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
+import { SizeChartContent } from '../components/SizeChart';
+import type { SizeUnit } from '../data/sizeChart';
 
 const sareeGuide = [
   {
@@ -10,15 +13,6 @@ const sareeGuide = [
     fits: 'Fits most body types — the drape style adjusts to you',
     note: 'All MnM sarees come in a single standard length as is traditional in silk sarees.',
   },
-];
-
-const blouseGuide = [
-  { size: 'XS', bust: '32"', waist: '26"', hip: '35"' },
-  { size: 'S',  bust: '34"', waist: '28"', hip: '37"' },
-  { size: 'M',  bust: '36"', waist: '30"', hip: '39"' },
-  { size: 'L',  bust: '38"', waist: '32"', hip: '41"' },
-  { size: 'XL', bust: '40"', waist: '34"', hip: '43"' },
-  { size: 'XXL',bust: '42"', waist: '36"', hip: '45"' },
 ];
 
 const underskirtGuide = [
@@ -49,6 +43,8 @@ const howToMeasure = [
 ];
 
 export default function SizeGuide() {
+  const [unit, setUnit] = useState<SizeUnit>('inches');
+
   return (
     <div className="pt-24 pb-20 min-h-screen">
       <div className="max-w-4xl mx-auto px-6 lg:px-10">
@@ -101,31 +97,8 @@ export default function SizeGuide() {
             <h2 className="font-cinzel text-lg tracking-widest text-mocha-900 uppercase mb-2 pb-3 border-b border-mocha-200">
               Blouse Size Chart
             </h2>
-            <p className="font-lora text-sm text-mocha-400 mb-6">
-              All measurements are in inches. If you're between sizes, size up for comfort.
-            </p>
-            <div className="overflow-x-auto">
-              <table className="w-full border-collapse text-sm">
-                <thead>
-                  <tr className="border-b border-mocha-200">
-                    {['Size', 'Bust', 'Waist', 'Hip'].map((h) => (
-                      <th key={h} className="text-left py-3 pr-6 font-cinzel text-mocha-900 uppercase tracking-wider text-xs">
-                        {h}
-                      </th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody className="font-lora text-mocha-600 divide-y divide-mocha-100">
-                  {blouseGuide.map((row) => (
-                    <tr key={row.size} className="hover:bg-mocha-50 transition-colors">
-                      <td className="py-3 pr-6 font-semibold text-mocha-800">{row.size}</td>
-                      <td className="py-3 pr-6">{row.bust}</td>
-                      <td className="py-3 pr-6">{row.waist}</td>
-                      <td className="py-3">{row.hip}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+            <div className="mt-6">
+              <SizeChartContent unit={unit} onUnitChange={setUnit} />
             </div>
           </section>
 

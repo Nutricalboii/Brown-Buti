@@ -5,7 +5,7 @@ export type Currency = 'INR' | 'USD';
 interface CurrencyContextValue {
   currency: Currency;
   setCurrency: (currency: Currency) => void;
-  formatPrice: (inrAmount: number) => string;
+  formatPrice: (inrAmount: number, usdAmount?: number) => string;
   usdRate: number;
 }
 
@@ -19,41 +19,51 @@ export function CurrencyProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     // Check saved preference first
-    const saved = localStorage.getItem('currency') as Currency;
+    let saved: string | null = null;
+    try {
+      saved = localStorage.getItem('currency');
+    } catch {
+      // Continue with timezone-based defaults when storage is unavailable.
+    }
     if (saved === 'INR' || saved === 'USD') {
       setCurrency(saved);
       return;
     }
 
-    // Auto-detect based on timezone
+    // Auto-detect based on timezone (Asia/Kolkata or Indian timezones -> INR, foreign -> USD)
     try {
-      const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
-      if (tz && !tz.toLowerCase().includes('kolkata')) {
+      const tz = (Intl.DateTimeFormat().resolvedOptions().timeZone || '').toLowerCase();
+      const isIndia = tz.includes('kolkata') || tz.includes('calcutta') || new Date().getTimezoneOffset() === -330;
+      if (!isIndia) {
         setCurrency('USD');
       } else {
         setCurrency('INR');
       }
-    } catch (error) {
+    } catch {
       setCurrency('INR');
     }
   }, []);
 
   const handleSetCurrency = (c: Currency) => {
     setCurrency(c);
-    localStorage.setItem('currency', c);
+    try {
+      localStorage.setItem('currency', c);
+    } catch {
+      // Currency selection still applies for the current session.
+    }
   };
 
-  const formatPrice = (inrAmount: number) => {
+  const formatPrice = (inrAmount: number, usdAmount?: number) => {
     if (currency === 'USD') {
-      let usdAmount = Math.round(inrAmount / USD_RATE);
-      if (inrAmount === 9500) usdAmount = 200;
-      else if (inrAmount === 3500) usdAmount = 75;
+      const finalUsd = typeof usdAmount === 'number'
+        ? usdAmount
+        : Math.round(inrAmount / USD_RATE);
 
       return new Intl.NumberFormat('en-US', {
         style: 'currency',
         currency: 'USD',
         maximumFractionDigits: 0,
-      }).format(usdAmount);
+      }).format(finalUsd);
     }
 
     return new Intl.NumberFormat('en-IN', {

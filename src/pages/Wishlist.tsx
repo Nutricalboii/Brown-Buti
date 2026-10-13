@@ -65,7 +65,7 @@ export default function Wishlist() {
                   className="group relative bg-white border border-mocha-100 hover:border-mocha-300 transition-colors"
                 >
                   {/* Product image */}
-                  <div 
+                  <div
                     className="relative aspect-[3/4] overflow-hidden cursor-pointer"
                     onClick={() => window.location.href = `/shop?product=${product.id}`}
                   >
@@ -93,7 +93,7 @@ export default function Wishlist() {
                     <p className="font-cinzel text-[10px] sm:text-xs tracking-[0.2em] text-mocha-400 uppercase mb-1">
                       {product.motif} · {product.category}
                     </p>
-                    <h3 
+                    <h3
                       className="font-playfair text-base sm:text-lg text-mocha-900 mb-3 cursor-pointer hover:underline"
                       onClick={() => window.location.href = `/shop?product=${product.id}`}
                     >
@@ -101,7 +101,7 @@ export default function Wishlist() {
                     </h3>
                     <div className="flex items-center justify-between">
                       <span className="font-lora text-mocha-700 font-medium">
-                        {formatPrice(product.price)}
+                        {formatPrice(product.price, product.priceUsd)}
                       </span>
                       <button
                         id={`wishlist-add-to-cart-${product.id}`}

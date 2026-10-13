@@ -1,6 +1,35 @@
+interface RazorpayCheckoutPayload {
+  razorpay_order_id: string;
+  razorpay_payment_id: string;
+  razorpay_signature: string;
+}
+
+interface RazorpayFailurePayload {
+  error?: { description?: string; reason?: string };
+}
+
+interface RazorpayCheckoutModalOptions {
+  key: string;
+  amount: number;
+  currency: string;
+  name: string;
+  description: string;
+  image: string;
+  order_id: string;
+  prefill: { name: string; email: string; contact: string };
+  theme: { color: string };
+  handler: (response: RazorpayCheckoutPayload) => Promise<void>;
+  modal: { ondismiss: () => void };
+}
+
+interface RazorpayCheckoutInstance {
+  on: (event: 'payment.failed', callback: (response: RazorpayFailurePayload) => void) => void;
+  open: () => void;
+}
+
 declare global {
   interface Window {
-    Razorpay: any;
+    Razorpay?: new (options: RazorpayCheckoutModalOptions) => RazorpayCheckoutInstance;
   }
 }
 
@@ -22,10 +51,12 @@ export interface VerifyPaymentResponse {
   error?: string;
   order_id?: string;
   payment_id?: string;
+  amount?: number;
+  currency?: string;
 }
 
 export interface RazorpayCheckoutOptions {
-  amount: number; // in INR
+  items: Array<{ productId: number | string; quantity: number }>;
   name?: string;
   description?: string;
   image?: string;
@@ -68,16 +99,19 @@ export const initiateRazorpayPayment = async (options: RazorpayCheckoutOptions):
     options.onError?.('Failed to load Razorpay SDK. Please check your internet connection.');
     return;
   }
+  const RazorpayConstructor = window.Razorpay;
+  if (!RazorpayConstructor) {
+    options.onError?.('Secure checkout could not be loaded. Please try Shopify checkout instead.');
+    return;
+  }
 
   const keyId = import.meta.env.VITE_RAZORPAY_KEY_ID;
   if (!keyId) {
     options.onError?.('Razorpay is not configured. Please contact support.');
     return;
   }
-  const amountInPaise = Math.round(options.amount * 100);
-
-  if (amountInPaise < 100) {
-    options.onError?.('Minimum order amount for payment is ₹1.');
+  if (!Array.isArray(options.items) || options.items.length === 0) {
+    options.onError?.('Your cart is empty. Add an item before checkout.');
     return;
   }
 
@@ -87,26 +121,28 @@ export const initiateRazorpayPayment = async (options: RazorpayCheckoutOptions):
     const response = await fetch('/api/create-order', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        amount: amountInPaise,
-        currency: 'INR',
-        receipt: `rcpt_${Date.now()}`,
-      }),
+      body: JSON.stringify({ items: options.items }),
     });
 
+    const responseData = await response.json().catch(() => ({})) as Partial<CreateOrderResponse> & { error?: string };
     if (!response.ok) {
-      const errRes = await response.json().catch(() => ({}));
-      throw new Error(errRes.error || `Server responded with status ${response.status}`);
+      throw new Error(responseData.error || 'Unable to start secure checkout.');
     }
 
-    orderData = await response.json();
-  } catch (err: any) {
-    console.error('Error creating Razorpay order:', err);
-    options.onError?.(err.message || 'Unable to create payment order. Please try again.');
+    if (
+      typeof responseData.order_id !== 'string' ||
+      typeof responseData.amount !== 'number' || !Number.isSafeInteger(responseData.amount) || responseData.amount < 100 ||
+      responseData.currency !== 'INR'
+    ) {
+      throw new Error('The payment service returned an invalid order.');
+    }
+    orderData = responseData as CreateOrderResponse;
+  } catch (error) {
+    options.onError?.(error instanceof Error ? error.message : 'Unable to create payment order. Please try again.');
     return;
   }
 
-  // STEP 2: STEP 2: FRONTEND - Checkout Modal Configuration
+  // STEP 2: Open the provider checkout with the server-priced order.
   const razorpayOptions = {
     key: keyId,
     amount: orderData.amount,
@@ -123,7 +159,7 @@ export const initiateRazorpayPayment = async (options: RazorpayCheckoutOptions):
     theme: {
       color: '#4A2C2A', // Mocha luxury palette
     },
-    handler: async (response: any) => {
+    handler: async (response: RazorpayCheckoutPayload) => {
       // STEP 3: BACKEND - Verify Signature
       try {
         const verifyRes = await fetch('/api/verify-payment', {
@@ -136,15 +172,19 @@ export const initiateRazorpayPayment = async (options: RazorpayCheckoutOptions):
           }),
         });
 
-        const verifyData: VerifyPaymentResponse = await verifyRes.json();
+        const verifyData = await verifyRes.json() as VerifyPaymentResponse;
 
-        if (verifyRes.ok && verifyData.success) {
+        if (
+          verifyRes.ok && verifyData.success &&
+          verifyData.order_id === orderData.order_id &&
+          verifyData.payment_id === response.razorpay_payment_id &&
+          verifyData.currency === 'INR' && verifyData.amount === orderData.amount
+        ) {
           options.onSuccess?.(verifyData);
         } else {
-          options.onError?.(verifyData.error || 'Payment signature verification failed.');
+          options.onError?.(verifyData.error || 'Payment could not be verified. Please contact support before retrying.');
         }
-      } catch (err: any) {
-        console.error('Verification request error:', err);
+      } catch {
         options.onError?.('Network error while verifying payment signature.');
       }
     },
@@ -155,13 +195,14 @@ export const initiateRazorpayPayment = async (options: RazorpayCheckoutOptions):
     },
   };
 
-  const razorpayInstance = new window.Razorpay(razorpayOptions);
-
-  razorpayInstance.on('payment.failed', (response: any) => {
-    console.error('Razorpay Payment Failed:', response.error);
-    const failureMsg = response.error?.description || response.error?.reason || 'Payment failed.';
-    options.onError?.(failureMsg);
-  });
-
-  razorpayInstance.open();
+  try {
+    const razorpayInstance = new RazorpayConstructor(razorpayOptions);
+    razorpayInstance.on('payment.failed', (failure) => {
+      const failureMessage = failure.error?.description || failure.error?.reason;
+      options.onError?.(failureMessage || 'Payment was not completed. Please try again or use Shopify checkout.');
+    });
+    razorpayInstance.open();
+  } catch {
+    options.onError?.('Secure checkout could not be opened. Please try Shopify checkout instead.');
+  }
 };

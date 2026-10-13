@@ -55,13 +55,18 @@ export function ProductJsonLd({ product }: { product: Product }) {
     '@context': 'https://schema.org',
     '@type': 'Product',
     name: product.name,
-    description: product.story,
-    image: product.image,
+    description: product.description?.join(' ') || product.story,
+    image: product.image || undefined,
     brand: {
       '@type': 'Brand',
       name: BRAND,
     },
-    category: product.category === 'Saree' ? 'Clothing > Ethnic Wear > Sarees' : 'Clothing > Ethnic Wear > Underskirts',
+    category:
+      product.category === 'Sarees'
+        ? 'Clothing > Ethnic Wear > Sarees'
+        : product.category === 'Blouses'
+          ? 'Clothing > Ethnic Wear > Blouses'
+          : 'Clothing > Ethnic Wear > Underskirts',
     keywords: product.keywords.join(', '),
     offers: {
       '@type': 'Offer',

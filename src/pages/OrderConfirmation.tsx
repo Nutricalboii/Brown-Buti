@@ -9,7 +9,31 @@ export default function OrderConfirmation() {
   const state = location.state as { paymentId?: string; orderId?: string } | null;
   const paymentId = state?.paymentId;
   const orderId = state?.orderId;
-  const orderNumber = orderId || `MM-${Math.floor(100000 + Math.random() * 900000)}`;
+
+  if (!paymentId || !orderId) {
+    return (
+      <div className="pt-24 pb-20 min-h-screen flex items-center">
+        <div className="max-w-2xl mx-auto px-6 text-center w-full" role="alert">
+          <p className="section-label mb-4">Payment not verified</p>
+          <h1 className="font-playfair text-4xl md:text-5xl text-mocha-900 mb-5">No confirmed payment found.</h1>
+          <p className="font-lora text-base text-mocha-600 leading-relaxed mb-8">
+            This page only confirms payments verified by our checkout. If you have already paid, please contact support before trying again.
+          </p>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <button onClick={() => navigate('/cart')} className="btn-primary">
+              Return to Cart <ArrowRight size={14} strokeWidth={1.5} />
+            </button>
+            <button
+              onClick={() => navigate('/contact')}
+              className="font-cinzel text-xs tracking-[0.2em] uppercase text-mocha-500 hover:text-mocha-800 transition-colors py-3"
+            >
+              Contact Support
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="pt-24 pb-20 min-h-screen flex items-center">
@@ -53,7 +77,7 @@ export default function OrderConfirmation() {
             transition={{ delay: 0.55, duration: 0.6 }}
             className="font-lora text-base text-mocha-600 leading-relaxed mb-3"
           >
-            Your payment has been successfully verified. Your saree is on its way to you, wrapped with care and intention.
+            Your payment has been captured and verified. Keep the Razorpay order ID below for your records.
           </motion.p>
 
           <motion.p
@@ -77,7 +101,7 @@ export default function OrderConfirmation() {
                 <p className="font-cinzel text-[10px] tracking-[0.25em] uppercase text-mocha-400 mb-1">
                   Razorpay Order ID
                 </p>
-                <p className="font-playfair text-base text-mocha-900">{orderNumber}</p>
+                <p className="font-playfair text-base text-mocha-900 break-all">{orderId}</p>
               </div>
               {paymentId && (
                 <div>
@@ -103,7 +127,7 @@ export default function OrderConfirmation() {
                 </p>
                 <div className="flex items-center gap-2">
                   <ShieldCheck size={14} className="text-forest-600" />
-                  <p className="font-lora text-sm text-forest-700 font-medium">HMAC-SHA256 Verified</p>
+                  <p className="font-lora text-sm text-forest-700 font-medium">Captured and verified by Razorpay</p>
                 </div>
               </div>
             </div>
@@ -118,12 +142,12 @@ export default function OrderConfirmation() {
           >
             <div className="flex items-center gap-3 text-mocha-500">
               <Mail size={16} strokeWidth={1.5} />
-              <p className="font-lora text-sm">Confirmation sent to your email</p>
+              <p className="font-lora text-sm">Payment verified securely</p>
             </div>
             <div className="hidden sm:block w-px h-4 bg-mocha-200" />
             <div className="flex items-center gap-3 text-mocha-500">
               <Package size={16} strokeWidth={1.5} />
-              <p className="font-lora text-sm">Tracking details to follow</p>
+              <p className="font-lora text-sm">Keep your order ID for support</p>
             </div>
           </motion.div>
 

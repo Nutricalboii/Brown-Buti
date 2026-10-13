@@ -6,9 +6,69 @@ interface ImageCarouselProps {
   media: string[];
   alt?: string;
   className?: string;
+  priority?: boolean;
 }
 
-export default function ImageCarousel({ media, alt = 'Product Image', className = '' }: ImageCarouselProps) {
+interface MediaSlideProps {
+  src: string;
+  alt: string;
+  isVideo: boolean;
+  priority: boolean;
+}
+
+function MediaSlide({ src, alt, isVideo, priority }: MediaSlideProps) {
+  const [status, setStatus] = useState<'loading' | 'ready' | 'error'>('loading');
+  const hasWebmFallback = src.toLowerCase().endsWith('.webm');
+
+  return (
+    <div className="relative h-full w-full bg-mocha-50" aria-busy={status === 'loading'}>
+      {status === 'loading' && (
+        <div
+          aria-hidden="true"
+          className="absolute inset-0 z-10 animate-pulse bg-mocha-100 motion-reduce:animate-none"
+        />
+      )}
+
+      {status === 'error' ? (
+        <div
+          role="img"
+          aria-label={`${alt} could not be loaded`}
+          className="flex h-full min-h-48 w-full items-center justify-center px-6 text-center font-lora text-sm italic text-mocha-400"
+        >
+          {isVideo ? 'Video unavailable' : 'Image unavailable'}
+        </div>
+      ) : isVideo ? (
+        <video
+          className="h-full w-full object-contain"
+          autoPlay
+          muted
+          loop
+          playsInline
+          preload="metadata"
+          onLoadedData={() => setStatus('ready')}
+          onError={() => setStatus('error')}
+        >
+          <source src={src} type={hasWebmFallback ? 'video/webm' : 'video/mp4'} />
+          {hasWebmFallback && (
+            <source src={src.replace(/\.webm$/i, '.mp4')} type="video/mp4" />
+          )}
+        </video>
+      ) : (
+        <img
+          src={src}
+          alt={alt}
+          className="h-full w-full object-contain"
+          loading={priority ? 'eager' : 'lazy'}
+          decoding="async"
+          onLoad={() => setStatus('ready')}
+          onError={() => setStatus('error')}
+        />
+      )}
+    </div>
+  );
+}
+
+export default function ImageCarousel({ media, alt = 'Product Image', className = '', priority = false }: ImageCarouselProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
 
   const nextSlide = (e: React.MouseEvent) => {
@@ -22,38 +82,34 @@ export default function ImageCarousel({ media, alt = 'Product Image', className 
   };
 
   const currentMedia = media[currentIndex];
-  const isVideo = currentMedia?.endsWith('.webm') || currentMedia?.endsWith('.mp4');
+  const normalizedMedia = currentMedia?.toLowerCase() ?? '';
+  const isVideo = ['.webm', '.mp4', '.mov', '.m4v'].some((extension) => normalizedMedia.endsWith(extension));
 
   return (
     <div className={`relative group overflow-hidden ${className}`}>
-      <AnimatePresence mode="wait">
-        <motion.div
-          key={currentIndex}
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.3 }}
-          className="w-full h-full"
-        >
-          {isVideo ? (
-            <video
-              src={currentMedia}
-              className="w-full h-full object-cover"
-              autoPlay
-              muted
-              loop
-              playsInline
-            />
-          ) : (
-            <img
+      {media.length === 0 ? (
+        <div className="w-full h-full min-h-48 flex items-center justify-center bg-mocha-50 px-6 text-center">
+          <span className="font-lora text-sm italic text-mocha-400">Images coming soon</span>
+        </div>
+      ) : (
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={currentIndex}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.3 }}
+            className="h-full w-full"
+          >
+            <MediaSlide
               src={currentMedia}
               alt={`${alt} - ${currentIndex + 1}`}
-              className="w-full h-full object-cover"
-              loading="lazy"
+              isVideo={isVideo}
+              priority={priority}
             />
-          )}
-        </motion.div>
-      </AnimatePresence>
+          </motion.div>
+        </AnimatePresence>
+      )}
 
       {media.length > 1 && (
         <>

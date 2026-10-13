@@ -1,0 +1,160 @@
+<fieldset class="mnm-size-selector">
+  <legend>Size</legend>
+  {% for size in 'XS,S,M,L,XL,XXL' | split: ',' %}
+    <label>
+      <input type="radio" name="options[Size]" value="{{ size }}" {% if forloop.first %}checked{% endif %}>
+      <span>{{ size }}</span>
+    </label>
+  {% endfor %}
+</fieldset>
+
+<button type="button" class="mnm-size-chart-trigger" data-mnm-size-chart-open aria-haspopup="dialog">
+  Size Chart
+</button>
+
+<div class="mnm-size-chart" data-mnm-size-chart hidden>
+  <button type="button" class="mnm-size-chart__backdrop" data-mnm-size-chart-close aria-label="Close size chart"></button>
+  <section class="mnm-size-chart__dialog" role="dialog" aria-modal="true" aria-labelledby="mnm-size-chart-title">
+    <button type="button" class="mnm-size-chart__close" data-mnm-size-chart-close aria-label="Close size chart">&times;</button>
+    <h2 id="mnm-size-chart-title" class="visually-hidden">Size Chart</h2>
+    <p class="mnm-size-chart__intro">All measurements mentioned below are in inches and centimeters.</p>
+
+    <div class="mnm-size-chart__units" role="group" aria-label="Measurement unit">
+      <button type="button" class="is-selected" data-mnm-unit="inches" aria-pressed="true">Inches</button>
+      <button type="button" data-mnm-unit="centimeters" aria-pressed="false">Centimeters</button>
+    </div>
+
+    <div class="mnm-size-chart__table-wrap">
+      <table class="mnm-size-chart__table" data-mnm-table="blouses">
+        <caption class="visually-hidden">Blouse size chart</caption>
+        <thead>
+          <tr><th colspan="5" data-mnm-table-title>SIZE CHART (INCHES)</th></tr>
+          <tr><th>Size</th><th>Shoulder</th><th>Bust</th><th>Waist</th><th>Hip</th></tr>
+        </thead>
+        <tbody>
+          <tr><th>XS</th><td data-inches="14">14</td><td data-inches="32">32</td><td data-inches="26">26</td><td data-inches="36">36</td></tr>
+          <tr><th>S</th><td data-inches="14.5">14.5</td><td data-inches="34">34</td><td data-inches="28">28</td><td data-inches="38">38</td></tr>
+          <tr><th>M</th><td data-inches="15">15</td><td data-inches="36">36</td><td data-inches="30">30</td><td data-inches="40">40</td></tr>
+          <tr><th>L</th><td data-inches="15.5">15.5</td><td data-inches="38">38</td><td data-inches="32">32</td><td data-inches="42">42</td></tr>
+          <tr><th>XL</th><td data-inches="16">16</td><td data-inches="40">40</td><td data-inches="34">34</td><td data-inches="44">44</td></tr>
+          <tr><th>XXL</th><td data-inches="16.5">16.5</td><td data-inches="42">42</td><td data-inches="36">36</td><td data-inches="46">46</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="mnm-size-chart__table-wrap">
+      <table class="mnm-size-chart__table" data-mnm-table="kurtis">
+        <caption class="visually-hidden">Kurti size chart</caption>
+        <thead>
+          <tr><th colspan="5" data-mnm-table-title>SIZE CHART FOR KURTIS (INCHES)</th></tr>
+          <tr><th>Size</th><th>Shoulder</th><th>Bust</th><th>Waist</th><th>Hip</th></tr>
+        </thead>
+        <tbody>
+          <tr><th>XS</th><td data-inches="14">14</td><td data-inches="32">32</td><td data-inches="26">26</td><td data-inches="36">36</td></tr>
+          <tr><th>S</th><td data-inches="14.5">14.5</td><td data-inches="34">34</td><td data-inches="28">28</td><td data-inches="38">38</td></tr>
+          <tr><th>M</th><td data-inches="15">15</td><td data-inches="36">36</td><td data-inches="30">30</td><td data-inches="40">40</td></tr>
+          <tr><th>L</th><td data-inches="15.5">15.5</td><td data-inches="38">38</td><td data-inches="32">32</td><td data-inches="42">42</td></tr>
+          <tr><th>XL</th><td data-inches="16">16</td><td data-inches="40">40</td><td data-inches="34">34</td><td data-inches="44">44</td></tr>
+          <tr><th>XXL</th><td data-inches="16.5">16.5</td><td data-inches="42">42</td><td data-inches="36">36</td><td data-inches="46">46</td></tr>
+          <tr><th>3XL</th><td data-inches="17">17</td><td data-inches="44">44</td><td data-inches="38">38</td><td data-inches="48">48</td></tr>
+          <tr><th>4XL</th><td data-inches="17.5">17.5</td><td data-inches="46">46</td><td data-inches="40">40</td><td data-inches="50">50</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="mnm-size-chart__diagram" aria-label="Measurement guide">
+      <p>How to measure</p>
+      <svg viewBox="0 0 520 220" role="img" aria-label="Illustration showing bust, waist and hip measurement areas">
+        <path d="M237 26c-16 11-25 30-27 54l-25 27 29 18-9 69h116l-9-69 29-18-25-27c-2-24-11-43-27-54-9 8-17 12-26 12s-17-4-26-12Z" fill="none" stroke="currentColor" stroke-width="2" />
+        <path d="M185 82h160M202 122h126M196 158h138" stroke="currentColor" stroke-width="1.5" stroke-dasharray="6 5" />
+        <text x="34" y="87" fill="currentColor" font-size="15">Bust</text><text x="34" y="127" fill="currentColor" font-size="15">Waist</text><text x="34" y="163" fill="currentColor" font-size="15">Hip</text>
+      </svg>
+    </div>
+  </section>
+</div>
+
+<style>
+  .mnm-size-selector { border: 0; margin: 0 0 16px; padding: 0; }
+  .mnm-size-selector legend { color: #574638; font-size: 11px; letter-spacing: .16em; margin-bottom: 10px; text-transform: uppercase; }
+  .mnm-size-selector { display: flex; flex-wrap: wrap; gap: 8px; }
+  .mnm-size-selector legend { width: 100%; }
+  .mnm-size-selector label { cursor: pointer; }
+  .mnm-size-selector input { position: absolute; opacity: 0; pointer-events: none; }
+  .mnm-size-selector span { border: 1px solid #d5c8bb; color: #574638; display: block; min-width: 48px; padding: 10px 12px; text-align: center; }
+  .mnm-size-selector input:checked + span, .mnm-size-selector label:hover span { background: #23180f; border-color: #23180f; color: #f7e5bd; }
+  .mnm-size-chart-trigger { border-bottom: 1px solid #9d8874; color: #574638; min-height: 44px; padding: 6px 0; text-transform: uppercase; letter-spacing: .16em; font-size: 11px; }
+  .mnm-size-chart-trigger:hover { border-color: #23180f; color: #23180f; }
+  .mnm-size-chart { position: fixed; inset: 0; z-index: 9999; display: flex; align-items: center; justify-content: center; padding: 24px; }
+  .mnm-size-chart[hidden] { display: none; }
+  .mnm-size-chart__backdrop { position: absolute; inset: 0; border: 0; background: rgba(35, 24, 15, .62); }
+  .mnm-size-chart__dialog { position: relative; z-index: 1; width: min(700px, 100%); max-height: 94vh; overflow-y: auto; background: #fff; padding: 56px 40px 48px; box-shadow: 0 18px 60px rgba(0, 0, 0, .24); color: #171717; }
+  .mnm-size-chart__close { position: absolute; top: 12px; right: 16px; border: 0; background: transparent; color: #ed7b44; font-size: 32px; line-height: 1; cursor: pointer; }
+  .mnm-size-chart__intro { max-width: 520px; margin: 0 auto 24px; text-align: center; font-size: 20px; line-height: 1.25; }
+  .mnm-size-chart__units { display: flex; justify-content: center; gap: 28px; margin-bottom: 32px; }
+  .mnm-size-chart__units button { height: 88px; border: 0; padding: 0 28px; background: #000; color: #fff; font-size: 16px; font-weight: 700; text-transform: uppercase; letter-spacing: .04em; cursor: pointer; }
+  .mnm-size-chart__units button:first-child { width: 116px; }
+  .mnm-size-chart__units button:last-child { width: 174px; }
+  .mnm-size-chart__units button.is-selected { background: #ed7b44; color: #000; }
+  .mnm-size-chart__table-wrap { overflow-x: auto; margin-bottom: 24px; }
+  .mnm-size-chart__table { width: 100%; min-width: 540px; border-collapse: collapse; font-size: 15px; }
+  .mnm-size-chart__table th, .mnm-size-chart__table td { border-left: 2px solid #e3e3e3; border-right: 2px solid #e3e3e3; padding: 12px; text-align: center; }
+  .mnm-size-chart__table thead tr:first-child th { border: 0; background: #ed7b44; color: #000; font-weight: 700; letter-spacing: .04em; }
+  .mnm-size-chart__table thead tr:nth-child(2) th { color: #171717; font-weight: 700; text-transform: uppercase; font-size: 12px; }
+  .mnm-size-chart__table tbody tr:nth-child(even) { background: #e7e7e7; }
+  .mnm-size-chart__table tbody th { font-weight: 400; }
+  .mnm-size-chart__diagram { border-top: 1px solid #e3e3e3; padding-top: 24px; color: #171717; }
+  .mnm-size-chart__diagram p { margin: 0 0 16px; color: #ed7b44; text-align: center; text-transform: uppercase; letter-spacing: .18em; font-size: 12px; font-weight: 700; }
+  .mnm-size-chart__diagram svg { display: block; width: 100%; max-width: 520px; margin: auto; }
+  .visually-hidden { position: absolute !important; width: 1px !important; height: 1px !important; padding: 0 !important; margin: -1px !important; overflow: hidden !important; clip: rect(0, 0, 0, 0) !important; white-space: nowrap !important; border: 0 !important; }
+  @media (max-width: 600px) {
+    .mnm-size-chart { padding: 0; }
+    .mnm-size-chart__dialog { max-height: 100vh; padding: 52px 20px 32px; }
+    .mnm-size-chart__intro { font-size: 17px; }
+    .mnm-size-chart__units { gap: 16px; }
+    .mnm-size-chart__units button { height: 68px; font-size: 13px; padding: 0 12px; }
+    .mnm-size-chart__units button:first-child { width: 116px; }
+    .mnm-size-chart__units button:last-child { width: 174px; }
+  }
+</style>
+
+<script>
+  (() => {
+    const chart = document.querySelector('[data-mnm-size-chart]');
+    if (!chart || chart.dataset.initialized === 'true') return;
+    chart.dataset.initialized = 'true';
+    const openButton = document.querySelector('[data-mnm-size-chart-open]');
+    const closeButtons = chart.querySelectorAll('[data-mnm-size-chart-close]');
+    const unitButtons = chart.querySelectorAll('[data-mnm-unit]');
+
+    const setUnit = (unit) => {
+      chart.querySelectorAll('[data-mnm-table-title]').forEach((title) => {
+        title.textContent = title.textContent.replace(/\((INCHES|CENTIMETERS)\)/, `(${unit.toUpperCase()})`);
+      });
+      chart.querySelectorAll('[data-inches]').forEach((cell) => {
+        const inches = Number(cell.dataset.inches);
+        cell.textContent = unit === 'inches' ? String(inches) : String(Math.round(inches * 2.54 * 10) / 10);
+      });
+      unitButtons.forEach((button) => {
+        const selected = button.dataset.mnmUnit === unit;
+        button.classList.toggle('is-selected', selected);
+        button.setAttribute('aria-pressed', String(selected));
+      });
+    };
+
+    openButton?.addEventListener('click', () => {
+      chart.hidden = false;
+      document.body.style.overflow = 'hidden';
+    });
+    closeButtons.forEach((button) => button.addEventListener('click', () => {
+      chart.hidden = true;
+      document.body.style.overflow = '';
+    }));
+    unitButtons.forEach((button) => button.addEventListener('click', () => setUnit(button.dataset.mnmUnit)));
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape' && !chart.hidden) {
+        chart.hidden = true;
+        document.body.style.overflow = '';
+      }
+    });
+  })();
+</script>

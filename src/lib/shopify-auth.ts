@@ -1,5 +1,35 @@
 import { shopifyFetch } from './shopify';
 
+export interface ShopifyCustomerAccessToken {
+  accessToken: string;
+  expiresAt: string;
+}
+
+export interface ShopifyOrderLineItem {
+  id: string;
+  title: string;
+  quantity: number;
+  variant?: { image?: { url?: string } | null } | null;
+}
+
+export interface ShopifyCustomerOrder {
+  id: string;
+  orderNumber: number | string;
+  processedAt: string;
+  fulfillmentStatus?: string | null;
+  totalPrice: { amount: string; currencyCode: string };
+  lineItems: { edges: Array<{ node: ShopifyOrderLineItem }> };
+}
+
+export interface ShopifyCustomer {
+  id: string;
+  email: string;
+  firstName?: string | null;
+  lastName?: string | null;
+  phone?: string | null;
+  orders?: { edges?: Array<{ node: ShopifyCustomerOrder }> } | null;
+}
+
 /**
  * Creates a customer access token (login).
  */
@@ -31,10 +61,10 @@ export async function loginCustomer(email: string, password: string) {
   const data = response.body?.data?.customerAccessTokenCreate;
 
   if (data?.customerUserErrors?.length > 0) {
-    throw new Error(data.customerUserErrors[0].message);
+    throw new Error(String(data.customerUserErrors[0].message || 'Unable to sign in.'));
   }
 
-  return data?.customerAccessToken;
+  return data?.customerAccessToken as ShopifyCustomerAccessToken | undefined;
 }
 
 /**
@@ -57,7 +87,13 @@ export async function registerCustomer(email: string, password: string, firstNam
     }
   `;
 
-  const input: any = {
+  const input: {
+    email: string;
+    password: string;
+    firstName?: string;
+    lastName?: string;
+    phone?: string;
+  } = {
     email,
     password,
   };
@@ -72,7 +108,7 @@ export async function registerCustomer(email: string, password: string, firstNam
   const data = response.body?.data?.customerCreate;
 
   if (data?.customerUserErrors?.length > 0) {
-    throw new Error(data.customerUserErrors[0].message);
+    throw new Error(String(data.customerUserErrors[0].message || 'Unable to create account.'));
   }
 
   // After registration, log them in automatically to get the token
@@ -82,7 +118,7 @@ export async function registerCustomer(email: string, password: string, firstNam
 /**
  * Fetches customer details and order history.
  */
-export async function getCustomer(accessToken: string) {
+export async function getCustomer(accessToken: string): Promise<ShopifyCustomer | null> {
   const query = `
     query getCustomer($customerAccessToken: String!) {
       customer(customerAccessToken: $customerAccessToken) {
@@ -105,8 +141,9 @@ export async function getCustomer(accessToken: string) {
               }
               lineItems(first: 10) {
                 edges {
-                  node {
-                    title
+            node {
+              id
+              title
                     quantity
                     variant {
                       image {
@@ -129,5 +166,5 @@ export async function getCustomer(accessToken: string) {
   const variables = { customerAccessToken: accessToken };
 
   const response = await shopifyFetch({ query, variables });
-  return response.body?.data?.customer;
+  return (response.body?.data?.customer as ShopifyCustomer | null | undefined) || null;
 }

@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Minus, Plus, X, ShoppingBag, ArrowRight, Tag, Loader2, ShieldCheck } from 'lucide-react';
+import { Minus, Plus, X, ShoppingBag, ArrowRight, Loader2, ShieldCheck } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import { createShopifyCheckout } from '../lib/shopify';
 import { useCurrency } from '../context/CurrencyContext';
@@ -17,10 +17,17 @@ export default function Cart() {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [showAgePopup, setShowAgePopup] = useState(false);
 
-  const threshold = currency === 'USD' ? 200 * usdRate : 5000;
-  const shippingFee = currency === 'USD' ? 25 * usdRate : 500;
-  const shipping = subtotal >= threshold ? 0 : shippingFee;
-  const total = subtotal + shipping;  const handleShopifyCheckout = async () => {
+  const subtotalUsd = items.reduce(
+    (sum, i) => sum + (i.product.priceUsd ?? Math.round(i.product.price / usdRate)) * i.quantity,
+    0
+  );
+  const threshold = currency === 'USD' ? 200 : 5000;
+  const shippingFee = currency === 'USD' ? 25 : 500;
+  const isFreeShipping = (currency === 'USD' ? subtotalUsd : subtotal) >= threshold;
+  const shipping = isFreeShipping ? 0 : shippingFee;
+  const total = subtotal + (currency === 'USD' ? shipping * usdRate : shipping);
+  const totalUsd = subtotalUsd + shipping;
+  const handleShopifyCheckout = async () => {
     const hasAccepted = localStorage.getItem('mocha_mogra_policy_accepted');
     if (!hasAccepted) {
       setShowAgePopup(true);
@@ -36,9 +43,8 @@ export default function Cart() {
       }));
       const checkoutUrl = await createShopifyCheckout(itemsPayload);
       window.location.href = checkoutUrl;
-    } catch (err) {
-      console.warn('Redirecting to Shopify checkout failed:', err);
-      setErrorMessage('Checkout is currently unavailable. Please try again later.');
+    } catch (error) {
+      setErrorMessage(error instanceof Error ? error.message : 'Shopify checkout is unavailable. Please try again.');
     } finally {
       setIsCheckingOut(false);
     }
@@ -65,7 +71,7 @@ export default function Cart() {
                 <AnimatePresence initial={false}>
                   {items.map((item) => (
                     <motion.div
-                      key={item.product.id}
+                      key={`${item.product.id}-${item.size ?? 'default'}`}
                       layout
                       initial={{ opacity: 0, height: 0 }}
                       animate={{ opacity: 1, height: 'auto' }}
@@ -79,11 +85,17 @@ export default function Cart() {
                         style={{ borderRadius: '6px', aspectRatio: '3/4' }}
                         onClick={() => navigate(`/shop?product=${item.product.id}`)}
                       >
-                        <img
-                          src={item.product.image}
-                          alt={item.product.name}
-                          className="w-full h-full object-cover"
-                        />
+                        {item.product.image ? (
+                          <img
+                            src={item.product.image}
+                            alt={item.product.name}
+                            className="w-full h-full object-cover"
+                          />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center p-3 text-center">
+                            <span className="font-lora text-xs italic text-mocha-400">Images coming soon</span>
+                          </div>
+                        )}
                       </div>
 
                       {/* Info */}
@@ -93,7 +105,7 @@ export default function Cart() {
                             <p className="font-cinzel text-[10px] md:text-xs tracking-[0.2em] uppercase text-mocha-500 mb-1">
                               {item.product.category} · {item.product.motif} Motif
                             </p>
-                            <h3 
+                            <h3
                               className="font-playfair text-lg md:text-xl text-mocha-900 mb-1 cursor-pointer hover:underline"
                               onClick={() => navigate(`/shop?product=${item.product.id}`)}
                             >
@@ -104,7 +116,7 @@ export default function Cart() {
                             </p>
                           </div>
                           <button
-                            onClick={() => removeItem(item.product.id)}
+                            onClick={() => removeItem(item.product.id, item.size)}
                             className="text-mocha-400 hover:text-mocha-800 transition-colors flex-shrink-0 p-1"
                             aria-label="Remove item"
                           >
@@ -116,7 +128,7 @@ export default function Cart() {
                           {/* Quantity */}
                           <div className="flex items-center border border-mocha-200">
                             <button
-                              onClick={() => updateQuantity(item.product.id, item.quantity - 1)}
+                              onClick={() => updateQuantity(item.product.id, item.quantity - 1, item.size)}
                               className="w-9 h-9 flex items-center justify-center text-mocha-600 hover:text-mocha-900 hover:bg-mocha-50 transition-colors"
                               aria-label="Decrease quantity"
                             >
@@ -126,7 +138,7 @@ export default function Cart() {
                               {item.quantity}
                             </span>
                             <button
-                              onClick={() => updateQuantity(item.product.id, item.quantity + 1)}
+                              onClick={() => updateQuantity(item.product.id, item.quantity + 1, item.size)}
                               className="w-9 h-9 flex items-center justify-center text-mocha-600 hover:text-mocha-900 hover:bg-mocha-50 transition-colors"
                               aria-label="Increase quantity"
                             >
@@ -134,9 +146,14 @@ export default function Cart() {
                             </button>
                           </div>
 
+                          {item.size && <span className="font-lora text-sm text-mocha-500">Size: {item.size}</span>}
+
                           {/* Price */}
                           <p className="font-playfair text-lg text-mocha-900">
-                            {formatPrice(item.product.price * item.quantity)}
+                            {formatPrice(
+                              item.product.price * item.quantity,
+                              (item.product.priceUsd ?? Math.round(item.product.price / usdRate)) * item.quantity
+                            )}
                           </p>
                         </div>
                       </div>
@@ -172,7 +189,7 @@ export default function Cart() {
                 <div className="space-y-4 mb-8">
                   <div className="flex justify-between font-lora text-sm text-mocha-700">
                     <span>Subtotal ({items.reduce((s, i) => s + i.quantity, 0)} items)</span>
-                    <span>{formatPrice(subtotal)}</span>
+                    <span>{formatPrice(subtotal, subtotalUsd)}</span>
                   </div>
                   <div className="flex justify-between font-lora text-sm text-mocha-700">
                     <span>Artisanal Packaging</span>
@@ -184,31 +201,25 @@ export default function Cart() {
                       {shipping === 0 ? (
                         <span className="text-forest-600 font-medium">Free</span>
                       ) : (
-                        formatPrice(shipping)
+                        currency === 'USD'
+                          ? formatPrice(shipping * usdRate, shipping)
+                          : formatPrice(shipping)
                       )}
                     </span>
                   </div>
                   {shipping > 0 && (
                     <p className="font-lora text-xs text-mocha-400 italic">
-                      Add {formatPrice(threshold - subtotal)} more for free shipping
+                      Add {formatPrice(
+                        currency === 'USD' ? (threshold - subtotalUsd) * usdRate : threshold - subtotal,
+                        currency === 'USD' ? threshold - subtotalUsd : Math.round((threshold - subtotal) / usdRate)
+                      )} more for free shipping
                     </p>
                   )}
                 </div>
 
-                {/* Promo */}
-                <div className="flex gap-2 mb-8">
-                  <div className="flex items-center gap-2 flex-1 border-b border-mocha-300">
-                    <Tag size={14} className="text-mocha-400" strokeWidth={1.5} />
-                    <input
-                      type="text"
-                      placeholder="Gift card or promo code"
-                      className="flex-1 bg-transparent font-lora text-sm text-mocha-700 placeholder-mocha-400 outline-none py-2"
-                    />
-                  </div>
-                  <button className="font-cinzel text-xs tracking-[0.15em] uppercase text-mocha-600 hover:text-mocha-900 border border-mocha-300 px-3 py-2 hover:border-mocha-600 transition-colors">
-                    Apply
-                  </button>
-                </div>
+                <p className="font-lora text-xs text-mocha-400 mb-8">
+                  Gift cards and discount codes can be entered at Shopify checkout.
+                </p>
 
                 <div className="border-t border-mocha-200 pt-6 mb-8">
                   <div className="flex justify-between">
@@ -216,7 +227,7 @@ export default function Cart() {
                       Estimated Total
                     </span>
                     <span className="font-playfair text-xl text-mocha-900">
-                      {formatPrice(total)}
+                      {formatPrice(total, totalUsd)}
                     </span>
                   </div>
                 </div>
@@ -252,12 +263,12 @@ export default function Cart() {
         )}
       </div>
 
-      <AgePrivacyPopup 
-        isOpen={showAgePopup} 
+      <AgePrivacyPopup
+        isOpen={showAgePopup}
         onAccept={() => {
           setShowAgePopup(false);
           handleShopifyCheckout();
-        }} 
+        }}
       />
     </div>
   );

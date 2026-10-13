@@ -1,49 +1,89 @@
-import { createContext, useContext, useState, useCallback } from 'react';
+import { createContext, useContext, useState, useCallback, useEffect } from 'react';
 import type { ReactNode } from 'react';
-import type { Product } from '../data/products';
+import { products, type Product } from '../data/products';
 
 export interface CartItem {
   product: Product;
   quantity: number;
+  size?: string;
 }
 
 interface CartContextValue {
   items: CartItem[];
-  addItem: (product: Product) => void;
-  removeItem: (productId: number | string) => void;
-  updateQuantity: (productId: number | string, quantity: number) => void;
+  addItem: (product: Product, size?: string) => void;
+  removeItem: (productId: number | string, size?: string) => void;
+  updateQuantity: (productId: number | string, quantity: number, size?: string) => void;
   clearCart: () => void;
   totalItems: number;
   subtotal: number;
 }
 
 const CartContext = createContext<CartContextValue | null>(null);
+const CART_STORAGE_KEY = 'mnm_cart';
+const MAX_ITEM_QUANTITY = 99;
+
+function readSavedCart(): CartItem[] {
+  try {
+    const stored: unknown = JSON.parse(localStorage.getItem(CART_STORAGE_KEY) || '[]');
+    if (!Array.isArray(stored)) return [];
+
+    return stored.flatMap((entry): CartItem[] => {
+      if (!entry || typeof entry !== 'object') return [];
+      const { productId, quantity, size } = entry as { productId?: unknown; quantity?: unknown; size?: unknown };
+      const product = products.find((candidate) => candidate.id === productId);
+      if (!product || !Number.isSafeInteger(quantity) || Number(quantity) < 1 || Number(quantity) > MAX_ITEM_QUANTITY) return [];
+      if (size !== undefined && (typeof size !== 'string' || !product.sizes?.includes(size))) return [];
+      return [{ product, quantity: Number(quantity), ...(typeof size === 'string' ? { size } : {}) }];
+    });
+  } catch {
+    return [];
+  }
+}
 
 export function CartProvider({ children }: { children: ReactNode }) {
-  const [items, setItems] = useState<CartItem[]>([]);
+  const [items, setItems] = useState<CartItem[]>(readSavedCart);
 
-  const addItem = useCallback((product: Product) => {
+  useEffect(() => {
+    try {
+      localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(items.map(({ product, quantity, size }) => ({
+        productId: product.id,
+        quantity,
+        ...(size ? { size } : {}),
+      }))));
+    } catch {
+      // The cart remains usable when browser storage is disabled or full.
+    }
+  }, [items]);
+
+  const addItem = useCallback((product: Product, size?: string) => {
+    const canonicalProduct = products.find((candidate) => candidate.id === product.id);
+    if (!canonicalProduct || (size !== undefined && !canonicalProduct.sizes?.includes(size))) return;
     setItems((prev) => {
-      const existing = prev.find((i) => i.product.id === product.id);
+      const existing = prev.find((i) => i.product.id === canonicalProduct.id && i.size === size);
       if (existing) {
         return prev.map((i) =>
-          i.product.id === product.id ? { ...i, quantity: i.quantity + 1 } : i
+          i.product.id === canonicalProduct.id && i.size === size
+            ? { ...i, quantity: Math.min(i.quantity + 1, MAX_ITEM_QUANTITY) }
+            : i
         );
       }
-      return [...prev, { product, quantity: 1 }];
+      return [...prev, { product: canonicalProduct, quantity: 1, size }];
     });
   }, []);
 
-  const removeItem = useCallback((productId: number | string) => {
-    setItems((prev) => prev.filter((i) => i.product.id !== productId));
+  const removeItem = useCallback((productId: number | string, size?: string) => {
+    setItems((prev) => prev.filter((i) => !(i.product.id === productId && i.size === size)));
   }, []);
 
-  const updateQuantity = useCallback((productId: number | string, quantity: number) => {
+  const updateQuantity = useCallback((productId: number | string, quantity: number, size?: string) => {
+    if (!Number.isSafeInteger(quantity)) return;
     if (quantity <= 0) {
-      setItems((prev) => prev.filter((i) => i.product.id !== productId));
+      setItems((prev) => prev.filter((i) => !(i.product.id === productId && i.size === size)));
     } else {
       setItems((prev) =>
-        prev.map((i) => (i.product.id === productId ? { ...i, quantity } : i))
+        prev.map((i) => i.product.id === productId && i.size === size
+          ? { ...i, quantity: Math.min(quantity, MAX_ITEM_QUANTITY) }
+          : i)
       );
     }
   }, []);

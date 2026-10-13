@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Search, X, ArrowRight } from 'lucide-react';
 import { products } from '../data/products';
 import type { Product } from '../data/products';
+import { useCurrency } from '../context/CurrencyContext';
 
 interface SearchOverlayProps {
   open: boolean;
@@ -11,6 +12,7 @@ interface SearchOverlayProps {
 }
 
 export default function SearchOverlay({ open, onClose, onSelectProduct }: SearchOverlayProps) {
+  const { formatPrice } = useCurrency();
   const [query, setQuery] = useState('');
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -145,18 +147,24 @@ export default function SearchOverlay({ open, onClose, onSelectProduct }: Search
                             className="flex-shrink-0 w-14 overflow-hidden bg-mocha-100"
                             style={{ borderRadius: '6px', aspectRatio: '3/4' }}
                           >
-                            <img
-                              src={product.image}
-                              alt={product.name}
-                              className="w-full h-full object-cover"
-                            />
+                            {product.image ? (
+                              <img
+                                src={product.image}
+                                alt={product.name}
+                                className="w-full h-full object-cover"
+                              />
+                            ) : (
+                              <div className="w-full h-full flex items-center justify-center p-2 text-center">
+                                <span className="font-lora text-[10px] italic text-mocha-400">Coming soon</span>
+                              </div>
+                            )}
                           </div>
                           <div className="flex-1 min-w-0">
                             <p className="font-cinzel text-xs tracking-[0.15em] uppercase text-mocha-800 mb-0.5">
                               {product.name}
                             </p>
                             <p className="font-lora text-sm text-mocha-500">
-                              {product.motif} Motif · {product.priceDisplay}
+                              {product.motif} Motif · {formatPrice(product.price, product.priceUsd)}
                             </p>
                             <div className="flex gap-1 mt-1 flex-wrap">
                               {product.personality.slice(0, 2).map((t) => (

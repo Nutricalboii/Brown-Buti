@@ -39,11 +39,11 @@ export default function AgePrivacyPopup({
         <h2 className="font-cinzel text-xl text-mocha-900 mb-6 text-center tracking-widest uppercase">
           Welcome to Mocha & Mogra
         </h2>
-        
+
         <div className="space-y-6">
           <label className="flex items-start gap-3 cursor-pointer group">
-            <input 
-              type="checkbox" 
+            <input
+              type="checkbox"
               className="mt-1 w-4 h-4 accent-mocha-800"
               checked={acceptedAge}
               onChange={(e) => setAcceptedAge(e.target.checked)}
@@ -55,8 +55,8 @@ export default function AgePrivacyPopup({
 
           <div className="space-y-3">
             <label className="flex items-start gap-3 cursor-pointer group">
-              <input 
-                type="checkbox" 
+              <input
+                type="checkbox"
                 className="mt-1 w-4 h-4 accent-mocha-800"
                 checked={acceptedPrivacy}
                 onChange={(e) => setAcceptedPrivacy(e.target.checked)}
@@ -65,7 +65,7 @@ export default function AgePrivacyPopup({
                 I have read and accept the <button type="button" onClick={(e) => { e.preventDefault(); setShowPolicy(!showPolicy); }} className="underline font-medium hover:text-gold-600 transition-colors">Privacy Policy</button>.
               </span>
             </label>
-            
+
             {showPolicy && (
               <div className="bg-mocha-50 p-4 text-xs font-lora text-mocha-600 h-32 overflow-y-auto border border-mocha-200 custom-scrollbar">
                 <p className="mb-2"><strong>Privacy Policy Summary</strong></p>

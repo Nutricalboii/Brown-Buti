@@ -5,13 +5,14 @@ import { ArrowRight, Feather } from 'lucide-react';
 import { products } from '../data/products';
 import { OrganizationJsonLd } from '../lib/jsonld';
 import { supabase } from '../lib/supabase';
+import { useCurrency } from '../context/CurrencyContext';
 
 const fadeUp = {
   hidden: { opacity: 0, y: 30 },
   visible: (i: number) => ({
     opacity: 1,
     y: 0,
-    transition: { duration: 0.7, delay: i * 0.12, ease: [0.25, 0.1, 0.25, 1] },
+    transition: { duration: 0.7, delay: i * 0.12, ease: [0.25, 0.1, 0.25, 1] as const },
   }),
 };
 
@@ -19,6 +20,7 @@ const fadeUp = {
 
 export default function Home() {
   const navigate = useNavigate();
+  const { formatPrice } = useCurrency();
   const featured = products.slice(0, 3);
   const [teaserInView, setTeaserInView] = useState(false);
   
@@ -48,8 +50,9 @@ export default function Home() {
       
       setSubscribeStatus('success');
       setEmail('');
-    } catch (err) {
-      console.error('Subscription error:', err);
+    } catch {
+      // Avoid logging provider details or request data in the browser console.
+      console.error('Newsletter signup failed.');
       setSubscribeStatus('error');
     } finally {
       setIsSubscribing(false);
@@ -165,11 +168,11 @@ export default function Home() {
       <section className="border-y border-mocha-200 overflow-hidden py-8 md:py-0">
         <div className="flex items-center w-max">
           {[...Array(4)].map((_, i) => (
-            <img 
+            <img
               key={i}
-              src="/images/motifs.webp" 
-              alt="Brand Motifs" 
-              className="h-20 md:h-28 lg:h-32 w-auto object-contain" 
+              src="/images/motifs.webp"
+              alt="Brand Motifs"
+              className="h-20 md:h-28 lg:h-32 w-auto object-contain"
             />
           ))}
         </div>
@@ -321,7 +324,7 @@ export default function Home() {
                 <p className="font-cinzel text-xs tracking-[0.2em] uppercase text-gold-400 mb-1">
                   {product.name}
                 </p>
-                <p className="font-lora text-sm text-mocha-400">{product.priceDisplay}</p>
+                <p className="font-lora text-sm text-mocha-400">{formatPrice(product.price, product.priceUsd)}</p>
               </motion.div>
             ))}
           </div>

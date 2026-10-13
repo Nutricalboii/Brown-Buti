@@ -10,10 +10,11 @@ import AgePrivacyPopup from './AgePrivacyPopup';
 
 interface AddedToBagDrawerProps {
   product: Product | null;
+  size?: string;
   onClose: () => void;
 }
 
-export default function AddedToBagDrawer({ product, onClose }: AddedToBagDrawerProps) {
+export default function AddedToBagDrawer({ product, size, onClose }: AddedToBagDrawerProps) {
   const navigate = useNavigate();
   const { items, totalItems, subtotal } = useCart();
   const { formatPrice } = useCurrency();
@@ -73,11 +74,17 @@ export default function AddedToBagDrawer({ product, onClose }: AddedToBagDrawerP
             <div className="p-6 flex-1 overflow-y-auto space-y-6">
               {/* Product Spotlight Card */}
               <div className="flex gap-4 p-4 bg-white border border-mocha-100 rounded-lg shadow-sm">
-                <img
-                  src={product.image}
-                  alt={product.name}
-                  className="w-24 h-32 object-cover rounded-md flex-shrink-0 bg-mocha-50"
-                />
+                {product.image ? (
+                  <img
+                    src={product.image}
+                    alt={product.name}
+                    className="w-24 h-32 object-cover rounded-md flex-shrink-0 bg-mocha-50"
+                  />
+                ) : (
+                  <div className="w-24 h-32 flex items-center justify-center rounded-md flex-shrink-0 bg-mocha-50 p-2 text-center">
+                    <span className="font-lora text-[10px] italic text-mocha-400">Images coming soon</span>
+                  </div>
+                )}
                 <div className="flex-1 flex flex-col justify-between py-1">
                   <div>
                     <span className="font-cinzel text-[9px] tracking-[0.2em] text-mocha-400 uppercase">
@@ -86,10 +93,11 @@ export default function AddedToBagDrawer({ product, onClose }: AddedToBagDrawerP
                     <h3 className="font-playfair text-base font-medium text-mocha-900 mt-0.5 line-clamp-2">
                       {product.name}
                     </h3>
+                    {size && <span className="block font-lora text-xs text-mocha-500 mt-1">Size: {size}</span>}
                   </div>
                   <div>
                     <span className="font-lora text-sm font-semibold text-mocha-800">
-                      {formatPrice(product.price)}
+                      {formatPrice(product.price, product.priceUsd)}
                     </span>
                   </div>
                 </div>
@@ -121,12 +129,18 @@ export default function AddedToBagDrawer({ product, onClose }: AddedToBagDrawerP
                       .filter((i) => i.product.id !== product.id)
                       .slice(0, 4)
                       .map((item) => (
-                        <img
-                          key={item.product.id}
-                          src={item.product.image}
-                          alt={item.product.name}
-                          className="w-12 h-16 object-cover rounded border border-mocha-200 flex-shrink-0"
-                        />
+                        item.product.image ? (
+                          <img
+                            key={item.product.id}
+                            src={item.product.image}
+                            alt={item.product.name}
+                            className="w-12 h-16 object-cover rounded border border-mocha-200 flex-shrink-0"
+                          />
+                        ) : (
+                          <div key={item.product.id} className="w-12 h-16 flex items-center justify-center rounded border border-mocha-200 flex-shrink-0 p-1 text-center">
+                            <span className="font-lora text-[8px] italic text-mocha-400">Soon</span>
+                          </div>
+                        )
                       ))}
                   </div>
                 </div>

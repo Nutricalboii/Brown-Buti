@@ -1,6 +1,8 @@
 {
   "imports": {
     "@supabase/functions-js": "jsr:@supabase/functions-js@^2",
-    "@supabase/server": "npm:@supabase/server@^1"
+    "@supabase/server": "npm:@supabase/server@^1",
+    "@upstash/ratelimit": "npm:@upstash/ratelimit@2.2.0",
+    "@upstash/redis": "npm:@upstash/redis@1.39.0"
   }
 }

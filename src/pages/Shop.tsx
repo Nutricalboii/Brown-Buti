@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from 'react';
+import { forwardRef, useState, useMemo, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { SlidersHorizontal, X, Check, Heart } from 'lucide-react';
@@ -8,7 +8,8 @@ import { ImageCarousel, ProductModal, AddedToBagDrawer } from '../components';
 import { useCurrency, useWishlist } from '../context';
 import { ShopItemListJsonLd, BreadcrumbJsonLd } from '../lib/jsonld';
 
-const CATEGORIES = ['Saree', 'Underskirt'];
+const CATEGORIES = ['Blouses', 'Sarees', 'Underskirt'];
+const COLLECTIONS = ['The Occasion Edit', 'The Café Collection'];
 const PRICE_RANGES = [
   { label: 'Under ₹5,000', min: 0, max: 4999 },
   { label: '₹5,000 – ₹10,000', min: 5000, max: 10000 },
@@ -18,21 +19,23 @@ const PERSONALITIES = ['Elegant', 'Refined', 'Confident', 'Intelligent', 'Herita
 
 interface Filters {
   categories: string[];
+  collections: string[];
   priceRanges: string[];
   personalities: string[];
 }
 
-const EMPTY_FILTERS: Filters = { categories: [], priceRanges: [], personalities: [] };
+const EMPTY_FILTERS: Filters = { categories: [], collections: [], priceRanges: [], personalities: [] };
 
 function toggle<T>(arr: T[], val: T): T[] {
   return arr.includes(val) ? arr.filter((x) => x !== val) : [...arr, val];
 }
 
 export default function Shop() {
-  const [products, setProducts] = useState<Product[]>(localProducts);
-  const [loading, setLoading] = useState(false);
+  const products = localProducts;
+  const loading = false;
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [addedProduct, setAddedProduct] = useState<Product | null>(null);
+  const [addedSize, setAddedSize] = useState<string | undefined>();
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [filters, setFilters] = useState<Filters>(EMPTY_FILTERS);
   const { formatPrice } = useCurrency();
@@ -42,21 +45,20 @@ export default function Shop() {
   useEffect(() => {
     const productId = searchParams.get('product');
     if (productId && products.length > 0) {
-      const p = products.find((prod) => prod.id.toString() === productId);
-      if (p) {
-        setSelectedProduct(p);
-      }
-      searchParams.delete('product');
-      setSearchParams(searchParams, { replace: true });
+      const product = products.find((item) => item.id.toString() === productId);
+      if (product) setSelectedProduct(product);
+      const nextParams = new URLSearchParams(searchParams);
+      nextParams.delete('product');
+      setSearchParams(nextParams, { replace: true });
     }
   }, [searchParams, products, setSearchParams]);
-
   const activeFilterCount =
-    filters.categories.length + filters.priceRanges.length + filters.personalities.length;
+    filters.categories.length + filters.collections.length + filters.priceRanges.length + filters.personalities.length;
 
   const filtered = useMemo(() => {
     return products.filter((p) => {
       if (filters.categories.length > 0 && !filters.categories.includes(p.category)) return false;
+      if (filters.collections.length > 0 && (!p.collection || !filters.collections.includes(p.collection))) return false;
       if (filters.priceRanges.length > 0) {
         const match = PRICE_RANGES.filter((r) => filters.priceRanges.includes(r.label))
           .some((r) => p.price >= r.min && p.price <= r.max);
@@ -68,7 +70,7 @@ export default function Shop() {
       }
       return true;
     });
-  }, [filters]);
+  }, [filters, products]);
 
   return (
     <div className="pt-24 pb-20 min-h-screen">
@@ -114,6 +116,15 @@ export default function Shop() {
                 className="flex items-center gap-1.5 bg-mocha-800 text-gold-200 font-cinzel text-[10px] tracking-[0.15em] uppercase px-3 py-1.5"
               >
                 {c} <X size={10} strokeWidth={2} />
+              </button>
+            ))}
+            {filters.collections.map((collection) => (
+              <button
+                key={collection}
+                onClick={() => setFilters((f) => ({ ...f, collections: toggle(f.collections, collection) }))}
+                className="flex items-center gap-1.5 bg-mocha-800 text-gold-200 font-cinzel text-[10px] tracking-[0.15em] uppercase px-3 py-1.5"
+              >
+                {collection} <X size={10} strokeWidth={2} />
               </button>
             ))}
             {filters.priceRanges.map((r) => (
@@ -263,6 +274,25 @@ export default function Shop() {
 
                 <div className="h-px bg-mocha-200" />
 
+                {/* Saree Collections */}
+                <div>
+                  <h3 className="font-cinzel text-[10px] tracking-[0.25em] uppercase text-mocha-500 mb-4">
+                    Saree Collection
+                  </h3>
+                  <div className="space-y-3">
+                    {COLLECTIONS.map((collection) => (
+                      <CheckboxItem
+                        key={collection}
+                        label={collection}
+                        checked={filters.collections.includes(collection)}
+                        onChange={() => setFilters((f) => ({ ...f, collections: toggle(f.collections, collection) }))}
+                      />
+                    ))}
+                  </div>
+                </div>
+
+                <div className="h-px bg-mocha-200" />
+
                 {/* Price */}
                 <div>
                   <h3 className="font-cinzel text-[10px] tracking-[0.25em] uppercase text-mocha-500 mb-4">
@@ -324,12 +354,13 @@ export default function Shop() {
       <ProductModal
         product={selectedProduct}
         onClose={() => setSelectedProduct(null)}
-        onAddedToCart={(prod) => setAddedProduct(prod)}
+        onAddedToCart={(prod, size) => { setAddedProduct(prod); setAddedSize(size); }}
       />
 
       {/* Added to Bag Luxury Slide-Over Drawer */}
       <AddedToBagDrawer
         product={addedProduct}
+        size={addedSize}
         onClose={() => setAddedProduct(null)}
       />
     </div>
@@ -368,17 +399,21 @@ interface ProductCardProps {
   product: Product;
   index: number;
   onSelect: (p: Product) => void;
-  formatPrice: (price: number) => string;
+  formatPrice: (price: number, priceUsd?: number) => string;
   onToggleWishlist: (p: Product) => void;
   isWishlisted: boolean;
 }
 
-function ProductCard({ product, index, onSelect, formatPrice, onToggleWishlist, isWishlisted }: ProductCardProps) {
+const ProductCard = forwardRef<HTMLDivElement, ProductCardProps>(function ProductCard(
+  { product, index, onSelect, formatPrice, onToggleWishlist, isWishlisted },
+  ref,
+) {
   const [hovered, setHovered] = useState(false);
   const [inView, setInView] = useState(false);
 
   return (
     <motion.div
+      ref={ref}
       layout
       initial={{ opacity: 0, y: 30 }}
       whileInView={{ opacity: 1, y: 0 }}
@@ -399,6 +434,7 @@ function ProductCard({ product, index, onSelect, formatPrice, onToggleWishlist, 
           <ImageCarousel 
             media={product.images || [product.image]} 
             alt={product.name} 
+            priority={index === 0}
             className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
           />
         )}
@@ -430,9 +466,11 @@ function ProductCard({ product, index, onSelect, formatPrice, onToggleWishlist, 
         <p className="font-cinzel text-xs tracking-[0.2em] uppercase text-mocha-800 mb-1">
           {product.name}
         </p>
-        <p className="font-lora text-sm text-mocha-500">{formatPrice(product.price)}</p>
-        <p className="font-lora text-xs italic text-mocha-400 mt-1">{product.motif} Motif</p>
+        <p className="font-lora text-sm text-mocha-500">{formatPrice(product.price, product.priceUsd)}</p>
+        <p className="font-lora text-xs italic text-mocha-400 mt-1">
+          {product.collection || `${product.motif} Motif`}
+        </p>
       </div>
     </motion.div>
   );
-}
+});
