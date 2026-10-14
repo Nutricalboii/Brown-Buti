@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Play } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { getResponsiveProductImageSrcSet } from '../lib/responsive-product-image';
 
@@ -20,6 +20,12 @@ interface MediaSlideProps {
   poster?: string;
   sizes: string;
   fullResolution: boolean;
+}
+
+function isVideoUrl(src?: string): boolean {
+  if (!src) return false;
+  const normalized = src.toLowerCase();
+  return ['.webm', '.mp4', '.mov', '.m4v'].some((extension) => normalized.endsWith(extension));
 }
 
 function MediaSlide({ src, alt, isVideo, priority, poster, sizes, fullResolution }: MediaSlideProps) {
@@ -103,8 +109,9 @@ export default function ImageCarousel({ media, alt = 'Product Image', className 
   };
 
   const currentMedia = media[currentIndex];
-  const normalizedMedia = currentMedia?.toLowerCase() ?? '';
-  const isVideo = ['.webm', '.mp4', '.mov', '.m4v'].some((extension) => normalizedMedia.endsWith(extension));
+  const isVideo = isVideoUrl(currentMedia);
+  const hasAnyVideo = media.some(isVideoUrl);
+  const firstVideoIndex = media.findIndex(isVideoUrl);
 
   return (
     <div className={`relative group overflow-hidden ${className}`}>
@@ -127,12 +134,34 @@ export default function ImageCarousel({ media, alt = 'Product Image', className 
               alt={`${alt} - ${currentIndex + 1}`}
               isVideo={isVideo}
               priority={priority}
-              poster={isVideo ? media.find((item) => !['.webm', '.mp4', '.mov', '.m4v'].some((extension) => item.toLowerCase().endsWith(extension))) : undefined}
+              poster={isVideo ? media.find((item) => !isVideoUrl(item)) : undefined}
               sizes={sizes}
               fullResolution={fullResolution}
             />
           </motion.div>
         </AnimatePresence>
+      )}
+
+      {/* Top Video Indicator Badge (Myntra / Flipkart style) */}
+      {hasAnyVideo && (
+        <button
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation();
+            if (firstVideoIndex !== -1) {
+              setCurrentIndex(firstVideoIndex);
+            }
+          }}
+          className={`absolute top-3 left-3 z-10 flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] tracking-wider uppercase font-cinzel transition-all shadow-sm ${
+            isVideo
+              ? 'bg-mocha-900/90 text-gold-300 border border-gold-400/50 backdrop-blur-md'
+              : 'bg-black/40 hover:bg-black/60 text-white/90 hover:text-white border border-white/20 backdrop-blur-md'
+          }`}
+          aria-label={isVideo ? 'Currently viewing video' : 'Watch product video'}
+        >
+          <Play size={9} className="fill-current" />
+          <span>Video</span>
+        </button>
       )}
 
       {media.length > 1 && (
@@ -153,16 +182,50 @@ export default function ImageCarousel({ media, alt = 'Product Image', className 
             <ChevronRight size={16} />
           </button>
 
-          {/* Dots Indicator */}
-          <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5 z-10">
-            {media.map((_, i) => (
-              <div
-                key={i}
-                className={`w-1.5 h-1.5 rounded-full transition-colors ${
-                  i === currentIndex ? 'bg-white' : 'bg-white/40'
-                }`}
-              />
-            ))}
+          {/* Dots & Video Indicators (Myntra / Flipkart style) */}
+          <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex items-center gap-1.5 z-10 px-2 py-1 rounded-full bg-black/30 backdrop-blur-sm pointer-events-auto shadow-sm">
+            {media.map((item, i) => {
+              const itemIsVideo = isVideoUrl(item);
+              const isActive = i === currentIndex;
+
+              if (itemIsVideo) {
+                return (
+                  <button
+                    key={i}
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setCurrentIndex(i);
+                    }}
+                    className={`p-0.5 flex items-center justify-center transition-all ${
+                      isActive
+                        ? 'text-white scale-110 drop-shadow'
+                        : 'text-white/50 hover:text-white/80'
+                    }`}
+                    aria-label={`View product video slide ${i + 1}`}
+                  >
+                    <Play size={10} className="fill-current" />
+                  </button>
+                );
+              }
+
+              return (
+                <button
+                  key={i}
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setCurrentIndex(i);
+                  }}
+                  className={`h-1.5 transition-all rounded-full ${
+                    isActive
+                      ? 'w-3 bg-white shadow-sm'
+                      : 'w-1.5 bg-white/50 hover:bg-white/80'
+                  }`}
+                  aria-label={`View product image slide ${i + 1}`}
+                />
+              );
+            })}
           </div>
         </>
       )}
