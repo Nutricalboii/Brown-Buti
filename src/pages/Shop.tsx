@@ -52,12 +52,35 @@ export default function Shop() {
       setSearchParams(nextParams, { replace: true });
     }
   }, [searchParams, products, setSearchParams]);
+
+  useEffect(() => {
+    const catParam = searchParams.get('category');
+    if (catParam) {
+      const matched = CATEGORIES.find(
+        (c) => c.toLowerCase() === catParam.toLowerCase() || c.toLowerCase().startsWith(catParam.toLowerCase().replace(/s$/, ''))
+      );
+      if (matched) {
+        setFilters((prev) => ({
+          ...prev,
+          categories: [matched],
+        }));
+      }
+    }
+  }, [searchParams]);
+
   const activeFilterCount =
     filters.categories.length + filters.collections.length + filters.priceRanges.length + filters.personalities.length;
 
   const filtered = useMemo(() => {
     return products.filter((p) => {
-      if (filters.categories.length > 0 && !filters.categories.includes(p.category)) return false;
+      if (filters.categories.length > 0) {
+        const matchesCategory = filters.categories.some((cat) => {
+          const c = cat.toLowerCase();
+          const pc = p.category.toLowerCase();
+          return pc === c || pc.startsWith(c) || c.startsWith(pc);
+        });
+        if (!matchesCategory) return false;
+      }
       if (filters.collections.length > 0 && (!p.collection || !filters.collections.includes(p.collection))) return false;
       if (filters.priceRanges.length > 0) {
         const match = PRICE_RANGES.filter((r) => filters.priceRanges.includes(r.label))
@@ -107,7 +130,32 @@ export default function Shop() {
 
         {/* Filters Bar */}
         <div className="flex flex-wrap items-center justify-between gap-y-3 mb-4 pb-4 border-b border-mocha-200">
-          <div className="flex w-full sm:w-auto items-center gap-2 flex-wrap">
+          <div className="flex w-full sm:w-auto items-center gap-3 flex-wrap">
+            {/* Category Dropdown */}
+            <label className="flex min-h-11 items-center gap-2 pr-2">
+              <span className="font-cinzel text-[10px] tracking-[0.15em] uppercase text-mocha-500">
+                Category
+              </span>
+              <select
+                value={filters.categories.length === 1 ? filters.categories[0] : ''}
+                onChange={(event) => {
+                  const category = event.target.value;
+                  setFilters((current) => ({
+                    ...current,
+                    categories: category ? [category] : [],
+                    collections: category === 'Blouses' || category === 'Underskirt' ? [] : current.collections,
+                  }));
+                }}
+                className="min-h-11 max-w-[min(58vw,15rem)] border-0 border-b border-mocha-300 bg-transparent px-2 font-lora text-sm text-mocha-800 focus-visible:border-b-mocha-400 focus-visible:outline-none focus-visible:ring-0 cursor-pointer"
+              >
+                <option className="bg-gold-100 text-mocha-800" value="">All categories</option>
+                {CATEGORIES.map((category) => (
+                  <option className="bg-gold-100 text-mocha-800" key={category} value={category}>{category}</option>
+                ))}
+              </select>
+            </label>
+
+            {/* Collection Dropdown */}
             <label className="flex min-h-11 items-center gap-2 pr-2">
               <span className="font-cinzel text-[10px] tracking-[0.15em] uppercase text-mocha-500">
                 Collection
@@ -119,9 +167,10 @@ export default function Shop() {
                   setFilters((current) => ({
                     ...current,
                     collections: collection ? [collection] : [],
+                    categories: collection && current.categories.includes('Blouses') ? [] : current.categories,
                   }));
                 }}
-                className="min-h-11 max-w-[min(58vw,15rem)] border-0 border-b border-mocha-300 bg-transparent px-2 font-lora text-sm text-mocha-800 focus-visible:border-b-mocha-400 focus-visible:outline-none focus-visible:ring-0"
+                className="min-h-11 max-w-[min(58vw,15rem)] border-0 border-b border-mocha-300 bg-transparent px-2 font-lora text-sm text-mocha-800 focus-visible:border-b-mocha-400 focus-visible:outline-none focus-visible:ring-0 cursor-pointer"
               >
                 <option className="bg-gold-100 text-mocha-800" value="">All collections</option>
                 {COLLECTIONS.map((collection) => (
