@@ -106,8 +106,29 @@ export default function Shop() {
         </div>
 
         {/* Filters Bar */}
-        <div className="flex items-center justify-between mb-4 pb-4 border-b border-mocha-200">
-          <div className="flex items-center gap-2 flex-wrap">
+        <div className="flex flex-wrap items-center justify-between gap-y-3 mb-4 pb-4 border-b border-mocha-200">
+          <div className="flex w-full sm:w-auto items-center gap-2 flex-wrap">
+            <label className="flex min-h-11 items-center gap-2 pr-2">
+              <span className="font-cinzel text-[10px] tracking-[0.15em] uppercase text-mocha-500">
+                Collection
+              </span>
+              <select
+                value={filters.collections.length === 1 ? filters.collections[0] : ''}
+                onChange={(event) => {
+                  const collection = event.target.value;
+                  setFilters((current) => ({
+                    ...current,
+                    collections: collection ? [collection] : [],
+                  }));
+                }}
+                className="min-h-11 max-w-[min(58vw,15rem)] border-0 border-b border-mocha-300 bg-transparent px-2 font-lora text-sm text-mocha-800 focus-visible:border-b-mocha-400 focus-visible:outline-none focus-visible:ring-0"
+              >
+                <option className="bg-gold-100 text-mocha-800" value="">All collections</option>
+                {COLLECTIONS.map((collection) => (
+                  <option className="bg-gold-100 text-mocha-800" key={collection} value={collection}>{collection}</option>
+                ))}
+              </select>
+            </label>
             {/* Active filter pills */}
             {filters.categories.map((c) => (
               <button
@@ -156,7 +177,7 @@ export default function Shop() {
           </div>
           <button
             onClick={() => setFiltersOpen(true)}
-            className="flex items-center gap-2 font-cinzel text-xs tracking-[0.15em] uppercase text-mocha-500 hover:text-mocha-800 transition-colors flex-shrink-0 ml-4"
+            className="flex items-center gap-2 font-cinzel text-xs tracking-[0.15em] uppercase text-mocha-500 hover:text-mocha-800 transition-colors flex-shrink-0 ml-0 sm:ml-4"
           >
             <SlidersHorizontal size={14} strokeWidth={1.5} />
             Filter
@@ -271,27 +292,6 @@ export default function Shop() {
                     ))}
                   </div>
                 </div>
-
-                <div className="h-px bg-mocha-200" />
-
-                {/* Saree Collections */}
-                <div>
-                  <h3 className="font-cinzel text-[10px] tracking-[0.25em] uppercase text-mocha-500 mb-4">
-                    Saree Collection
-                  </h3>
-                  <div className="space-y-3">
-                    {COLLECTIONS.map((collection) => (
-                      <CheckboxItem
-                        key={collection}
-                        label={collection}
-                        checked={filters.collections.includes(collection)}
-                        onChange={() => setFilters((f) => ({ ...f, collections: toggle(f.collections, collection) }))}
-                      />
-                    ))}
-                  </div>
-                </div>
-
-                <div className="h-px bg-mocha-200" />
 
                 {/* Price */}
                 <div>
