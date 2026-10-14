@@ -121,11 +121,11 @@ export default function Shop() {
                     collections: collection ? [collection] : [],
                   }));
                 }}
-                className="min-h-11 max-w-[min(58vw,15rem)] border-0 border-b border-mocha-300 bg-transparent px-2 font-lora text-sm text-mocha-800 focus-visible:border-b-2 focus-visible:border-b-mocha-700 focus-visible:outline-none focus-visible:ring-0"
+                className="min-h-11 max-w-[min(58vw,15rem)] border-0 border-b border-mocha-300 bg-transparent px-2 font-lora text-sm text-mocha-800 focus-visible:border-b-mocha-400 focus-visible:outline-none focus-visible:ring-0"
               >
-                <option value="">All collections</option>
+                <option className="bg-gold-100 text-mocha-800" value="">All collections</option>
                 {COLLECTIONS.map((collection) => (
-                  <option key={collection} value={collection}>{collection}</option>
+                  <option className="bg-gold-100 text-mocha-800" key={collection} value={collection}>{collection}</option>
                 ))}
               </select>
             </label>
