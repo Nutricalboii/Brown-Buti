@@ -1,12 +1,15 @@
 import { useState } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { getResponsiveProductImageSrcSet } from '../lib/responsive-product-image';
 
 interface ImageCarouselProps {
   media: string[];
   alt?: string;
   className?: string;
   priority?: boolean;
+  fullResolution?: boolean;
+  sizes?: string;
 }
 
 interface MediaSlideProps {
@@ -14,15 +17,20 @@ interface MediaSlideProps {
   alt: string;
   isVideo: boolean;
   priority: boolean;
+  poster?: string;
+  sizes: string;
+  fullResolution: boolean;
 }
 
-function MediaSlide({ src, alt, isVideo, priority }: MediaSlideProps) {
+function MediaSlide({ src, alt, isVideo, priority, poster, sizes, fullResolution }: MediaSlideProps) {
   const [status, setStatus] = useState<'loading' | 'ready' | 'error'>('loading');
   const hasWebmFallback = src.toLowerCase().endsWith('.webm');
+  const [useMp4Fallback, setUseMp4Fallback] = useState(false);
+  const mp4FallbackSrc = hasWebmFallback ? src.replace(/\.webm$/i, '.mp4') : undefined;
 
   return (
     <div className="relative h-full w-full bg-mocha-50" aria-busy={status === 'loading'}>
-      {status === 'loading' && (
+      {status === 'loading' && !isVideo && (
         <div
           aria-hidden="true"
           className="absolute inset-0 z-10 animate-pulse bg-mocha-100 motion-reduce:animate-none"
@@ -39,27 +47,40 @@ function MediaSlide({ src, alt, isVideo, priority }: MediaSlideProps) {
         </div>
       ) : isVideo ? (
         <video
+          key={useMp4Fallback ? mp4FallbackSrc : src}
           className="h-full w-full object-contain"
+          poster={poster}
           autoPlay
           muted
           loop
           playsInline
+          controls={false}
           preload="metadata"
-          onLoadedData={() => setStatus('ready')}
-          onError={() => setStatus('error')}
+          onCanPlay={(event) => {
+            setStatus('ready');
+            void event.currentTarget.play().catch(() => undefined);
+          }}
+          onError={() => {
+            if (mp4FallbackSrc && !useMp4Fallback) {
+              setStatus('loading');
+              setUseMp4Fallback(true);
+            } else {
+              setStatus('error');
+            }
+          }}
         >
-          <source src={src} type={hasWebmFallback ? 'video/webm' : 'video/mp4'} />
-          {hasWebmFallback && (
-            <source src={src.replace(/\.webm$/i, '.mp4')} type="video/mp4" />
-          )}
+          <source src={useMp4Fallback && mp4FallbackSrc ? mp4FallbackSrc : src} type={useMp4Fallback || !hasWebmFallback ? 'video/mp4' : 'video/webm'} />
         </video>
       ) : (
         <img
           src={src}
+          srcSet={fullResolution ? undefined : getResponsiveProductImageSrcSet(src)}
+          sizes={sizes}
           alt={alt}
           className="h-full w-full object-contain"
           loading={priority ? 'eager' : 'lazy'}
           decoding="async"
+          fetchPriority={priority ? 'high' : 'auto'}
           onLoad={() => setStatus('ready')}
           onError={() => setStatus('error')}
         />
@@ -68,7 +89,7 @@ function MediaSlide({ src, alt, isVideo, priority }: MediaSlideProps) {
   );
 }
 
-export default function ImageCarousel({ media, alt = 'Product Image', className = '', priority = false }: ImageCarouselProps) {
+export default function ImageCarousel({ media, alt = 'Product Image', className = '', priority = false, fullResolution = false, sizes = '(max-width: 768px) 100vw, 512px' }: ImageCarouselProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
 
   const nextSlide = (e: React.MouseEvent) => {
@@ -106,6 +127,9 @@ export default function ImageCarousel({ media, alt = 'Product Image', className 
               alt={`${alt} - ${currentIndex + 1}`}
               isVideo={isVideo}
               priority={priority}
+              poster={isVideo ? media.find((item) => !['.webm', '.mp4', '.mov', '.m4v'].some((extension) => item.toLowerCase().endsWith(extension))) : undefined}
+              sizes={sizes}
+              fullResolution={fullResolution}
             />
           </motion.div>
         </AnimatePresence>
@@ -116,14 +140,14 @@ export default function ImageCarousel({ media, alt = 'Product Image', className 
           {/* Navigation Arrows (visible on hover for desktop) */}
           <button
             onClick={prevSlide}
-            className="absolute left-2 top-1/2 -translate-y-1/2 w-8 h-8 flex items-center justify-center bg-white/60 hover:bg-white text-mocha-900 rounded-full md:opacity-0 md:group-hover:opacity-100 transition-opacity z-10 shadow-sm"
+            className="absolute left-2 top-1/2 -translate-y-1/2 w-11 h-11 flex items-center justify-center bg-white/70 hover:bg-white text-mocha-900 rounded-full md:opacity-0 md:group-hover:opacity-100 transition-opacity z-10 shadow-sm"
             aria-label="Previous image"
           >
             <ChevronLeft size={16} />
           </button>
           <button
             onClick={nextSlide}
-            className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 flex items-center justify-center bg-white/60 hover:bg-white text-mocha-900 rounded-full md:opacity-0 md:group-hover:opacity-100 transition-opacity z-10 shadow-sm"
+            className="absolute right-2 top-1/2 -translate-y-1/2 w-11 h-11 flex items-center justify-center bg-white/70 hover:bg-white text-mocha-900 rounded-full md:opacity-0 md:group-hover:opacity-100 transition-opacity z-10 shadow-sm"
             aria-label="Next image"
           >
             <ChevronRight size={16} />

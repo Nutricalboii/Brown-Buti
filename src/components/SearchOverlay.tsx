@@ -4,6 +4,7 @@ import { Search, X, ArrowRight } from 'lucide-react';
 import { products } from '../data/products';
 import type { Product } from '../data/products';
 import { useCurrency } from '../context/CurrencyContext';
+import { getResponsiveProductImageSrcSet } from '../lib/responsive-product-image';
 
 interface SearchOverlayProps {
   open: boolean;
@@ -150,6 +151,8 @@ export default function SearchOverlay({ open, onClose, onSelectProduct }: Search
                             {product.image ? (
                               <img
                                 src={product.image}
+                                srcSet={getResponsiveProductImageSrcSet(product.image)}
+                                sizes="56px"
                                 alt={product.name}
                                 className="w-full h-full object-cover"
                               />

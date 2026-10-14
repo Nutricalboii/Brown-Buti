@@ -4,6 +4,7 @@ import { ArrowLeft, Heart, ShoppingBag } from 'lucide-react';
 import { useWishlist } from '../context/WishlistContext';
 import { useCart } from '../context/CartContext';
 import { useCurrency } from '../context/CurrencyContext';
+import { getResponsiveProductImageSrcSet } from '../lib/responsive-product-image';
 
 export default function Wishlist() {
   const { items, toggleWishlist } = useWishlist();
@@ -71,6 +72,8 @@ export default function Wishlist() {
                   >
                     <img
                       src={product.image}
+                      srcSet={getResponsiveProductImageSrcSet(product.image)}
+                      sizes="(min-width: 1024px) 33vw, 50vw"
                       alt={product.name}
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                     />

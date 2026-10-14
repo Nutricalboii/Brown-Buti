@@ -435,6 +435,7 @@ const ProductCard = forwardRef<HTMLDivElement, ProductCardProps>(function Produc
             media={product.images || [product.image]} 
             alt={product.name} 
             priority={index === 0}
+            sizes="(max-width: 767px) 50vw, (max-width: 1023px) 33vw, 25vw"
             className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
           />
         )}

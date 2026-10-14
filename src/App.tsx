@@ -20,7 +20,6 @@ const Contact = lazy(() => import('./pages/Contact'));
 const Cart = lazy(() => import('./pages/Cart'));
 const Auth = lazy(() => import('./pages/Auth'));
 const Profile = lazy(() => import('./pages/Profile'));
-const OrderConfirmation = lazy(() => import('./pages/OrderConfirmation'));
 const Privacy = lazy(() => import('./pages/Privacy'));
 const Terms = lazy(() => import('./pages/Terms'));
 const ReturnPolicy = lazy(() => import('./pages/ReturnPolicy'));
@@ -55,8 +54,7 @@ function Layout() {
   const [addedSize, setAddedSize] = useState<string | undefined>();
   const location = useLocation();
 
-  const isCheckoutFlow =
-    location.pathname === '/order-confirmation' || location.pathname === '/auth';
+  const isCheckoutFlow = location.pathname === '/auth';
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -66,7 +64,7 @@ function Layout() {
         </Suspense>
       )}
       <Navbar onSearchOpen={() => setSearchOpen(true)} />
-      <main className="flex-1">
+      <main className="flex-1 overflow-x-clip">
         <Suspense fallback={<RouteLoading />}>
           <Routes>
             <Route path="/" element={<Home />} />
@@ -76,7 +74,6 @@ function Layout() {
             <Route path="/cart" element={<Cart />} />
             <Route path="/auth" element={<Auth />} />
             <Route path="/profile" element={<Profile />} />
-            <Route path="/order-confirmation" element={<OrderConfirmation />} />
             <Route path="/privacy" element={<Privacy />} />
             <Route path="/terms" element={<Terms />} />
             <Route path="/return-policy" element={<ReturnPolicy />} />

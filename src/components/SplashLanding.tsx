@@ -152,6 +152,7 @@ export default function SplashLanding() {
               muted
               loop
               playsInline
+              controls={false}
               onLoadedMetadata={handleLoaded}
               className="absolute inset-0 w-full h-full object-cover opacity-70 md:hidden"
             />
@@ -165,6 +166,7 @@ export default function SplashLanding() {
                 muted
                 loop
                 playsInline
+                controls={false}
                 onLoadedMetadata={handleLoaded}
                 className="w-full h-full object-cover opacity-70"
               />
@@ -176,6 +178,7 @@ export default function SplashLanding() {
                 muted
                 loop
                 playsInline
+                controls={false}
                 onLoadedMetadata={handleLoaded}
                 className="w-full h-full object-cover opacity-80 border-x border-mocha-900/20 shadow-2xl z-10"
               />
@@ -187,6 +190,7 @@ export default function SplashLanding() {
                 muted
                 loop
                 playsInline
+                controls={false}
                 onLoadedMetadata={handleLoaded}
                 className="w-full h-full object-cover opacity-70"
               />

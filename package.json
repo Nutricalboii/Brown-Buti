@@ -6,20 +6,19 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "test": "node --test server/*.test.js",
+    "test": "node --test",
     "lint": "eslint .",
     "preview": "vite preview",
+    "media:responsive": "node scripts/generate-responsive-product-media.mjs",
+    "media:video:webm": "node scripts/generate-high-quality-product-videos.mjs",
     "typecheck": "tsc --noEmit -p tsconfig.app.json"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.112.4",
     "@upstash/ratelimit": "^2.2.0",
     "@upstash/redis": "^1.39.0",
-    "dotenv": "^18.0.6",
-    "express": "^5.2.1",
     "framer-motion": "^12.42.2",
     "lucide-react": "^0.344.0",
-    "razorpay": "^2.9.8",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-router-dom": "^7.18.4",
