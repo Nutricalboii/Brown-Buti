@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { ArrowRight, Feather } from 'lucide-react';
@@ -7,6 +7,53 @@ import { OrganizationJsonLd } from '../lib/jsonld';
 import { supabase } from '../lib/supabase';
 import { useCurrency } from '../context/CurrencyContext';
 import { getResponsiveProductImageSrcSet } from '../lib/responsive-product-image';
+import { configureAutoplayVideo, playWithAutoplayFallback } from '../lib/video-autoplay';
+
+interface TeaserVideoProps {
+  webmSrc: string;
+  mp4Src: string;
+  poster: string;
+  className?: string;
+  style?: React.CSSProperties;
+}
+
+function TeaserVideo({ webmSrc, mp4Src, poster, className, style }: TeaserVideoProps) {
+  const videoRef = useRef<HTMLVideoElement | null>(null);
+
+  useEffect(() => {
+    if (!videoRef.current) return;
+    return playWithAutoplayFallback(videoRef.current);
+  }, []);
+
+  return (
+    <video
+      ref={(node) => {
+        videoRef.current = node;
+        configureAutoplayVideo(node);
+      }}
+      poster={poster}
+      className={className}
+      style={style}
+      autoPlay
+      muted
+      loop
+      playsInline
+      preload="auto"
+      controls={false}
+      onCanPlay={(e) => {
+        configureAutoplayVideo(e.currentTarget);
+        void e.currentTarget.play().catch(() => {});
+      }}
+      onLoadedMetadata={(e) => {
+        configureAutoplayVideo(e.currentTarget);
+        void e.currentTarget.play().catch(() => {});
+      }}
+    >
+      <source src={webmSrc} type="video/webm" />
+      <source src={mp4Src} type="video/mp4" />
+    </video>
+  );
+}
 
 const fadeUp = {
   hidden: { opacity: 0, y: 30 },
@@ -16,8 +63,6 @@ const fadeUp = {
     transition: { duration: 0.7, delay: i * 0.12, ease: [0.25, 0.1, 0.25, 1] as const },
   }),
 };
-
-
 
 export default function Home() {
   const navigate = useNavigate();
@@ -198,17 +243,12 @@ export default function Home() {
                   transition={{ duration: 0.7 }}
                 >
                   {teaserInView && (
-                    <video
-                      src="https://res.cloudinary.com/xtrw55ut/video/upload/coverreel2.webm"
+                    <TeaserVideo
+                      webmSrc="https://res.cloudinary.com/xtrw55ut/video/upload/coverreel2.webm"
+                      mp4Src="https://res.cloudinary.com/xtrw55ut/video/upload/coverreel2.mp4"
                       poster="https://res.cloudinary.com/xtrw55ut/video/upload/so_0/coverreel2.jpg"
                       className="absolute top-1/2 left-1/2 max-w-none"
                       style={{ width: '177.77%', height: '56.25%', transform: 'translate(-50%, -50%) rotate(-90deg)' }}
-                      autoPlay
-                      muted
-                      loop
-                      playsInline
-                      preload="metadata"
-                      controls={false}
                     />
                   )}
                 </motion.div>
@@ -225,16 +265,11 @@ export default function Home() {
                   transition={{ duration: 0.7, delay: 0.15 }}
                 >
                   {teaserInView && (
-                    <video
-                      src="https://res.cloudinary.com/xtrw55ut/video/upload/a_-90,so_3,eo_7/coverreel1.webm"
+                    <TeaserVideo
+                      webmSrc="https://res.cloudinary.com/xtrw55ut/video/upload/a_-90,so_3,eo_7/coverreel1.webm"
+                      mp4Src="https://res.cloudinary.com/xtrw55ut/video/upload/a_-90,so_3,eo_7/coverreel1.mp4"
                       poster="https://res.cloudinary.com/xtrw55ut/video/upload/a_-90,so_3/coverreel1.jpg"
                       className="absolute inset-0 w-full h-full object-cover object-[center_80%]"
-                      autoPlay
-                      muted
-                      loop
-                      playsInline
-                      preload="metadata"
-                      controls={false}
                     />
                   )}
                 </motion.div>
@@ -251,17 +286,12 @@ export default function Home() {
                   transition={{ duration: 0.7, delay: 0.3 }}
                 >
                   {teaserInView && (
-                    <video
-                      src="https://res.cloudinary.com/xtrw55ut/video/upload/eo_4/coverreel3.webm"
+                    <TeaserVideo
+                      webmSrc="https://res.cloudinary.com/xtrw55ut/video/upload/eo_4/coverreel3.webm"
+                      mp4Src="https://res.cloudinary.com/xtrw55ut/video/upload/eo_4/coverreel3.mp4"
                       poster="https://res.cloudinary.com/xtrw55ut/video/upload/so_0/coverreel3.jpg"
                       className="absolute top-1/2 left-1/2 max-w-none"
                       style={{ width: '177.77%', height: '56.25%', transform: 'translate(-50%, -50%) rotate(-90deg)' }}
-                      autoPlay
-                      muted
-                      loop
-                      playsInline
-                      preload="metadata"
-                      controls={false}
                     />
                   )}
                 </motion.div>

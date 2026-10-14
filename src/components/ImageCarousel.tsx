@@ -1,7 +1,8 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { getResponsiveProductImageSrcSet } from '../lib/responsive-product-image';
+import { configureAutoplayVideo, playWithAutoplayFallback } from '../lib/video-autoplay';
 
 interface ImageCarouselProps {
   media: string[];
@@ -24,9 +25,16 @@ interface MediaSlideProps {
 
 function MediaSlide({ src, alt, isVideo, priority, poster, sizes, fullResolution }: MediaSlideProps) {
   const [status, setStatus] = useState<'loading' | 'ready' | 'error'>('loading');
-  const hasWebmFallback = src.toLowerCase().endsWith('.webm');
-  const [useMp4Fallback, setUseMp4Fallback] = useState(false);
-  const mp4FallbackSrc = hasWebmFallback ? src.replace(/\.webm$/i, '.mp4') : undefined;
+  const videoRef = useRef<HTMLVideoElement | null>(null);
+
+  const isWebm = src.toLowerCase().endsWith('.webm');
+  const webmSrc = isWebm ? src : undefined;
+  const mp4Src = isWebm ? src.replace(/\.webm$/i, '.mp4') : src;
+
+  useEffect(() => {
+    if (!isVideo || !videoRef.current) return;
+    return playWithAutoplayFallback(videoRef.current);
+  }, [isVideo, src]);
 
   return (
     <div className="relative h-full w-full bg-mocha-50" aria-busy={status === 'loading'}>
@@ -47,7 +55,11 @@ function MediaSlide({ src, alt, isVideo, priority, poster, sizes, fullResolution
         </div>
       ) : isVideo ? (
         <video
-          key={useMp4Fallback ? mp4FallbackSrc : src}
+          key={src}
+          ref={(node) => {
+            videoRef.current = node;
+            configureAutoplayVideo(node);
+          }}
           className="h-full w-full object-contain"
           poster={poster}
           autoPlay
@@ -55,21 +67,22 @@ function MediaSlide({ src, alt, isVideo, priority, poster, sizes, fullResolution
           loop
           playsInline
           controls={false}
-          preload="metadata"
+          preload="auto"
           onCanPlay={(event) => {
             setStatus('ready');
+            configureAutoplayVideo(event.currentTarget);
+            void event.currentTarget.play().catch(() => undefined);
+          }}
+          onLoadedMetadata={(event) => {
+            configureAutoplayVideo(event.currentTarget);
             void event.currentTarget.play().catch(() => undefined);
           }}
           onError={() => {
-            if (mp4FallbackSrc && !useMp4Fallback) {
-              setStatus('loading');
-              setUseMp4Fallback(true);
-            } else {
-              setStatus('error');
-            }
+            setStatus('error');
           }}
         >
-          <source src={useMp4Fallback && mp4FallbackSrc ? mp4FallbackSrc : src} type={useMp4Fallback || !hasWebmFallback ? 'video/mp4' : 'video/webm'} />
+          {webmSrc && <source src={webmSrc} type="video/webm" />}
+          {mp4Src && <source src={mp4Src} type="video/mp4" />}
         </video>
       ) : (
         <img

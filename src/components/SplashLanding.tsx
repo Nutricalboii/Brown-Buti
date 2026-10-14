@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { configureAutoplayVideo, playWithAutoplayFallback } from '../lib/video-autoplay';
 
 export default function SplashLanding() {
   const [visible, setVisible] = useState(() => {
@@ -17,9 +18,24 @@ export default function SplashLanding() {
   const rightVidRef = useRef<HTMLVideoElement>(null);
   const mobileVidRef = useRef<HTMLVideoElement>(null);
 
-  const handleLoaded = () => {
+  const handleLoaded = (e: React.SyntheticEvent<HTMLVideoElement>) => {
+    configureAutoplayVideo(e.currentTarget);
+    void e.currentTarget.play().catch(() => {});
     setVideosReady((prev) => prev + 1);
   };
+
+  useEffect(() => {
+    if (!visible) return;
+    const cleanups = [
+      playWithAutoplayFallback(mobileVidRef.current),
+      playWithAutoplayFallback(leftVidRef.current),
+      playWithAutoplayFallback(midVidRef.current),
+      playWithAutoplayFallback(rightVidRef.current),
+    ];
+    return () => {
+      cleanups.forEach((c) => c());
+    };
+  }, [visible]);
 
   useEffect(() => {
     // Wait until at least 1 video is ready, then after a brief timeout, sync their current times.
@@ -146,58 +162,82 @@ export default function SplashLanding() {
           <div className="absolute inset-0 w-full h-full bg-mocha-900">
             {/* Mobile Video */}
             <video
-              ref={mobileVidRef}
-              src="https://res.cloudinary.com/xtrw55ut/video/upload/q_auto,f_auto/splash.webm"
+              ref={(node) => {
+                mobileVidRef.current = node;
+                configureAutoplayVideo(node);
+              }}
               poster="https://res.cloudinary.com/xtrw55ut/video/upload/so_0/splash.jpg"
               autoPlay
               muted
               loop
               playsInline
+              preload="auto"
               controls={false}
               onLoadedMetadata={handleLoaded}
               className="absolute inset-0 w-full h-full object-cover opacity-70 md:hidden"
-            />
+            >
+              <source src="https://res.cloudinary.com/xtrw55ut/video/upload/q_auto,f_auto/splash.webm" type="video/webm" />
+              <source src="https://res.cloudinary.com/xtrw55ut/video/upload/q_auto,f_auto/splash.mp4" type="video/mp4" />
+            </video>
             
             {/* Desktop Collage */}
             <div className="absolute inset-0 hidden md:grid grid-cols-3 w-full h-full">
               <video
-                ref={leftVidRef}
-                src="https://res.cloudinary.com/xtrw55ut/video/upload/q_auto,f_auto/splash.webm"
+                ref={(node) => {
+                  leftVidRef.current = node;
+                  configureAutoplayVideo(node);
+                }}
                 poster="https://res.cloudinary.com/xtrw55ut/video/upload/so_0/splash.jpg"
                 autoPlay
                 muted
                 loop
                 playsInline
+                preload="auto"
                 controls={false}
                 onLoadedMetadata={handleLoaded}
                 className="w-full h-full object-cover opacity-70"
-              />
+              >
+                <source src="https://res.cloudinary.com/xtrw55ut/video/upload/q_auto,f_auto/splash.webm" type="video/webm" />
+                <source src="https://res.cloudinary.com/xtrw55ut/video/upload/q_auto,f_auto/splash.mp4" type="video/mp4" />
+              </video>
               
               <video
-                ref={midVidRef}
-                src="https://res.cloudinary.com/xtrw55ut/video/upload/q_auto,f_auto/splash.webm"
+                ref={(node) => {
+                  midVidRef.current = node;
+                  configureAutoplayVideo(node);
+                }}
                 poster="https://res.cloudinary.com/xtrw55ut/video/upload/so_0/splash.jpg"
                 autoPlay
                 muted
                 loop
                 playsInline
+                preload="auto"
                 controls={false}
                 onLoadedMetadata={handleLoaded}
                 className="w-full h-full object-cover opacity-80 border-x border-mocha-900/20 shadow-2xl z-10"
-              />
+              >
+                <source src="https://res.cloudinary.com/xtrw55ut/video/upload/q_auto,f_auto/splash.webm" type="video/webm" />
+                <source src="https://res.cloudinary.com/xtrw55ut/video/upload/q_auto,f_auto/splash.mp4" type="video/mp4" />
+              </video>
               
               <video
-                ref={rightVidRef}
-                src="https://res.cloudinary.com/xtrw55ut/video/upload/q_auto,f_auto/splash.webm"
+                ref={(node) => {
+                  rightVidRef.current = node;
+                  configureAutoplayVideo(node);
+                }}
                 poster="https://res.cloudinary.com/xtrw55ut/video/upload/so_0/splash.jpg"
                 autoPlay
                 muted
                 loop
                 playsInline
+                preload="auto"
                 controls={false}
                 onLoadedMetadata={handleLoaded}
                 className="w-full h-full object-cover opacity-70"
-              />
+              >
+                <source src="https://res.cloudinary.com/xtrw55ut/video/upload/q_auto,f_auto/splash.webm" type="video/webm" />
+                <source src="https://res.cloudinary.com/xtrw55ut/video/upload/q_auto,f_auto/splash.mp4" type="video/mp4" />
+              </video>
             </div>
 
             <div className="absolute inset-0 bg-gradient-to-t from-mocha-900/90 via-transparent to-mocha-900/30 z-20 pointer-events-none" />
