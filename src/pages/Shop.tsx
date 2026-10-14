@@ -121,7 +121,7 @@ export default function Shop() {
                     collections: collection ? [collection] : [],
                   }));
                 }}
-                className="min-h-11 max-w-[min(58vw,15rem)] border-0 border-b border-mocha-300 bg-transparent px-2 font-lora text-sm text-mocha-800 focus-visible:outline focus-visible:outline-1 focus-visible:outline-offset-1 focus-visible:outline-mocha-500"
+                className="min-h-11 max-w-[min(58vw,15rem)] border-0 border-b border-mocha-300 bg-transparent px-2 font-lora text-sm text-mocha-800 focus-visible:border-b-2 focus-visible:border-b-mocha-700 focus-visible:outline-none focus-visible:ring-0"
               >
                 <option value="">All collections</option>
                 {COLLECTIONS.map((collection) => (
