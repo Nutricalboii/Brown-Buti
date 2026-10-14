@@ -200,12 +200,14 @@ export default function Home() {
                   {teaserInView && (
                     <video
                       src="https://res.cloudinary.com/xtrw55ut/video/upload/coverreel2.webm"
+                      poster="https://res.cloudinary.com/xtrw55ut/video/upload/so_0/coverreel2.jpg"
                       className="absolute top-1/2 left-1/2 max-w-none"
                       style={{ width: '177.77%', height: '56.25%', transform: 'translate(-50%, -50%) rotate(-90deg)' }}
                       autoPlay
                       muted
                       loop
                       playsInline
+                      preload="metadata"
                       controls={false}
                     />
                   )}
@@ -225,11 +227,13 @@ export default function Home() {
                   {teaserInView && (
                     <video
                       src="https://res.cloudinary.com/xtrw55ut/video/upload/a_-90,so_3,eo_7/coverreel1.webm"
+                      poster="https://res.cloudinary.com/xtrw55ut/video/upload/a_-90,so_3/coverreel1.jpg"
                       className="absolute inset-0 w-full h-full object-cover object-[center_80%]"
                       autoPlay
                       muted
                       loop
                       playsInline
+                      preload="metadata"
                       controls={false}
                     />
                   )}
@@ -249,12 +253,14 @@ export default function Home() {
                   {teaserInView && (
                     <video
                       src="https://res.cloudinary.com/xtrw55ut/video/upload/eo_4/coverreel3.webm"
+                      poster="https://res.cloudinary.com/xtrw55ut/video/upload/so_0/coverreel3.jpg"
                       className="absolute top-1/2 left-1/2 max-w-none"
                       style={{ width: '177.77%', height: '56.25%', transform: 'translate(-50%, -50%) rotate(-90deg)' }}
                       autoPlay
                       muted
                       loop
                       playsInline
+                      preload="metadata"
                       controls={false}
                     />
                   )}

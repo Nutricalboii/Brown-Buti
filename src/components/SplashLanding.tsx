@@ -148,6 +148,7 @@ export default function SplashLanding() {
             <video
               ref={mobileVidRef}
               src="https://res.cloudinary.com/xtrw55ut/video/upload/q_auto,f_auto/splash.webm"
+              poster="https://res.cloudinary.com/xtrw55ut/video/upload/so_0/splash.jpg"
               autoPlay
               muted
               loop
@@ -162,6 +163,7 @@ export default function SplashLanding() {
               <video
                 ref={leftVidRef}
                 src="https://res.cloudinary.com/xtrw55ut/video/upload/q_auto,f_auto/splash.webm"
+                poster="https://res.cloudinary.com/xtrw55ut/video/upload/so_0/splash.jpg"
                 autoPlay
                 muted
                 loop
@@ -174,6 +176,7 @@ export default function SplashLanding() {
               <video
                 ref={midVidRef}
                 src="https://res.cloudinary.com/xtrw55ut/video/upload/q_auto,f_auto/splash.webm"
+                poster="https://res.cloudinary.com/xtrw55ut/video/upload/so_0/splash.jpg"
                 autoPlay
                 muted
                 loop
@@ -186,6 +189,7 @@ export default function SplashLanding() {
               <video
                 ref={rightVidRef}
                 src="https://res.cloudinary.com/xtrw55ut/video/upload/q_auto,f_auto/splash.webm"
+                poster="https://res.cloudinary.com/xtrw55ut/video/upload/so_0/splash.jpg"
                 autoPlay
                 muted
                 loop
