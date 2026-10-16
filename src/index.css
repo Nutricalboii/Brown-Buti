@@ -68,6 +68,21 @@
   .input-field {
     @apply w-full border-0 border-b border-mocha-300 bg-transparent py-3 text-mocha-800 font-lora text-sm placeholder-mocha-400 focus:outline-none focus:border-mocha-700 transition-colors duration-200;
   }
+
+  .contact-subject-select {
+    color-scheme: light;
+    accent-color: #C99A2E;
+  }
+
+  .contact-subject-select option {
+    background-color: #FFFEF7;
+    color: #3D2814;
+  }
+
+  .contact-subject-select option:checked {
+    background-color: #FCEABB;
+    color: #3D2814;
+  }
 }
 
 @layer utilities {

@@ -170,13 +170,17 @@ export default function Contact() {
                   initial="hidden"
                   animate="visible"
                 >
-                  <label className="block font-cinzel text-[10px] tracking-[0.25em] uppercase text-mocha-500 mb-2">
+                  <label
+                    htmlFor="contact-subject"
+                    className="block font-cinzel text-[10px] tracking-[0.25em] uppercase text-mocha-500 mb-2"
+                  >
                     Subject
                   </label>
                   <select
+                    id="contact-subject"
                     value={form.subject}
                     onChange={(e) => setForm({ ...form, subject: e.target.value })}
-                    className={`input-field bg-transparent cursor-pointer appearance-none ${errors.subject ? 'border-red-500' : ''}`}
+                    className={`input-field contact-subject-select bg-transparent cursor-pointer appearance-none ${errors.subject ? 'border-red-500' : ''}`}
                   >
                     <option value="">Select a subject</option>
                     {subjects.map((s) => (
