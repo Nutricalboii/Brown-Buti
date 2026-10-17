@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { NavLink, Link } from 'react-router-dom';
 import { Instagram, Mail, ArrowRight } from 'lucide-react';
 import { supabase } from '../lib/supabase';
+import { BRAND_LOGO, BRAND_NAME } from '../lib/brand';
 
 export default function Footer() {
   const [email, setEmail] = useState('');
@@ -45,12 +46,12 @@ export default function Footer() {
           <div className="md:col-span-1">
             <div className="flex items-center gap-3 mb-5">
               <img
-                src="https://res.cloudinary.com/xtrw55ut/image/upload/mnmlogo-Photoroom.webp"
-                alt="Mocha & Mogra"
-                className="h-10 w-10 object-contain brightness-0 invert opacity-80"
+                src={BRAND_LOGO}
+                alt={`${BRAND_NAME} logo`}
+                className="h-11 w-11 object-contain"
               />
               <span className="font-playfair text-xl font-bold text-gold-200">
-                Mocha &amp; Mogra
+                {BRAND_NAME}
               </span>
             </div>
             <p className="font-lora text-sm text-mocha-300 leading-relaxed max-w-xs">
@@ -182,7 +183,7 @@ export default function Footer() {
 
         <div className="border-t border-mocha-700 pt-8 flex flex-col sm:flex-row items-center justify-between gap-4">
           <p className="font-lora text-xs text-mocha-500">
-            &copy; {new Date().getFullYear()} Mocha &amp; Mogra. Handcrafted with Grace.
+            &copy; {new Date().getFullYear()} {BRAND_NAME}. Handcrafted with Grace.
           </p>
           <p className="font-cinzel text-xs tracking-[0.2em] text-mocha-500 uppercase">
             Story Before Trend

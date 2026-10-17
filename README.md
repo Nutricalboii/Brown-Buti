@@ -1,4 +1,4 @@
-# Mocha & Mogra — Contemporary Silk Saree E-Commerce Storefront
+# Brown Buti — Contemporary Silk Saree E-Commerce Storefront
 
 > **A Collection of Stories, Stitched in Silk.**  
 > A high-end, headless React 18 + Vite + TypeScript e-commerce platform crafted with bespoke luxury aesthetics, custom storytelling UI components, headless Shopify commerce integration, Supabase Edge Functions, and enterprise-grade SEO & analytics.
@@ -23,7 +23,7 @@
 
 ## Executive Overview & Brand Philosophy
 
-**Mocha & Mogra** is a contemporary luxury saree brand celebrating artisan-crafted silk, bespoke motif design, and heritage storytelling. The web application is engineered to evoke the experience of a high-end fashion atelier, combining warm cream and mocha color palettes (`#FAF7F2`, `#FFFEF7`, `#1E140A`), dynamic silk video loops, elegant typography (`Cinzel`, `Playfair Display`, `Lora`), and zero-friction purchase flows.
+**Brown Buti** is a contemporary luxury saree brand celebrating artisan-crafted silk, bespoke motif design, and heritage storytelling. The web application is engineered to evoke the experience of a high-end fashion atelier, combining warm cream and mocha color palettes (`#FAF7F2`, `#FFFEF7`, `#1E140A`), dynamic silk video loops, elegant typography (`Cinzel`, `Playfair Display`, `Lora`), and zero-friction purchase flows. Existing Mocha & Mogra domain, contact mailbox, Shopify identifiers, and service configuration are intentionally retained until approved replacements are ready.
 
 ### Technical Architecture Highlights
 - **Headless Commerce Stack**: React 18 SPA built with Vite and TypeScript, paired with Shopify as a headless backend for inventory, order processing, and tax compliance.
@@ -194,7 +194,9 @@ Mocha_And_Mogra_Website/
 ├── postcss.config.js            # PostCSS configuration for TailwindCSS processing
 ├── public/                      # Public static assets & brand logos
 │   ├── images/
-│   │   └── mnmlogo-Photoroom.webp
+│   │   ├── brown-buti-logo.webp # Full transparent Brown Buti wordmark
+│   │   ├── brown-buti-mark.webp # Transparent emblem for compact UI use
+│   │   └── mnmlogo-Photoroom.webp # Retained legacy logo asset
 │   └── favicon.ico
 ├── README.md                    # Main repository documentation & architectural manual
 ├── src/
@@ -220,6 +222,7 @@ Mocha_And_Mogra_Website/
 │   ├── data/
 │   │   └── products.ts          # Catalog data model & product inventory array
 │   ├── lib/                     # Core Utility & Integration Libraries
+│   │   └── brand.ts              # Current customer-facing brand name, logo and tagline
 │   │   ├── analytics.ts         # Dual GA4 & Meta Pixel conversion tracking engine
 │   │   ├── jsonld.tsx           # SEO Schema.org structured data helpers
 │   │   ├── shopify.ts           # Shopify Headless API & cart permalink generator
@@ -357,4 +360,4 @@ Newsletter subscriptions submitted in `Footer.tsx` trigger the Supabase Edge Fun
 
 ---
 
-*Documentation maintained by Antigravity AI Engineering Team for Mocha & Mogra.*
+*Documentation maintained by Antigravity AI Engineering Team for Brown Buti.*

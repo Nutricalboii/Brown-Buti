@@ -1,6 +1,6 @@
 # 📑 Technical Dependencies, Deep-Dive Architecture & Production Readiness Audit
 
-> **Mocha & Mogra E-Commerce Platform**  
+> **Brown Buti E-Commerce Platform**
 > *Technical Reference & Systems Architectural Manual*
 
 ---
@@ -274,4 +274,4 @@ Configures universal single-page application route rewrites so deep page links (
 
 ---
 
-*Technical specification manual prepared for Mocha & Mogra.*
+*Technical specification manual prepared for Brown Buti. Existing domain, Shopify IDs, email, and infrastructure identifiers remain unchanged pending owner-approved service cutover.*

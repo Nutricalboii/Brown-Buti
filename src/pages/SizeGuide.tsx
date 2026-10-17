@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
 import { SizeChartContent } from '../components/SizeChart';
 import type { SizeUnit } from '../data/sizeChart';
+import { BRAND_NAME } from '../lib/brand';
 
 const sareeGuide = [
   {
@@ -11,7 +12,7 @@ const sareeGuide = [
     length: '5.5 metres',
     blousePiece: '0.8 metres included',
     fits: 'Fits most body types — the drape style adjusts to you',
-    note: 'All MnM sarees come in a single standard length as is traditional in silk sarees.',
+    note: `All ${BRAND_NAME} sarees come in a single standard length, as is traditional in silk sarees.`,
   },
 ];
 
@@ -67,7 +68,7 @@ export default function SizeGuide() {
               Size Guide
             </h1>
             <p className="font-lora text-mocha-500 leading-relaxed max-w-2xl">
-              Every Mocha &amp; Mogra piece is crafted to drape beautifully. Use this guide to find your perfect fit — or write to us at{' '}
+              Every {BRAND_NAME} piece is crafted to drape beautifully. Use this guide to find your perfect fit — or write to us at{' '}
               <a href="mailto:labelmochanmogra@gmail.com" className="text-mocha-700 underline underline-offset-2">
                 labelmochanmogra@gmail.com
               </a>{' '}
@@ -160,7 +161,7 @@ export default function SizeGuide() {
               Write to us with your measurements and the saree you love — we'll guide you personally.
             </p>
             <a
-              href="mailto:labelmochanmogra@gmail.com?subject=Size%20Query%20-%20Mocha%20%26%20Mogra"
+              href="mailto:labelmochanmogra@gmail.com?subject=Size%20Query%20-%20Brown%20Buti"
               className="inline-flex items-center gap-2 font-cinzel text-xs tracking-[0.2em] uppercase bg-mocha-900 text-gold-200 px-8 py-3 hover:bg-mocha-700 transition-colors"
             >
               Write to Us

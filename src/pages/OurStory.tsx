@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { ArrowRight } from 'lucide-react';
+import { BRAND_LOGO, BRAND_NAME } from '../lib/brand';
 
 const fadeUp = {
   hidden: { opacity: 0, y: 30 },
@@ -41,7 +42,7 @@ export default function OurStory() {
       >
         <img
           src="https://res.cloudinary.com/xtrw55ut/image/upload/q_auto,f_auto,w_1600/covermain.webp"
-          alt="Mocha & Mogra atelier"
+          alt={`${BRAND_NAME} atelier`}
           className="w-full h-full object-cover object-center"
           loading="lazy"
         />
@@ -72,7 +73,7 @@ export default function OurStory() {
       <div className="flex justify-center mb-24">
         <div className="flex items-center gap-4">
           <div className="w-16 h-px bg-mocha-300" />
-          <img src="https://res.cloudinary.com/xtrw55ut/image/upload/q_auto,f_auto,w_200/mnmlogo-Photoroom.webp" alt="" className="h-8 w-8 object-contain opacity-40" loading="lazy" />
+          <img src={BRAND_LOGO} alt={`${BRAND_NAME} logo`} className="h-10 w-10 object-contain opacity-80" loading="lazy" />
           <div className="w-16 h-px bg-mocha-300" />
         </div>
       </div>
@@ -119,7 +120,7 @@ export default function OurStory() {
               What if the saree could have a point of view?
             </h3>
             <p className="font-lora text-base text-mocha-600 leading-relaxed mb-6">
-              That was the question behind Mocha & Mogra. I’ve always been a fashion person — an MBA in Marketing by profession, and someone who has always found her creative outlet in styling, experimenting and putting her own spin on things.
+              That was the question behind the label. I’ve always been a fashion person — an MBA in Marketing by profession, and someone who has always found her creative outlet in styling, experimenting and putting her own spin on things.
             </p>
             <p className="font-lora text-base text-mocha-600 leading-relaxed mb-6">
               I discovered my love for the saree after marriage. The elegance was undeniable. But as I wore more of them, I realised I wanted something beyond beautiful. I wanted personality.
@@ -131,7 +132,7 @@ export default function OurStory() {
               At a time when embroidery had moved far beyond occasion wear — onto shirts, jackets, bags and everyday fashion — I started imagining what could happen if we brought that same sense of creativity to the saree. Not another floral border. Not another predictable motif. Something unexpected.
             </p>
             <p className="font-lora text-base text-mocha-600 leading-relaxed mb-10">
-              Patchwork elephants. Seahorses. Details that make a traditional silhouette feel instantly contemporary. That became Mocha & Mogra.
+              Patchwork elephants. Seahorses. Details that make a traditional silhouette feel instantly contemporary. That became the spirit of the collection.
             </p>
           </motion.div>
         </div>
@@ -188,7 +189,7 @@ export default function OurStory() {
         </div>
       </section>
 
-      {/* Why Mocha & Mogra */}
+      {/* The Brand's Next Chapter */}
       <section className="py-24 max-w-5xl mx-auto px-6 lg:px-10 text-center">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -196,27 +197,27 @@ export default function OurStory() {
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
         >
-          <p className="section-label mb-4">The Duality</p>
+          <p className="section-label mb-4">A New Chapter</p>
           <h2 className="font-cinzel text-3xl md:text-4xl tracking-wider text-mocha-900 uppercase mb-10">
-            Why Mocha & Mogra?
+            The Brown Buti Point of View
           </h2>
           <h3 className="font-playfair text-2xl text-mocha-800 mb-8 italic">
-            Because she’s both.
+            The name is new. The point of view remains.
           </h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-12 mb-12">
             <div className="p-8 bg-[#FFFEF7] border border-mocha-200">
-              <h4 className="font-cinzel text-xl text-mocha-900 mb-4">☕ MOCHA</h4>
-              <p className="font-lora text-mocha-600">Ambitious / Playful / Expressive / Contemporary</p>
-              <p className="font-lora text-mocha-500 mt-4 text-sm">Mocha is her modern side — ambitious, expressive, curious and a little rebellious.</p>
+              <h4 className="font-cinzel text-xl text-mocha-900 mb-4">CRAFT</h4>
+              <p className="font-lora text-mocha-600">Artisan-led / Thoughtful / Distinctive</p>
+              <p className="font-lora text-mocha-500 mt-4 text-sm">We bring careful workmanship and expressive motifs to a silhouette women have worn for generations.</p>
             </div>
             <div className="p-8 bg-[#FFFEF7] border border-mocha-200">
-              <h4 className="font-cinzel text-xl text-mocha-900 mb-4">🌼 MOGRA</h4>
-              <p className="font-lora text-mocha-600">Feminine / Classic / Timeless / Elegant</p>
-              <p className="font-lora text-mocha-500 mt-4 text-sm">Mogra is her timeless side — feminine, graceful and unmistakably Indian.</p>
+              <h4 className="font-cinzel text-xl text-mocha-900 mb-4">POINT OF VIEW</h4>
+              <p className="font-lora text-mocha-600">Contemporary / Personal / Story-led</p>
+              <p className="font-lora text-mocha-500 mt-4 text-sm">Each piece is designed to feel individual, easy to make your own, and worth returning to.</p>
             </div>
           </div>
           <p className="font-lora text-lg text-mocha-700 leading-relaxed mb-6">
-            Together, they represent the woman I design for: someone who can love where she comes from without dressing only for where she came from.
+            Brown Buti carries this work into its next chapter: rooted in Indian textile heritage, with room for personal style and new ways to wear it.
           </p>
           <p className="font-lora text-lg text-mocha-700 leading-relaxed font-medium">
             This changes the perception of the saree from occasion wear to lifestyle wear. A saree with tradition in its roots and personality in every detail.
@@ -237,7 +238,7 @@ export default function OurStory() {
               Find your story.
             </h3>
             <p className="font-lora text-sm text-mocha-600 leading-relaxed mb-10">
-              Each Mocha & Mogra saree is waiting for the woman it was made for. Browse the wardrobe and discover which one speaks to you.
+              Each Brown Buti piece is waiting for the woman it was made for. Browse the wardrobe and discover which one speaks to you.
             </p>
             <button
               onClick={() => navigate('/shop')}

@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
+import { BRAND_NAME } from '../lib/brand';
 
 export default function ReturnPolicy() {
   return (
@@ -26,7 +27,7 @@ export default function ReturnPolicy() {
 
           <div className="font-lora text-mocha-600 space-y-6 leading-relaxed">
             <p>
-              At Mocha &amp; Mogra, each piece is crafted with care and intention. We want you to love what you receive. Please read our return and refund policy carefully before placing your order.
+              At {BRAND_NAME}, each piece is crafted with care and intention. We want you to love what you receive. Please read our return and refund policy carefully before placing your order.
             </p>
 
             <h2 className="font-cinzel text-xl text-mocha-900 tracking-wider uppercase mt-8 mb-4">Our Return Window</h2>

@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useCart } from '../context/CartContext';
 import { useCurrency } from '../context/CurrencyContext';
 import { useWishlist } from '../context/WishlistContext';
+import { BRAND_LOGO, BRAND_NAME } from '../lib/brand';
 
 const navLinks = [
   { label: 'Home', path: '/' },
@@ -50,12 +51,12 @@ export default function Navbar({ onSearchOpen }: NavbarProps) {
             {/* Logo */}
             <NavLink to="/" className="flex items-center gap-3">
               <img
-                src="https://res.cloudinary.com/xtrw55ut/image/upload/mnmlogo-Photoroom.webp"
-                alt="Mocha & Mogra"
-                className="h-10 w-10 object-contain"
+                src={BRAND_LOGO}
+                alt={`${BRAND_NAME} logo`}
+                className="h-11 w-11 object-contain"
               />
               <span className="font-playfair text-lg font-bold text-mocha-900 tracking-wide hidden sm:block">
-                Mocha &amp; Mogra
+                {BRAND_NAME}
               </span>
             </NavLink>
 

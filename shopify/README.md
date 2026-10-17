@@ -1,6 +1,6 @@
 # Shopify size-chart snippet
 
-`snippets/mnm-size-chart.liquid` contains the same size-chart modal used by the Mocha & Mogra website.
+`snippets/mnm-size-chart.liquid` contains the size-chart modal prepared for the Brown Buti website. The `mnm` snippet name is retained so existing Shopify theme references do not break during the brand transition.
 
 To publish it in the Shopify theme:
 

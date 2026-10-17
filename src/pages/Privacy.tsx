@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
+import { BRAND_NAME } from '../lib/brand';
 
 export default function Privacy() {
   return (
@@ -22,7 +23,7 @@ export default function Privacy() {
           </h1>
           <div className="font-lora text-mocha-600 space-y-6 leading-relaxed">
             <p>
-              At Mocha & Mogra, we take your privacy seriously. This Privacy Policy outlines how we collect, use, and protect your personal information when you visit our website or make a purchase.
+              At {BRAND_NAME}, we take your privacy seriously. This Privacy Policy outlines how we collect, use, and protect your personal information when you visit our website or make a purchase.
             </p>
             <h2 className="font-cinzel text-xl text-mocha-900 tracking-wider uppercase mt-8 mb-4">Information We Collect</h2>
             <p>

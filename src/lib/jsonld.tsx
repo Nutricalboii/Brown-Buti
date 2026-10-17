@@ -6,8 +6,9 @@
 import { useEffect } from 'react';
 import type { Product } from '../data/products';
 import { CUSTOMER_CARE_EMAIL, WHATSAPP_NUMBER } from './contact';
+import { BRAND_FULL_LOGO, BRAND_NAME } from './brand';
 
-const BRAND = 'Mocha & Mogra';
+const BRAND = BRAND_NAME;
 const BASE_URL = 'https://mocha-and-mogra-website.vercel.app';
 
 /** Inject/update a JSON-LD block by a unique ID */
@@ -38,7 +39,7 @@ export function OrganizationJsonLd() {
     '@type': 'Organization',
     name: BRAND,
     url: BASE_URL,
-    logo: `${BASE_URL}/images/mnmlogo-Photoroom.webp`,
+    logo: `${BASE_URL}${BRAND_FULL_LOGO}`,
     contactPoint: {
       '@type': 'ContactPoint',
       email: CUSTOMER_CARE_EMAIL,

@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { configureAutoplayVideo, playWithAutoplayFallback } from '../lib/video-autoplay';
+import { BRAND_LOGO, BRAND_NAME } from '../lib/brand';
 
 export default function SplashLanding() {
   const [visible, setVisible] = useState(() => {
@@ -13,10 +14,10 @@ export default function SplashLanding() {
   const isDismissing = useRef(false);
 
   const [videosReady, setVideosReady] = useState(0);
-  const leftVidRef = useRef<HTMLVideoElement>(null);
-  const midVidRef = useRef<HTMLVideoElement>(null);
-  const rightVidRef = useRef<HTMLVideoElement>(null);
-  const mobileVidRef = useRef<HTMLVideoElement>(null);
+  const leftVidRef = useRef<HTMLVideoElement | null>(null);
+  const midVidRef = useRef<HTMLVideoElement | null>(null);
+  const rightVidRef = useRef<HTMLVideoElement | null>(null);
+  const mobileVidRef = useRef<HTMLVideoElement | null>(null);
 
   const handleLoaded = (e: React.SyntheticEvent<HTMLVideoElement>) => {
     configureAutoplayVideo(e.currentTarget);
@@ -246,9 +247,9 @@ export default function SplashLanding() {
           {/* Logo */}
           <div className="absolute top-8 left-8 z-10">
             <img
-              src="https://res.cloudinary.com/xtrw55ut/image/upload/mnmlogo-Photoroom.webp"
-              alt="MnM Logo"
-              className="h-10 md:h-12 w-auto invert opacity-90"
+              src={BRAND_LOGO}
+              alt={`${BRAND_NAME} logo`}
+              className="h-16 w-16 rounded-sm object-cover shadow-lg md:h-20 md:w-20"
             />
           </div>
 
