@@ -1,4 +1,8 @@
-# Mocha & Mogra — Full Launch Guide
+# Brown Buti — Launch Reference (Legacy Setup Steps)
+
+> Rebrand note: customer-facing web copy and local logo now use Brown Buti. Existing Shopify host, custom-domain references, email, account IDs, and `mnm` code identifiers remain until the business owner approves replacements and confirms each service is ready. Do not create a new store or rotate credentials for a display-name change.
+>
+> **Important:** The setup checklist below was written for the earlier Mocha & Mogra launch and contains historical setup advice/statuses. The Shopify store, Vercel deployment, payments, policies, and integrations already exist. Do not follow any “create,” “buy,” “connect,” or credential steps below as a new action without first checking the live account and confirming an approved cutover plan. Names such as `mochamogra.myshopify.com` are retained identifiers, not the proposed customer-facing brand.
 
 ---
 
@@ -170,7 +174,7 @@ Shopify handles this natively — it has built-in fraud analysis and bot detecti
 **Payments:** 7–15 days after delivery confirmation
 **Fulfillment:** You ship to customer OR use Myntra's warehouse (FMW)
 
-**Tips for Mocha & Mogra:**
+**Tips for Brown Buti:**
 - Lead with Riwaayat (your bestseller) as hero product
 - Strong lifestyle photography is NON-NEGOTIABLE on Myntra
 - Myntra strongly prefers established/branded sellers — having your own website helps the application
@@ -184,7 +188,7 @@ Shopify handles this natively — it has built-in fraud analysis and bot detecti
 **Eligibility:**
 - GST registration
 - Minimum 5 SKUs
-- Brand story + unique positioning (✅ MnM has this)
+- Brand story + unique positioning (✅ Brown Buti has this)
 
 **Process:**
 1. Go to **seller.nykaafashion.com** → Register as vendor
@@ -197,10 +201,10 @@ Shopify handles this natively — it has built-in fraud analysis and bot detecti
 **Payments:** 15–30 days cycle
 **Fulfillment:** Self-ship (courier to customer) or Nykaa warehouse
 
-**Nykaa Fashion Advantage for MnM:**
+**Nykaa Fashion Advantage for Brown Buti:**
 - Nykaa Fashion actively supports indie/boutique labels
 - Strong customer base of urban women who love premium ethnic wear
-- Good fit with MnM's target audience
+- Good fit with Brown Buti's target audience
 
 ---
 

@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
+import { BRAND_NAME } from '../lib/brand';
 
 export default function ShippingPolicy() {
   return (
@@ -26,7 +27,7 @@ export default function ShippingPolicy() {
 
           <div className="font-lora text-mocha-600 space-y-6 leading-relaxed">
             <p>
-              At Mocha &amp; Mogra, we take great care in packaging and dispatching every order. Each piece is wrapped with love before it reaches you.
+              At {BRAND_NAME}, we take great care in packaging and dispatching every order. Each piece is wrapped with love before it reaches you.
             </p>
 
             <h2 className="font-cinzel text-xl text-mocha-900 tracking-wider uppercase mt-8 mb-4">Processing Time</h2>
@@ -113,7 +114,7 @@ export default function ShippingPolicy() {
 
             <h2 className="font-cinzel text-xl text-mocha-900 tracking-wider uppercase mt-8 mb-4">Packaging</h2>
             <p>
-              Every Mocha &amp; Mogra order is carefully packaged in tissue paper and sealed with our signature label. We use eco-friendly packaging materials wherever possible.
+              Every {BRAND_NAME} order is carefully packaged in tissue paper and sealed with our signature label. We use eco-friendly packaging materials wherever possible.
             </p>
 
             <h2 className="font-cinzel text-xl text-mocha-900 tracking-wider uppercase mt-8 mb-4">Issues with Delivery</h2>

@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { BRAND_NAME } from '../lib/brand';
 
 export default function AgePrivacyPopup({
   isOpen,
@@ -37,7 +38,7 @@ export default function AgePrivacyPopup({
       <div className="absolute inset-0 bg-mocha-900/80 backdrop-blur-sm" />
       <div className="relative bg-[#FFFEF7] max-w-lg w-full p-8 shadow-2xl border border-mocha-200">
         <h2 className="font-cinzel text-xl text-mocha-900 mb-6 text-center tracking-widest uppercase">
-          Welcome to Mocha & Mogra
+          Welcome to {BRAND_NAME}
         </h2>
 
         <div className="space-y-6">

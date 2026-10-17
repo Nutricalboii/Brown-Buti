@@ -134,7 +134,7 @@ export const products: Product[] = [
     personality: ['Heritage', 'Regal', 'Timeless'],
     keywords: ['Silk', 'Elephant Motif', 'Heritage', 'Regal'],
     story:
-      'This one is very close to my heart. The elephant felt like the perfect place to start — deeply Indian, instantly recognisable, but playful enough to become something completely new through our patchwork. And you clearly agreed. Riwayaat is our best-seller. The saree that made people stop, ask questions and discover Mocha & Mogra for the first time.',
+      'This one is very close to my heart. The elephant felt like the perfect place to start — deeply Indian, instantly recognisable, but playful enough to become something completely new through our patchwork. And you clearly agreed. Riwayaat is our best-seller. The saree that made people stop, ask questions and discover the label for the first time.',
     wearFor: 'A little bit of our riwayaat, with a lot of our personality.',
     image: productMedia('riwaayat', 'NGD_2247_Original.webp'),
     images: [productMedia('riwaayat', 'NGD_2247_Original.webp'), productMedia('riwaayat', 'NGD_2325.webp'), productMedia('riwaayat', 'NGD_2225_Original.webp'), productMedia('riwaayat', 'NGD_2200_Original.webp'), productMedia('riwaayat', 'NGD_2229_Original.webp'), productMedia('riwaayat', 'NGD_2282_Original.webp'), productMedia('riwaayat', 'NGD_2358_Original.webp'), productMedia('riwaayat', 'NGD_2181_Original.webp'), productMedia('riwaayat', 'IMG_0995.webp'), productMedia('riwaayat', 'IMG_1023.webp')],

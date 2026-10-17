@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion';
 import { WHATSAPP_NUMBER } from '../lib/contact';
+import { BRAND_NAME } from '../lib/brand';
 
 interface WhatsAppButtonProps {
   /** WhatsApp phone number in international format without + or spaces, e.g. "919876543210" */
@@ -10,7 +11,7 @@ interface WhatsAppButtonProps {
 
 export default function WhatsAppButton({
   phoneNumber = WHATSAPP_NUMBER,
-  message = 'Hello! I\'d like to know more about Mocha & Mogra.',
+  message = `Hello! I'd like to know more about ${BRAND_NAME}.`,
 }: WhatsAppButtonProps) {
   const encodedMessage = encodeURIComponent(message);
   const href = `https://wa.me/${phoneNumber}?text=${encodedMessage}`;

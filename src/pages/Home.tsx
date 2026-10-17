@@ -8,6 +8,7 @@ import { supabase } from '../lib/supabase';
 import { useCurrency } from '../context/CurrencyContext';
 import { getResponsiveProductImageSrcSet } from '../lib/responsive-product-image';
 import { configureAutoplayVideo, playWithAutoplayFallback } from '../lib/video-autoplay';
+import { BRAND_NAME } from '../lib/brand';
 
 interface TeaserVideoProps {
   webmSrc: string;
@@ -312,7 +313,7 @@ export default function Home() {
                 <em>Designed for Today.</em>
               </h2>
               <p className="font-lora text-base text-mocha-600 leading-relaxed mb-6">
-                Mocha & Mogra is a contemporary premium saree label that celebrates storytelling through design. Every saree is crafted in premium silk and brought to life with artisan-led machine embroidery.
+                {BRAND_NAME} is a contemporary premium saree label that celebrates storytelling through design. Every saree is crafted in premium silk and brought to life with artisan-led machine embroidery.
               </p>
               <p className="font-lora text-base text-mocha-600 leading-relaxed mb-10">
                 We aren&apos;t creating seasonal collections. We are creating stories women can wear.
@@ -424,7 +425,7 @@ export default function Home() {
             <blockquote className="font-playfair text-2xl md:text-3xl lg:text-4xl italic text-mocha-800 leading-relaxed mb-10">
               "Luxury, for me, has never been about loud logos. It is about thoughtful design. Beautiful craftsmanship."
             </blockquote>
-            <p className="section-label">— Founder, Mocha & Mogra</p>
+            <p className="section-label">— Founder, {BRAND_NAME}</p>
             <div className="w-px h-16 bg-mocha-300 mx-auto mt-10" />
           </motion.div>
         </div>

@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { Mail, Clock, MapPin, Send, CheckCircle, AlertCircle, MessageCircle } from 'lucide-react';
 import { z } from 'zod';
 import { CUSTOMER_CARE_EMAIL, WHATSAPP_DISPLAY_NUMBER, WHATSAPP_URL } from '../lib/contact';
+import { BRAND_NAME } from '../lib/brand';
 
 const fadeUp = {
   hidden: { opacity: 0, y: 24 },
@@ -346,7 +347,7 @@ export default function Contact() {
           <div key={i} className="overflow-hidden bg-mocha-100 flex aspect-[4/3] md:aspect-[16/9]">
             <img
               src={src}
-              alt="Mocha & Mogra saree"
+              alt={`${BRAND_NAME} saree`}
               className={`w-full h-full object-cover opacity-80 ${i < 2 ? 'object-bottom' : 'object-center'}`}
               loading="lazy"
             />

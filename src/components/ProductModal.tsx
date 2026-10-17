@@ -17,6 +17,7 @@ import ImageCarousel from './ImageCarousel';
 import { useCurrency } from '../context/CurrencyContext';
 import { SizeChartModal } from './SizeChart';
 import { CUSTOMER_CARE_EMAIL, WHATSAPP_DISPLAY_NUMBER, WHATSAPP_NUMBER } from '../lib/contact';
+import { BRAND_NAME } from '../lib/brand';
 
 interface ProductModalProps {
   product: Product | null;
@@ -26,11 +27,11 @@ interface ProductModalProps {
 
 const DELIVERY_RETURN = [
   'Shipping: It takes about 10-12 working days for domestic orders and 12-15 working days for international orders to be shipped from our end.',
-  'Return: As a company policy, we do not provide a refund/return on any product once sold. Once the Mocha & Mogra pieces are sold they can be exchanged either with a different product or the replacement in a bigger or smaller size, for the same product (provided the aforementioned terms and conditions are met).',
+  `Return: As a company policy, we do not provide a refund/return on any product once sold. Once the ${BRAND_NAME} pieces are sold they can be exchanged either with a different product or the replacement in a bigger or smaller size, for the same product (provided the aforementioned terms and conditions are met).`,
   'We issue a credit note for our customers, only when the desired size of the product is not in stock. If the product is eligible for size exchange, you may write to us at labelmochanmogra@gmail.com strictly within 48 hours of delivery to request an exchange.',
 ];
 
-const MNM_CONTACTS = {
+const BRAND_CONTACTS = {
   whatsapp: WHATSAPP_NUMBER,
   phone: WHATSAPP_NUMBER,
   email: CUSTOMER_CARE_EMAIL,
@@ -359,9 +360,9 @@ function CustomizeOrderModal({ open, onClose }: { open: boolean; onClose: () => 
             <div>
               <p className="font-lora text-base leading-relaxed text-mocha-700 mb-6">Reach us on your preferred channel with your size &amp; customisation details — we reply within 24 hours.</p>
               <div className="space-y-3">
-                <ContactOption icon={<MessageCircle size={22} />} iconClass="bg-emerald-100 text-emerald-700" label="WhatsApp" value={WHATSAPP_DISPLAY_NUMBER} href={`https://wa.me/${MNM_CONTACTS.whatsapp}`} />
-                <ContactOption icon={<Phone size={22} />} iconClass="bg-indigo-100 text-indigo-700" label="Call Us" value={`${WHATSAPP_DISPLAY_NUMBER} · Mon–Fri, 9am–5pm IST`} href={`tel:+${MNM_CONTACTS.phone}`} />
-                <ContactOption icon={<Mail size={22} />} iconClass="bg-red-100 text-red-700" label="Email" value={MNM_CONTACTS.email} href={`mailto:${MNM_CONTACTS.email}`} />
+                <ContactOption icon={<MessageCircle size={22} />} iconClass="bg-emerald-100 text-emerald-700" label="WhatsApp" value={WHATSAPP_DISPLAY_NUMBER} href={`https://wa.me/${BRAND_CONTACTS.whatsapp}`} />
+                <ContactOption icon={<Phone size={22} />} iconClass="bg-indigo-100 text-indigo-700" label="Call Us" value={`${WHATSAPP_DISPLAY_NUMBER} · Mon–Fri, 9am–5pm IST`} href={`tel:+${BRAND_CONTACTS.phone}`} />
+                <ContactOption icon={<Mail size={22} />} iconClass="bg-red-100 text-red-700" label="Email" value={BRAND_CONTACTS.email} href={`mailto:${BRAND_CONTACTS.email}`} />
               </div>
             </div>
           ) : (
@@ -377,7 +378,7 @@ function CustomizeOrderModal({ open, onClose }: { open: boolean; onClose: () => 
                 <FormField label="Hip (cm)" name="hip" inputMode="decimal" placeholder="e.g. 96" />
               </div>
               <button type="submit" className="w-full btn-primary-filled justify-center py-3.5 mt-2"><Send size={15} strokeWidth={1.5} /> Submit Details</button>
-              {submitted && <p className="font-lora text-sm leading-relaxed text-forest-600" role="status">Details saved for this session. Please email them to {MNM_CONTACTS.email} so the team can reply within 24 hours.</p>}
+              {submitted && <p className="font-lora text-sm leading-relaxed text-forest-600" role="status">Details saved for this session. Please email them to {BRAND_CONTACTS.email} so the team can reply within 24 hours.</p>}
             </form>
           )}
         </div>
