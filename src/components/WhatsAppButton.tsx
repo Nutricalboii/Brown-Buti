@@ -1,4 +1,5 @@
 import { motion } from 'framer-motion';
+import { WHATSAPP_NUMBER } from '../lib/contact';
 
 interface WhatsAppButtonProps {
   /** WhatsApp phone number in international format without + or spaces, e.g. "919876543210" */
@@ -8,7 +9,7 @@ interface WhatsAppButtonProps {
 }
 
 export default function WhatsAppButton({
-  phoneNumber = '919876543210',
+  phoneNumber = WHATSAPP_NUMBER,
   message = 'Hello! I\'d like to know more about Mocha & Mogra.',
 }: WhatsAppButtonProps) {
   const encodedMessage = encodeURIComponent(message);

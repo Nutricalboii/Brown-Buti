@@ -5,6 +5,7 @@
  */
 import { useEffect } from 'react';
 import type { Product } from '../data/products';
+import { CUSTOMER_CARE_EMAIL, WHATSAPP_NUMBER } from './contact';
 
 const BRAND = 'Mocha & Mogra';
 const BASE_URL = 'https://mocha-and-mogra-website.vercel.app';
@@ -40,7 +41,8 @@ export function OrganizationJsonLd() {
     logo: `${BASE_URL}/images/mnmlogo-Photoroom.webp`,
     contactPoint: {
       '@type': 'ContactPoint',
-      email: 'labelmochanmogra@gmail.com',
+      email: CUSTOMER_CARE_EMAIL,
+      telephone: `+${WHATSAPP_NUMBER}`,
       contactType: 'customer service',
     },
     sameAs: ['https://www.instagram.com/mocha.n.mogra/'],

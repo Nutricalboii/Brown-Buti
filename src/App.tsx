@@ -29,6 +29,7 @@ const WishlistPage = lazy(() => import('./pages/Wishlist'));
 
 import type { Product } from './data/products';
 import { trackPageView } from './lib/analytics';
+import { WHATSAPP_NUMBER } from './lib/contact';
 
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -85,7 +86,7 @@ function Layout() {
         </Suspense>
       </main>
       {!isCheckoutFlow && <Footer />}
-      {!isCheckoutFlow && <WhatsAppButton phoneNumber="919999999999" />}
+      {!isCheckoutFlow && <WhatsAppButton phoneNumber={WHATSAPP_NUMBER} />}
 
 
       {/* Global Search Overlay */}

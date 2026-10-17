@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Mail, Clock, MapPin, Send, CheckCircle, AlertCircle } from 'lucide-react';
+import { Mail, Clock, MapPin, Send, CheckCircle, AlertCircle, MessageCircle } from 'lucide-react';
 import { z } from 'zod';
+import { CUSTOMER_CARE_EMAIL, WHATSAPP_DISPLAY_NUMBER, WHATSAPP_URL } from '../lib/contact';
 
 const fadeUp = {
   hidden: { opacity: 0, y: 24 },
@@ -255,10 +256,25 @@ export default function Contact() {
                     <div>
                       <p className="font-lora text-sm text-mocha-800 mb-1">Email Us</p>
                       <a
-                        href="mailto:labelmochanmogra@gmail.com"
+                        href={`mailto:${CUSTOMER_CARE_EMAIL}`}
                         className="font-lora text-sm text-mocha-500 hover:text-mocha-800 transition-colors"
                       >
-                        labelmochanmogra@gmail.com
+                        {CUSTOMER_CARE_EMAIL}
+                      </a>
+                    </div>
+                  </div>
+
+                  <div className="flex gap-4">
+                    <MessageCircle size={18} className="text-gold-600 flex-shrink-0 mt-0.5" strokeWidth={1.5} />
+                    <div>
+                      <p className="font-lora text-sm text-mocha-800 mb-1">WhatsApp</p>
+                      <a
+                        href={WHATSAPP_URL}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="font-lora text-sm text-mocha-500 hover:text-mocha-800 transition-colors"
+                      >
+                        {WHATSAPP_DISPLAY_NUMBER}
                       </a>
                     </div>
                   </div>

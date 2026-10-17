@@ -16,6 +16,7 @@ import { createDirectShopifyCheckout } from '../lib/shopify';
 import ImageCarousel from './ImageCarousel';
 import { useCurrency } from '../context/CurrencyContext';
 import { SizeChartModal } from './SizeChart';
+import { CUSTOMER_CARE_EMAIL, WHATSAPP_DISPLAY_NUMBER, WHATSAPP_NUMBER } from '../lib/contact';
 
 interface ProductModalProps {
   product: Product | null;
@@ -29,11 +30,10 @@ const DELIVERY_RETURN = [
   'We issue a credit note for our customers, only when the desired size of the product is not in stock. If the product is eligible for size exchange, you may write to us at labelmochanmogra@gmail.com strictly within 48 hours of delivery to request an exchange.',
 ];
 
-// These are deliberately left blank until the final M&M contact details are confirmed.
 const MNM_CONTACTS = {
-  whatsapp: '',
-  phone: '',
-  email: 'labelmochanmogra@gmail.com',
+  whatsapp: WHATSAPP_NUMBER,
+  phone: WHATSAPP_NUMBER,
+  email: CUSTOMER_CARE_EMAIL,
 };
 
 const overlayVariants = {
@@ -359,8 +359,8 @@ function CustomizeOrderModal({ open, onClose }: { open: boolean; onClose: () => 
             <div>
               <p className="font-lora text-base leading-relaxed text-mocha-700 mb-6">Reach us on your preferred channel with your size &amp; customisation details — we reply within 24 hours.</p>
               <div className="space-y-3">
-                <ContactOption icon={<MessageCircle size={22} />} iconClass="bg-emerald-100 text-emerald-700" label="WhatsApp" value={MNM_CONTACTS.whatsapp ? `+${MNM_CONTACTS.whatsapp}` : 'Number to be confirmed'} href={MNM_CONTACTS.whatsapp ? `https://wa.me/${MNM_CONTACTS.whatsapp}` : undefined} />
-                <ContactOption icon={<Phone size={22} />} iconClass="bg-indigo-100 text-indigo-700" label="Call Us" value={MNM_CONTACTS.phone ? `+${MNM_CONTACTS.phone} · Mon–Fri, 9am–5pm IST` : 'Phone number to be confirmed'} href={MNM_CONTACTS.phone ? `tel:+${MNM_CONTACTS.phone}` : undefined} />
+                <ContactOption icon={<MessageCircle size={22} />} iconClass="bg-emerald-100 text-emerald-700" label="WhatsApp" value={WHATSAPP_DISPLAY_NUMBER} href={`https://wa.me/${MNM_CONTACTS.whatsapp}`} />
+                <ContactOption icon={<Phone size={22} />} iconClass="bg-indigo-100 text-indigo-700" label="Call Us" value={`${WHATSAPP_DISPLAY_NUMBER} · Mon–Fri, 9am–5pm IST`} href={`tel:+${MNM_CONTACTS.phone}`} />
                 <ContactOption icon={<Mail size={22} />} iconClass="bg-red-100 text-red-700" label="Email" value={MNM_CONTACTS.email} href={`mailto:${MNM_CONTACTS.email}`} />
               </div>
             </div>
