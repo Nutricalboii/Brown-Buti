@@ -2,7 +2,7 @@
 
 > Rebrand note: customer-facing web copy and local logo now use Brown Buti. Existing Shopify host, custom-domain references, email, account IDs, and `mnm` code identifiers remain until the business owner approves replacements and confirms each service is ready. Do not create a new store or rotate credentials for a display-name change.
 >
-> **Important:** The setup checklist below was written for the earlier Mocha & Mogra launch and contains historical setup advice/statuses. The Shopify store, Vercel deployment, payments, policies, and integrations already exist. Do not follow any “create,” “buy,” “connect,” or credential steps below as a new action without first checking the live account and confirming an approved cutover plan. Names such as `mochamogra.myshopify.com` are retained identifiers, not the proposed customer-facing brand.
+> **Historical guide — not an active runbook.** This setup checklist was written for the former Mocha & Mogra launch and contains stale advice/statuses. Brown Buti is the current customer-facing brand. The Shopify store, Vercel deployment, payments, policies, and integrations already exist. Do not follow any “create,” “buy,” “connect,” or credential steps below as a new action without checking the live account and an approved cutover plan. Names such as `mochamogra.myshopify.com` and `mochamogra.com` are retained legacy identifiers, not a statement that those names should be used for new branding.
 
 ---
 

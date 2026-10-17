@@ -6,6 +6,7 @@ import { useCart } from '../context/CartContext';
 import { useCurrency } from '../context/CurrencyContext';
 import { useWishlist } from '../context/WishlistContext';
 import { BRAND_LOGO, BRAND_NAME } from '../lib/brand';
+import { CUSTOMER_CARE_EMAIL } from '../lib/contact';
 
 const navLinks = [
   { label: 'Home', path: '/' },
@@ -193,7 +194,7 @@ export default function Navbar({ onSearchOpen }: NavbarProps) {
               </button>
             </div>
             <div className="mt-8 border-t border-mocha-100 pt-8 text-mocha-500 font-lora text-sm">
-              labelmochanmogra@gmail.com
+              {CUSTOMER_CARE_EMAIL}
             </div>
           </motion.div>
         )}

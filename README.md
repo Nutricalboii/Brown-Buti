@@ -23,7 +23,7 @@
 
 ## Executive Overview & Brand Philosophy
 
-**Brown Buti** is a contemporary luxury saree brand celebrating artisan-crafted silk, bespoke motif design, and heritage storytelling. The web application is engineered to evoke the experience of a high-end fashion atelier, combining warm cream and mocha color palettes (`#FAF7F2`, `#FFFEF7`, `#1E140A`), dynamic silk video loops, elegant typography (`Cinzel`, `Playfair Display`, `Lora`), and zero-friction purchase flows. Existing Mocha & Mogra domain, contact mailbox, Shopify identifiers, and service configuration are intentionally retained until approved replacements are ready.
+**Brown Buti** is a contemporary luxury saree brand celebrating artisan-crafted silk, bespoke motif design, and heritage storytelling. The web application is engineered to evoke the experience of a high-end fashion atelier, combining warm cream and mocha color palettes (`#FAF7F2`, `#FFFEF7`, `#1E140A`), dynamic silk video loops, elegant typography (`Cinzel`, `Playfair Display`, `Lora`), and zero-friction purchase flows. Legacy Mocha & Mogra domain, contact mailbox, Shopify identifiers, and service configuration are intentionally retained until approved replacements are ready.
 
 ### Technical Architecture Highlights
 - **Headless Commerce Stack**: React 18 SPA built with Vite and TypeScript, paired with Shopify as a headless backend for inventory, order processing, and tax compliance.
@@ -184,7 +184,7 @@ graph TD
 ## Complete Codebase Walkthrough & File Inventory
 
 ```
-Mocha_And_Mogra_Website/
+Brown-Buti/
 ├── .env.example                 # Environment variables template
 ├── .github/
 │   └── workflows/
@@ -285,8 +285,8 @@ Mocha_And_Mogra_Website/
 ### 1. Installation
 
 ```bash
-git clone https://github.com/Nutricalboii/Mocha_And_Mogra_Website.git
-cd Mocha_And_Mogra_Website
+git clone https://github.com/Nutricalboii/Brown-Buti.git
+cd Brown-Buti
 npm install
 ```
 
@@ -342,21 +342,20 @@ Newsletter subscriptions submitted in `Footer.tsx` trigger the Supabase Edge Fun
 
 ---
 
-## Comprehensive Launch Audit: What is Done vs. What is Left
+## Launch readiness: source status vs. owner-side verification
+
+This is a code repository, not proof that external services are configured. The table below separates locally verifiable implementation from account settings that must be checked by the owner. Do not use old launch steps in archived documents as current instructions.
 
 | Component / Subsystem | Status | Details / Description | Action Required for Production |
 |---|---|---|---|
-| **Frontend UI & Styling** | 100% Complete | Bespoke luxury aesthetic, warm cream/mocha palette, silk video loops, custom typography. | None. Fully verified. |
-| **Catalog & Product Modal** | 100% Complete | Arch carousels, motif filters, story drawers, 1-click Buy Now. | Optional: Replace Cloudinary demo URLs with brand CDN if needed. |
-| **State Management** | 100% Complete | Cart, Wishlist, and Currency Contexts with localStorage persistence. | None. Fully verified. |
-| **Modular Barrel Architecture** | 100% Complete | Clean `index.ts` barrel exports for components, contexts, and pages. | None. Fully verified. |
-| **Shopify Integration** | 100% Complete | Permalink checkout redirect helper & fallback mechanism implemented. | **Add real Shopify numeric Variant IDs** in `src/data/products.ts` for 1-click line item cart loading. |
-| **Shopify Admin Setup** | Pending Client Action | Shopify store created (`1fieuf-bz.myshopify.com`). | **Disable password protection** in Shopify Admin -> Preferences, and **enable payment gateway** (Razorpay / Stripe). |
-| **Custom Domain Setup** | Pending Client Action | Code ready for custom domain deployment. | Purchase domain (e.g. `mochanmogra.com`) and configure DNS records in Vercel & Shopify. |
-| **Supabase Edge Function** | 100% Complete | Deno function & GitHub Action workflow deployed. | Set Supabase secrets (`MAILCHIMP_API_KEY`, `MAILCHIMP_LIST_ID`, `MAILCHIMP_DC`) via CLI or dashboard. |
-| **SEO & Structured Data** | 100% Complete | Dynamic JSON-LD injection (Product, Org, ItemList, Breadcrumbs). | Replace `BASE_URL` in `src/lib/jsonld.tsx` with official production domain once live. |
-| **Analytics Engine** | 100% Complete | Dual GA4 & Meta Pixel tracking setup with safety guards. | Add production `VITE_GA4_MEASUREMENT_ID` and `VITE_META_PIXEL_ID` in Vercel environment settings. |
-| **GitHub Deployment** | 100% Complete | PR submitted on upstream repository. | **Merge PR** on GitHub to trigger automatic Vercel production deployment. |
+| **Frontend / catalog** | Present in source | Brown Buti identity, product catalog and responsive storefront are implemented in this repository. | Validate the deployed build and product content in the owner-approved preview. |
+| **Build / tests** | Locally verifiable | Run `npm run build`, `npm run typecheck`, `npm test`, and `npm run lint`. | Re-run on the exact commit intended for release; address any new failures. |
+| **Shopify checkout** | Integration code present; account state unverified here | Storefront hands checkout to Shopify; checkout and payment-provider setup are Shopify-side. | Owner should verify current products, variants, payment provider, checkout and order emails in Shopify Admin. Do not recreate the store or replace IDs. |
+| **Shopify public brand settings** | Not changed by this source update | Store name/logo, vendor values, theme, notification templates and customer-care details are external settings. | Apply Brown Buti public display branding after owner review. Keep store domain, product/variant IDs, inventory and orders. |
+| **Domains / Vercel** | Existing project aliases preserved | The live Vercel URL remains the canonical host for current source metadata; old custom-domain records are not assumed active. | Verify production project, connected repository, domains and redirects in Vercel before changing aliases or DNS. |
+| **Supabase / newsletter** | Integration code present; hosted deployment unverified | Local Supabase CLI slug is `brown-buti`; hosted project reference, URLs and secrets are unchanged. | Verify the deployed function, secrets and allowed origins in the existing project. |
+| **SEO / social** | Brand copy and sitemap updated locally | JSON-LD and page metadata identify Brown Buti; sitemap lists the verified Vercel host. Existing social handle remains unchanged. | Submit/inspect the sitemap and review social cards after deployment; change the social profile only after a replacement handle is approved. |
+| **GitHub** | Repository renamed | Current repository: `Nutricalboii/Brown-Buti`; history and service integrations are retained. | Verify branch protection and deployment triggers from GitHub settings as needed. |
 
 ---
 

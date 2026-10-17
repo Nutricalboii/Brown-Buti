@@ -3,6 +3,8 @@
 > **Brown Buti E-Commerce Platform**
 > *Technical Reference & Systems Architectural Manual*
 
+> **Status:** This document includes an archived launch checklist written for the former Mocha & Mogra repository. Current code lives at [Nutricalboii/Brown-Buti](https://github.com/Nutricalboii/Brown-Buti). Treat historic PR/domain/payment setup steps as stale; verify current production settings before acting. Keep existing service IDs, secrets, seller/legal identity, checkout, and domains until replacements are explicitly approved and verified.
+
 ---
 
 ## 📖 Table of Contents
@@ -256,21 +258,21 @@ Configures universal single-page application route rewrites so deep page links (
 - [x] **Analytics Integration Layer**: Dual event dispatchers for GA4 and Meta Pixel initialized with safety window checks.
 - [x] **Serverless Newsletter Subsystem**: Deno Edge Function script created and configured for Supabase & Mailchimp API integration.
 - [x] **Production Build Verification**: Clean compilation (`vite build`) with zero TypeScript errors (`tsc --noEmit`).
-- [x] **Pull Request #7**: PR #7 submitted on upstream repository (`Anushka130126/Mocha_And_Mogra_Website`) incorporating all recent checkout and Shopify updates.
+- [Historical] **Pull Request #7**: This launch checklist is an archived snapshot from the former repository/ownership setup. Do not treat its PR, deployment, payment, or domain actions below as current instructions. Current repository: `Nutricalboii/Brown-Buti`.
 
 ---
 
-### 3.2 Outstanding Tasks for Production Launch (Action Plan)
+### 3.2 Current release checks (external account state not verified)
+
+The former launch action list below has been replaced. The local source is not evidence that Shopify, Vercel, Supabase, payment, DNS, or email settings are ready. Verify settings in the existing owner accounts; do not recreate services or follow obsolete payment/domain instructions.
 
 | Task Description | Responsible Party | Action Instructions | Priority |
 |---|---|---|---|
-| **1. Merge Pull Request #7** | Repository Owner / Lead Dev | Open **[PR #7 on GitHub](https://github.com/Anushka130126/Mocha_And_Mogra_Website/pull/7)** and click **"Merge pull request"**. This will trigger automatic Vercel deployment. | **High (Immediate)** |
-| **2. Disable Shopify Store Password** | Store Administrator | Log into Shopify Admin (`1fieuf-bz.myshopify.com`) -> **Online Store** -> **Preferences** -> **Password Protection**. Uncheck *"Restrict access to visitors with the password"* and click **Save**. | **High (Immediate)** |
-| **3. Activate Shopify Payment Gateway** | Store Administrator | Go to Shopify Admin -> **Settings** -> **Payments**. Activate **Razorpay**, **Shopify Payments**, or **Stripe** to process Indian UPI/Cards & international payments. | **High (Pre-Launch)** |
-| **4. Configure Custom Domain DNS** | Store Administrator | Purchase domain (e.g. `mochanmogra.com`). In Vercel Project Settings, add domain `mochanmogra.com` and update DNS CNAME / A records in registrar dashboard. | **Medium** |
-| **5. Add Real Shopify Numeric Variant IDs** | Developer / Catalog Manager | Update `src/data/products.ts` with real numeric Shopify Variant IDs (e.g. `id: 4589230192`) matching products created in Shopify Admin. | **Medium** |
-| **6. Set Supabase Edge Function Secrets** | Developer | Set Deno secrets in Supabase CLI or dashboard: `MAILCHIMP_API_KEY`, `MAILCHIMP_LIST_ID`, `MAILCHIMP_DC`. | **Low** |
-| **7. Add Live Analytics Tracking IDs** | Developer / Store Owner | Set `VITE_GA4_MEASUREMENT_ID` and `VITE_META_PIXEL_ID` environment variables in Vercel project environment settings. | **Low** |
+| **Shopify** | Owner | Verify current product/variant data, checkout handoff, payment provider, order email and inventory in the existing admin. Preserve IDs, orders and payment configuration. | Before release |
+| **Vercel** | Owner / developer | Verify production project, connected Brown-Buti repository, branch, deployment, environment values and existing aliases. Do not rename project slugs or domains as part of this source-only change. | Before release |
+| **Supabase / newsletter** | Owner / developer | Verify existing hosted project, deployed function, secret availability and production CORS origins. Local CLI slug is now `brown-buti`; no hosted project was recreated. | Before release |
+| **Contact and legal** | Owner | Existing mailbox and legal seller details remain. Replace only after new inbox forwarding and legal/business review are ready. | Before public cutover |
+| **SEO / social** | Developer / owner | Sitemap now uses the verified Vercel host; verify page metadata/social previews after deployment and update social profiles only after the new handle is approved. | After deployment |
 
 ---
 

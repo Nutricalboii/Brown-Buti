@@ -2,7 +2,7 @@
 # https://supabase.com/docs/guides/local-development/cli/config
 # A string used to distinguish different Supabase projects on the same host. Defaults to the
 # working directory name when running `supabase init`.
-project_id = "Mocha_And_Mogra_Website"
+project_id = "brown-buti"
 
 [api]
 enabled = true

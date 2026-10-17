@@ -3,6 +3,7 @@ import { NavLink, Link } from 'react-router-dom';
 import { Instagram, Mail, ArrowRight } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { BRAND_LOGO, BRAND_NAME } from '../lib/brand';
+import { CUSTOMER_CARE_EMAIL } from '../lib/contact';
 
 export default function Footer() {
   const [email, setEmail] = useState('');
@@ -59,7 +60,7 @@ export default function Footer() {
             </p>
             <div className="flex gap-4 mt-6">
               <a
-                href="mailto:labelmochanmogra@gmail.com"
+                href={`mailto:${CUSTOMER_CARE_EMAIL}`}
                 aria-label="Email"
                 className="text-mocha-400 hover:text-gold-300 transition-colors"
               >
