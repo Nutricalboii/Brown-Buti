@@ -2,6 +2,7 @@ import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
 import { BRAND_NAME } from '../lib/brand';
+import { CUSTOMER_CARE_EMAIL } from '../lib/contact';
 
 export default function Privacy() {
   return (
@@ -39,7 +40,7 @@ export default function Privacy() {
             </p>
             <h2 className="font-cinzel text-xl text-mocha-900 tracking-wider uppercase mt-8 mb-4">Contact Us</h2>
             <p>
-              If you have any questions about this Privacy Policy, please contact us at <a href="mailto:labelmochanmogra@gmail.com" className="text-gold-600 hover:underline">labelmochanmogra@gmail.com</a>.
+              If you have any questions about this Privacy Policy, please contact us at <a href={`mailto:${CUSTOMER_CARE_EMAIL}`} className="text-gold-600 hover:underline">{CUSTOMER_CARE_EMAIL}</a>.
             </p>
           </div>
         </motion.div>

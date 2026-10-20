@@ -2,6 +2,7 @@ import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
 import { BRAND_NAME } from '../lib/brand';
+import { CUSTOMER_CARE_EMAIL } from '../lib/contact';
 
 export default function ShippingPolicy() {
   return (
@@ -120,8 +121,8 @@ export default function ShippingPolicy() {
             <h2 className="font-cinzel text-xl text-mocha-900 tracking-wider uppercase mt-8 mb-4">Issues with Delivery</h2>
             <p>
               If your order is significantly delayed, lost in transit, or arrives damaged, please contact us immediately at{' '}
-              <a href="mailto:labelmochanmogra@gmail.com" className="text-mocha-700 underline underline-offset-2">
-                labelmochanmogra@gmail.com
+              <a href={`mailto:${CUSTOMER_CARE_EMAIL}`} className="text-mocha-700 underline underline-offset-2">
+                {CUSTOMER_CARE_EMAIL}
               </a>{' '}
               with your order number and we will resolve it promptly.
             </p>
@@ -130,8 +131,8 @@ export default function ShippingPolicy() {
             <p>
               For shipping-related queries:<br />
               <strong>Email:</strong>{' '}
-              <a href="mailto:labelmochanmogra@gmail.com" className="text-mocha-700 underline underline-offset-2">
-                labelmochanmogra@gmail.com
+              <a href={`mailto:${CUSTOMER_CARE_EMAIL}`} className="text-mocha-700 underline underline-offset-2">
+                {CUSTOMER_CARE_EMAIL}
               </a>
             </p>
           </div>

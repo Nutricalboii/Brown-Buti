@@ -2,6 +2,7 @@ import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
 import { BRAND_NAME } from '../lib/brand';
+import { CUSTOMER_CARE_EMAIL } from '../lib/contact';
 
 export default function ReturnPolicy() {
   return (
@@ -33,8 +34,8 @@ export default function ReturnPolicy() {
             <h2 className="font-cinzel text-xl text-mocha-900 tracking-wider uppercase mt-8 mb-4">Our Return Window</h2>
             <p>
               We accept return requests within <strong>7 days</strong> of delivery for eligible items. To initiate a return, please contact us at{' '}
-              <a href="mailto:labelmochanmogra@gmail.com" className="text-mocha-700 underline underline-offset-2">
-                labelmochanmogra@gmail.com
+              <a href={`mailto:${CUSTOMER_CARE_EMAIL}`} className="text-mocha-700 underline underline-offset-2">
+                {CUSTOMER_CARE_EMAIL}
               </a>{' '}
               within this window.
             </p>
@@ -75,7 +76,7 @@ export default function ReturnPolicy() {
 
             <h2 className="font-cinzel text-xl text-mocha-900 tracking-wider uppercase mt-8 mb-4">How to Initiate a Return</h2>
             <ol className="list-decimal list-outside ml-5 space-y-2">
-              <li>Email us at <a href="mailto:labelmochanmogra@gmail.com" className="text-mocha-700 underline underline-offset-2">labelmochanmogra@gmail.com</a> with your order number, reason for return, and photos if applicable.</li>
+              <li>Email us at <a href={`mailto:${CUSTOMER_CARE_EMAIL}`} className="text-mocha-700 underline underline-offset-2">{CUSTOMER_CARE_EMAIL}</a> with your order number, reason for return, and photos if applicable.</li>
               <li>Our team will respond within 1–2 business days with return instructions.</li>
               <li>Pack the item securely and ship it to the address provided.</li>
               <li>Once received and approved, your refund or exchange will be processed.</li>
@@ -85,8 +86,8 @@ export default function ReturnPolicy() {
             <p>
               For any questions about returns or refunds, please reach out to us:<br />
               <strong>Email:</strong>{' '}
-              <a href="mailto:labelmochanmogra@gmail.com" className="text-mocha-700 underline underline-offset-2">
-                labelmochanmogra@gmail.com
+              <a href={`mailto:${CUSTOMER_CARE_EMAIL}`} className="text-mocha-700 underline underline-offset-2">
+                {CUSTOMER_CARE_EMAIL}
               </a>
             </p>
           </div>
