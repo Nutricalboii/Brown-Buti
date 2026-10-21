@@ -8,14 +8,21 @@ const chandi = {
   shopifyVariantIds: shopifySizeVariantIds.chandi,
 };
 
+const chandini = {
+  name: 'Chandini',
+  sizes: ['S', 'M', 'L', 'XL', 'XXL'],
+  shopifyVariantIds: shopifySizeVariantIds.chandini,
+};
+
 const tamara = {
   name: 'Tamara — Copper',
   sizes: ['XS', 'S', 'M', 'L', 'XL', 'XXL'],
   shopifyVariantIds: shopifySizeVariantIds.tamara,
 };
 
-test('uses the exact Shopify variant for every Chandi and Tamara size', () => {
+test('uses the exact Shopify variant for every Chandini, Chandi, and Tamara size', () => {
   for (const [product, expectedIds] of [
+    [chandini, ['67450973094137', '67450973126905', '67450973159673', '67450973192441', '67450973225209']],
     [chandi, ['67365796544761', '67365796577529', '67365796610297', '67365796643065', '67365796675833', '67365796708601']],
     [tamara, ['67365833998585', '67365834031353', '67365834064121', '67365834096889', '67365834129657', '67365834162425']],
   ]) {
@@ -28,6 +35,7 @@ test('uses the exact Shopify variant for every Chandi and Tamara size', () => {
 test('requires a valid selected size when product-specific variants exist', () => {
   assert.throws(() => resolveShopifyVariantId(chandi), /Choose a size/);
   assert.throws(() => resolveShopifyVariantId(chandi, '3XL'), /Choose a size/);
+  assert.throws(() => resolveShopifyVariantId(chandini, '3XL'), /Choose a size/);
 });
 
 test('blocks checkout for multi-size products without Shopify size variants', () => {
