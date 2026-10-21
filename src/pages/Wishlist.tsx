@@ -108,12 +108,18 @@ export default function Wishlist() {
                       </span>
                       <button
                         id={`wishlist-add-to-cart-${product.id}`}
-                        onClick={() => addItem(product)}
-                        aria-label={`Add ${product.name} to cart`}
+                        onClick={() => {
+                          if (product.sizes && product.sizes.length > 1) {
+                            window.location.href = `/shop?product=${product.id}`;
+                            return;
+                          }
+                          addItem(product, product.sizes?.[0]);
+                        }}
+                        aria-label={product.sizes && product.sizes.length > 1 ? `Choose a size for ${product.name}` : `Add ${product.name} to cart`}
                         className="flex items-center gap-1.5 font-cinzel text-xs tracking-widest uppercase text-mocha-600 hover:text-mocha-900 transition-colors"
                       >
                         <ShoppingBag size={14} />
-                        Add to Bag
+                        {product.sizes && product.sizes.length > 1 ? 'Choose Size' : 'Add to Bag'}
                       </button>
                     </div>
                   </div>

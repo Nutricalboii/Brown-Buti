@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Minus, Plus, X, ShoppingBag, ArrowRight, Loader2, ShieldCheck } from 'lucide-react';
 import { useCart } from '../context/CartContext';
-import { createShopifyCheckout } from '../lib/shopify';
+import { createShopifyCheckout, getShopifyVariantId } from '../lib/shopify';
 import { useCurrency } from '../context/CurrencyContext';
 import { getResponsiveProductImageSrcSet } from '../lib/responsive-product-image';
 
@@ -12,7 +12,7 @@ import AgePrivacyPopup from '../components/AgePrivacyPopup';
 export default function Cart() {
   const navigate = useNavigate();
   const { items, removeItem, updateQuantity, subtotal } = useCart();
-  const { currency, formatPrice, usdRate } = useCurrency();
+  const { formatPrice, usdRate } = useCurrency();
 
   const [isCheckingOut, setIsCheckingOut] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -22,12 +22,6 @@ export default function Cart() {
     (sum, i) => sum + (i.product.priceUsd ?? Math.round(i.product.price / usdRate)) * i.quantity,
     0
   );
-  const threshold = currency === 'USD' ? 200 : 5000;
-  const shippingFee = currency === 'USD' ? 25 : 500;
-  const isFreeShipping = (currency === 'USD' ? subtotalUsd : subtotal) >= threshold;
-  const shipping = isFreeShipping ? 0 : shippingFee;
-  const total = subtotal + (currency === 'USD' ? shipping * usdRate : shipping);
-  const totalUsd = subtotalUsd + shipping;
   const handleShopifyCheckout = async () => {
     const hasAccepted = localStorage.getItem('mocha_mogra_policy_accepted');
     if (!hasAccepted) {
@@ -39,7 +33,7 @@ export default function Cart() {
       setErrorMessage(null);
       setIsCheckingOut(true);
       const itemsPayload = items.map((item) => ({
-        variantId: item.product.shopifyVariantId || item.product.id,
+        variantId: getShopifyVariantId(item.product, item.size),
         quantity: item.quantity,
       }));
       const checkoutUrl = await createShopifyCheckout(itemsPayload);
@@ -195,29 +189,9 @@ export default function Cart() {
                     <span>{formatPrice(subtotal, subtotalUsd)}</span>
                   </div>
                   <div className="flex justify-between font-lora text-sm text-mocha-700">
-                    <span>Artisanal Packaging</span>
-                    <span className="text-forest-600 font-medium">Complimentary</span>
-                  </div>
-                  <div className="flex justify-between font-lora text-sm text-mocha-700">
                     <span>Shipping</span>
-                    <span>
-                      {shipping === 0 ? (
-                        <span className="text-forest-600 font-medium">Free</span>
-                      ) : (
-                        currency === 'USD'
-                          ? formatPrice(shipping * usdRate, shipping)
-                          : formatPrice(shipping)
-                      )}
-                    </span>
+                    <span className="text-right">Calculated at Shopify checkout</span>
                   </div>
-                  {shipping > 0 && (
-                    <p className="font-lora text-xs text-mocha-400 italic">
-                      Add {formatPrice(
-                        currency === 'USD' ? (threshold - subtotalUsd) * usdRate : threshold - subtotal,
-                        currency === 'USD' ? threshold - subtotalUsd : Math.round((threshold - subtotal) / usdRate)
-                      )} more for free shipping
-                    </p>
-                  )}
                 </div>
 
                 <p className="font-lora text-xs text-mocha-400 mb-8">
@@ -227,13 +201,16 @@ export default function Cart() {
                 <div className="border-t border-mocha-200 pt-6 mb-8">
                   <div className="flex justify-between">
                     <span className="font-cinzel text-sm tracking-[0.15em] uppercase text-mocha-900">
-                      Estimated Total
+                      Items Total
                     </span>
                     <span className="font-playfair text-xl text-mocha-900">
-                      {formatPrice(total, totalUsd)}
+                      {formatPrice(subtotal, subtotalUsd)}
                     </span>
                   </div>
                 </div>
+                <p className="font-lora text-xs text-mocha-500 -mt-5 mb-6">
+                  Shipping options and final delivery charges are confirmed at Shopify checkout.
+                </p>
 
                 {/* Primary Button: Shopify Checkout */}
                 <button

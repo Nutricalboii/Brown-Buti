@@ -12,7 +12,7 @@ import {
 } from 'lucide-react';
 import type { Product } from '../data/products';
 import { useCart } from '../context/CartContext';
-import { createDirectShopifyCheckout } from '../lib/shopify';
+import { createDirectShopifyCheckout, getShopifyVariantId } from '../lib/shopify';
 import ImageCarousel from './ImageCarousel';
 import { useCurrency } from '../context/CurrencyContext';
 import { SizeChartModal } from './SizeChart';
@@ -54,7 +54,7 @@ export default function ProductModal({ product, onClose, onAddedToCart }: Produc
   const [customizeOpen, setCustomizeOpen] = useState(false);
   const [sizeChartOpen, setSizeChartOpen] = useState(false);
   const [selectedSize, setSelectedSize] = useState<string | undefined>();
-  const [sizeError, setSizeError] = useState(false);
+  const [sizeError, setSizeError] = useState<string | null>(null);
 
   useEffect(() => {
     if (product) {
@@ -63,7 +63,7 @@ export default function ProductModal({ product, onClose, onAddedToCart }: Produc
       setCustomizeOpen(false);
       setSizeChartOpen(false);
       setSelectedSize(product?.sizes?.length === 1 ? product.sizes[0] : undefined);
-      setSizeError(false);
+      setSizeError(null);
     } else {
       document.body.style.overflow = '';
     }
@@ -88,7 +88,13 @@ export default function ProductModal({ product, onClose, onAddedToCart }: Produc
   const handleAddToCart = () => {
     if (!product) return;
     if (product.sizes?.length && !selectedSize) {
-      setSizeError(true);
+      setSizeError('Please select a size before continuing.');
+      return;
+    }
+    try {
+      getShopifyVariantId(product, selectedSize);
+    } catch (error) {
+      setSizeError(error instanceof Error ? error.message : 'This size is not available for checkout yet. Please contact us.');
       return;
     }
     addItem(product, selectedSize);
@@ -100,13 +106,20 @@ export default function ProductModal({ product, onClose, onAddedToCart }: Produc
   const handleBuyNow = () => {
     if (!product) return;
     if (product.sizes?.length && !selectedSize) {
-      setSizeError(true);
+      setSizeError('Please select a size before continuing.');
+      return;
+    }
+    let variantId: string | number | undefined;
+    try {
+      variantId = getShopifyVariantId(product, selectedSize);
+    } catch (error) {
+      setSizeError(error instanceof Error ? error.message : 'This size is not available for checkout yet. Please contact us.');
       return;
     }
     addItem(product, selectedSize);
     onClose();
     window.location.href = createDirectShopifyCheckout([
-      { variantId: product.shopifyVariantId || product.id, quantity: 1 },
+      { variantId, quantity: 1 },
     ]);
   };
 
@@ -176,14 +189,14 @@ export default function ProductModal({ product, onClose, onAddedToCart }: Produc
                           name={`size-${product.id}`}
                           value={size}
                           checked={selectedSize === size}
-                          onChange={() => { setSelectedSize(size); setSizeError(false); }}
+                          onChange={() => { setSelectedSize(size); setSizeError(null); }}
                           className="sr-only"
                         />
                         {size}
                       </label>
                     ))}
                   </div>
-                  {sizeError && <p id={`size-error-${product.id}`} className="mt-2 font-lora text-sm text-red-700" role="alert">Please select a size before continuing.</p>}
+                  {sizeError && <p id={`size-error-${product.id}`} className="mt-2 font-lora text-sm text-red-700" role="alert" aria-live="polite">{sizeError}</p>}
                 </fieldset>
               ) : null}
 

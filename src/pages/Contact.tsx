@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Mail, Clock, MapPin, Send, CheckCircle, AlertCircle, MessageCircle } from 'lucide-react';
+import { Mail, Clock, MapPin, Send, AlertCircle, MessageCircle } from 'lucide-react';
 import { z } from 'zod';
 import { CUSTOMER_CARE_EMAIL, WHATSAPP_DISPLAY_NUMBER, WHATSAPP_URL } from '../lib/contact';
 import { BRAND_NAME } from '../lib/brand';
@@ -39,7 +39,7 @@ export default function Contact() {
     message: '',
   });
   const [errors, setErrors] = useState<Partial<Record<keyof ContactForm, string>>>({});
-  const [submitted, setSubmitted] = useState(false);
+  const [emailDraft, setEmailDraft] = useState<string | null>(null);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -57,8 +57,10 @@ export default function Contact() {
       return;
     }
 
-    // Process sanitized and validated data
-    setSubmitted(true);
+    const { name, email, subject, message } = result.data;
+    const draftSubject = `[Brown Buti] ${subject}`;
+    const draftBody = `Name: ${name}\nEmail: ${email}\n\n${message}`;
+    setEmailDraft(`mailto:${CUSTOMER_CARE_EMAIL}?subject=${encodeURIComponent(draftSubject)}&body=${encodeURIComponent(draftBody)}`);
   };
 
   return (
@@ -95,25 +97,25 @@ export default function Contact() {
         <div className="grid grid-cols-1 lg:grid-cols-5 gap-16 lg:gap-24">
           {/* Form */}
           <div className="lg:col-span-3">
-            {submitted ? (
+            {emailDraft ? (
               <motion.div
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.5 }}
                 className="flex flex-col items-center justify-center py-20 text-center"
               >
-                <CheckCircle size={40} className="text-mocha-700 mb-6" strokeWidth={1.5} />
+                <Mail size={40} className="text-mocha-700 mb-6" strokeWidth={1.5} />
                 <h3 className="font-playfair text-3xl text-mocha-900 mb-4">
-                  Message Received.
+                  Your message is ready.
                 </h3>
                 <p className="font-lora text-sm text-mocha-600 leading-relaxed max-w-sm">
-                  Thank you for reaching out. We will get back to you within 1–2 business days.
+                  Open the draft below in your email app. The message is not sent until you review it and tap Send.
                 </p>
-                <button
-                  onClick={() => setSubmitted(false)}
-                  className="mt-8 btn-primary text-xs"
-                >
-                  Send Another Message
+                <a href={emailDraft} className="mt-8 btn-primary text-xs" aria-label="Open your email app to send this message">
+                  Open Email Draft
+                </a>
+                <button onClick={() => setEmailDraft(null)} className="mt-4 font-lora text-sm text-mocha-600 underline">
+                  Edit message
                 </button>
               </motion.div>
             ) : (
@@ -125,11 +127,13 @@ export default function Contact() {
                     initial="hidden"
                     animate="visible"
                   >
-                    <label className="block font-cinzel text-[10px] tracking-[0.25em] uppercase text-mocha-500 mb-2">
+                    <label htmlFor="contact-name" className="block font-cinzel text-[10px] tracking-[0.25em] uppercase text-mocha-500 mb-2">
                       Full Name
                     </label>
                     <input
+                      id="contact-name"
                       type="text"
+                      autoComplete="name"
                       value={form.name}
                       onChange={(e) => setForm({ ...form, name: e.target.value })}
                       placeholder="Your name"
@@ -148,11 +152,13 @@ export default function Contact() {
                     initial="hidden"
                     animate="visible"
                   >
-                    <label className="block font-cinzel text-[10px] tracking-[0.25em] uppercase text-mocha-500 mb-2">
+                    <label htmlFor="contact-email" className="block font-cinzel text-[10px] tracking-[0.25em] uppercase text-mocha-500 mb-2">
                       Email Address
                     </label>
                     <input
+                      id="contact-email"
                       type="email"
+                      autoComplete="email"
                       value={form.email}
                       onChange={(e) => setForm({ ...form, email: e.target.value })}
                       placeholder="you@example.com"
@@ -204,11 +210,12 @@ export default function Contact() {
                   initial="hidden"
                   animate="visible"
                 >
-                  <label className="block font-cinzel text-[10px] tracking-[0.25em] uppercase text-mocha-500 mb-2">
+                  <label htmlFor="contact-message" className="block font-cinzel text-[10px] tracking-[0.25em] uppercase text-mocha-500 mb-2">
                     Message
                   </label>
                   <textarea
                     rows={6}
+                    id="contact-message"
                     value={form.message}
                     onChange={(e) => setForm({ ...form, message: e.target.value })}
                     placeholder="Share your thoughts, questions, or the story you want to wear..."

@@ -1,4 +1,5 @@
 import { PRODUCT_PRICES_INR } from '../../shared/product-prices.mjs';
+import { shopifySizeVariantIds } from '../../shared/shopify-product-variant.mjs';
 
 export interface Product {
   id: number | string;
@@ -18,6 +19,7 @@ export interface Product {
   washingInstructions?: string;
   modelSize?: string;
   sizes?: string[];
+  shopifyVariantIds?: Record<string, string>;
   image: string;
   images: string[];
   color: string;
@@ -252,6 +254,7 @@ export const products: Product[] = [
     image: productMedia('chandi', '360DD99D-9A11-435F-BAAA-D11394AB83E1.webp'),
     images: [productMedia('chandi', '360DD99D-9A11-435F-BAAA-D11394AB83E1.webp'), productMedia('chandi', 'DSC03248.webp'), productMedia('chandi', 'DSC03228.webp'), productMedia('chandi', 'DSC03277.webp')],
     color: '#C4904E',
+    shopifyVariantIds: shopifySizeVariantIds.chandi,
   },
   {
     id: 'tamara',
@@ -278,5 +281,6 @@ export const products: Product[] = [
     image: productMedia('tamara', 'BB012038-BE11-42CC-A53E-F99B9F0C9FF0.webp'),
     images: [productMedia('tamara', 'BB012038-BE11-42CC-A53E-F99B9F0C9FF0.webp'), productMedia('tamara', 'DSC03596.webp'), productMedia('tamara', 'C9275.browser.webm'), productMedia('tamara', 'C9274.browser.webm'), productMedia('tamara', 'C9277.browser.webm')],
     color: '#A67340',
+    shopifyVariantIds: shopifySizeVariantIds.tamara,
   },
 ];
