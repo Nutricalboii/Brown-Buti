@@ -340,6 +340,17 @@ Newsletter subscriptions submitted in `Footer.tsx` trigger the Supabase Edge Fun
 2. Inserts the subscriber email into Supabase table `newsletter_subscribers`.
 3. Sends an authenticated `POST` request to Mailchimp API v3.0 (`https://{DC}.api.mailchimp.com/3.0/lists/{LIST_ID}/members`).
 
+### 3. Contact form delivery
+The Contact page submits to `supabase/functions/contact-form/index.ts`. Before deploying that function, configure these secrets in the existing Supabase project (never in Vite or Git):
+
+- `RESEND_API_KEY` — server-side Resend API key.
+- `CONTACT_FROM_EMAIL` — sender address verified with Resend.
+- `CONTACT_TO_EMAIL` — optional; defaults to `hello.brownbuti@gmail.com`.
+- `UPSTASH_REDIS_REST_URL` and `UPSTASH_REDIS_REST_TOKEN` — shared rate-limit store, also used by the newsletter function.
+- `ALLOWED_ORIGINS` — comma-separated exact production and preview website origins.
+
+The browser form reports success only after the email provider accepts the message. Until the function and secrets are deployed, it offers a prepared email draft instead.
+
 ---
 
 ## Launch readiness: source status vs. owner-side verification
@@ -351,6 +362,7 @@ This is a code repository, not proof that external services are configured. The 
 | **Frontend / catalog** | Present in source | Brown Buti identity, product catalog and responsive storefront are implemented in this repository. | Validate the deployed build and product content in the owner-approved preview. |
 | **Build / tests** | Locally verifiable | Run `npm run build`, `npm run typecheck`, `npm test`, and `npm run lint`. | Re-run on the exact commit intended for release; address any new failures. |
 | **Shopify checkout** | Integration code present; account state unverified here | Storefront hands checkout to Shopify; checkout and payment-provider setup are Shopify-side. | Owner should verify current products, variants, payment provider, checkout and order emails in Shopify Admin. Do not recreate the store or replace IDs. |
+| **Contact form** | Secure delivery function implemented locally | Server-side validation, origin checks, honeypot, shared rate limiting and Resend delivery; production secrets/deployment are not assumed. | Configure the documented Supabase secrets, deploy the `contact-form` function, then verify a real test enquiry reaches the customer-care inbox. |
 | **Shopify public brand settings** | Not changed by this source update | Store name/logo, vendor values, theme, notification templates and customer-care details are external settings. | Apply Brown Buti public display branding after owner review. Keep store domain, product/variant IDs, inventory and orders. |
 | **Domains / Vercel** | Existing project aliases preserved | The live Vercel URL remains the canonical host for current source metadata; old custom-domain records are not assumed active. | Verify production project, connected repository, domains and redirects in Vercel before changing aliases or DNS. |
 | **Supabase / newsletter** | Integration code present; hosted deployment unverified | Local Supabase CLI slug is `brown-buti`; hosted project reference, URLs and secrets are unchanged. | Verify the deployed function, secrets and allowed origins in the existing project. |

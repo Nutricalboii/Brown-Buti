@@ -422,3 +422,9 @@ entrypoint = "./functions/subscribe-mailchimp/index.ts"
 # Specifies static files to be bundled with the function. Supports glob patterns.
 # For example, if you want to serve static HTML pages in your function:
 # static_files = [ "./functions/subscribe-mailchimp/*.html" ]
+
+[functions.contact-form]
+enabled = true
+verify_jwt = false
+import_map = "./functions/contact-form/deno.json"
+entrypoint = "./functions/contact-form/index.ts"

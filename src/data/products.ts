@@ -227,7 +227,7 @@ export const products: Product[] = [
     image: productMedia('chandini', 'DSC03169.webp'),
     images: [productMedia('chandini', 'DSC03169.webp'), productMedia('chandini', 'C9236.browser.webm'), productMedia('chandini', 'DSC03186.webp'), productMedia('chandini', 'DSC03155.webp'), productMedia('chandini', 'DSC03193.webp')],
     color: '#D8D0C4',
-    shopifyVariantId: '48996875534585', // CHAANDINI
+    shopifyVariantIds: shopifySizeVariantIds.chandini,
   },
   {
     id: 'chandi',

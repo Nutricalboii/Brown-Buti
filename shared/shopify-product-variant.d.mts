@@ -1,4 +1,5 @@
 export const shopifySizeVariantIds: {
+  chandini: Record<string, string>;
   chandi: Record<string, string>;
   tamara: Record<string, string>;
 };

@@ -4,6 +4,7 @@ import { Mail, Clock, MapPin, Send, AlertCircle, MessageCircle } from 'lucide-re
 import { z } from 'zod';
 import { CUSTOMER_CARE_EMAIL, WHATSAPP_DISPLAY_NUMBER, WHATSAPP_URL } from '../lib/contact';
 import { BRAND_NAME } from '../lib/brand';
+import { supabase } from '../lib/supabase';
 
 const fadeUp = {
   hidden: { opacity: 0, y: 24 },
@@ -23,8 +24,8 @@ const subjects = [
 ];
 
 const contactSchema = z.object({
-  name: z.string().min(2, 'Name must be at least 2 characters').max(50, 'Name is too long').regex(/^[a-zA-Z\s]*$/, 'Name can only contain letters'),
-  email: z.string().email('Please enter a valid email address').max(100, 'Email is too long'),
+  name: z.string().trim().min(2, 'Name must be at least 2 characters').max(50, 'Name is too long').regex(/^[\p{L}\p{M}][\p{L}\p{M} '.-]*$/u, 'Please enter a valid name'),
+  email: z.string().trim().email('Please enter a valid email address').max(254, 'Email is too long'),
   subject: z.string().min(1, 'Please select a subject'),
   message: z.string().min(10, 'Message must be at least 10 characters').max(1000, 'Message is too long (max 1000 characters)'),
 });
@@ -40,10 +41,15 @@ export default function Contact() {
   });
   const [errors, setErrors] = useState<Partial<Record<keyof ContactForm, string>>>({});
   const [emailDraft, setEmailDraft] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
+  const [sendError, setSendError] = useState<string | null>(null);
+  const [website, setWebsite] = useState('');
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrors({});
+    setSendError(null);
     
     // Secure Input Validation
     const result = contactSchema.safeParse(form);
@@ -55,6 +61,27 @@ export default function Contact() {
       });
       setErrors(formattedErrors);
       return;
+    }
+
+    if (!supabase) {
+      setSendError('Online message sending is not configured yet. You can send your message by email instead.');
+    } else {
+      setIsSubmitting(true);
+      try {
+        const { error } = await supabase.functions.invoke('contact-form', {
+          body: { ...result.data, website },
+        });
+        if (error) throw error;
+        setSubmitted(true);
+        setForm({ name: '', email: '', subject: '', message: '' });
+        setWebsite('');
+        setIsSubmitting(false);
+        return;
+      } catch {
+        setSendError('We could not send your message right now. Please use the email option below.');
+      } finally {
+        setIsSubmitting(false);
+      }
     }
 
     const { name, email, subject, message } = result.data;
@@ -97,7 +124,24 @@ export default function Contact() {
         <div className="grid grid-cols-1 lg:grid-cols-5 gap-16 lg:gap-24">
           {/* Form */}
           <div className="lg:col-span-3">
-            {emailDraft ? (
+            {submitted ? (
+              <motion.div
+                role="status"
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.5 }}
+                className="flex flex-col items-center justify-center py-20 text-center"
+              >
+                <Mail size={40} className="text-mocha-700 mb-6" strokeWidth={1.5} />
+                <h3 className="font-playfair text-3xl text-mocha-900 mb-4">Thank you for writing to us.</h3>
+                <p className="font-lora text-sm text-mocha-600 leading-relaxed max-w-sm">
+                  Your message has been sent. Our team will reply to the email address you provided.
+                </p>
+                <button onClick={() => setSubmitted(false)} className="mt-8 btn-primary text-xs">
+                  Send another message
+                </button>
+              </motion.div>
+            ) : emailDraft ? (
               <motion.div
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
@@ -109,7 +153,7 @@ export default function Contact() {
                   Your message is ready.
                 </h3>
                 <p className="font-lora text-sm text-mocha-600 leading-relaxed max-w-sm">
-                  Open the draft below in your email app. The message is not sent until you review it and tap Send.
+                  Online sending is temporarily unavailable. Open the prepared draft in your email app, review it, and tap Send.
                 </p>
                 <a href={emailDraft} className="mt-8 btn-primary text-xs" aria-label="Open your email app to send this message">
                   Open Email Draft
@@ -120,6 +164,23 @@ export default function Contact() {
               </motion.div>
             ) : (
               <form onSubmit={handleSubmit} className="space-y-10">
+                <div className="sr-only" aria-hidden="true">
+                  <label htmlFor="contact-website">Leave this field empty</label>
+                  <input
+                    id="contact-website"
+                    name="website"
+                    type="text"
+                    value={website}
+                    onChange={(event) => setWebsite(event.target.value)}
+                    autoComplete="off"
+                    tabIndex={-1}
+                  />
+                </div>
+                {sendError && (
+                  <p role="alert" className="font-lora text-sm text-red-700" id="contact-send-error">
+                    {sendError}
+                  </p>
+                )}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
                   <motion.div
                     custom={0}
@@ -236,10 +297,11 @@ export default function Contact() {
                 >
                   <button
                     type="submit"
+                    disabled={isSubmitting}
                     className="btn-primary-filled flex items-center gap-2"
                   >
-                    Send Message
-                    <Send size={14} strokeWidth={1.5} />
+                    {isSubmitting ? 'Sending…' : 'Send Message'}
+                    <Send size={14} strokeWidth={1.5} aria-hidden="true" />
                   </button>
                 </motion.div>
               </form>
