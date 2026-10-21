@@ -46,7 +46,7 @@ export function OrganizationJsonLd() {
       telephone: `+${WHATSAPP_NUMBER}`,
       contactType: 'customer service',
     },
-    sameAs: ['https://www.instagram.com/mocha.n.mogra/'],
+    sameAs: ['https://www.instagram.com/brown.buti/'],
   });
   return null;
 }
