@@ -1,5 +1,7 @@
 // Shopify Headless Integration Helper
 import { createShopifyCartPermalink } from '../../shared/shopify-cart-permalink.mjs';
+import { resolveShopifyVariantId } from '../../shared/shopify-product-variant.mjs';
+import type { Product } from '../data/products';
 
 const DEFAULT_SHOPIFY_DOMAIN = '1fieuf-bz.myshopify.com';
 const CUSTOM_SHOPIFY_DOMAINS = new Set(['mochamogra.com', 'www.mochamogra.com']);
@@ -22,6 +24,10 @@ function resolveShopifyDomain(configuredDomain?: string): string {
 export const SHOPIFY_STORE_DOMAIN = resolveShopifyDomain(import.meta.env.VITE_SHOPIFY_STORE_DOMAIN);
 const SHOPIFY_STOREFRONT_ACCESS_TOKEN = import.meta.env.VITE_SHOPIFY_STOREFRONT_ACCESS_TOKEN || '';
 const SHOPIFY_API_VERSION = '2026-10';
+
+export function getShopifyVariantId(product: Product, size?: string): string | number | undefined {
+  return resolveShopifyVariantId(product, size);
+}
 
 /**
  * Executes a GraphQL query against the Shopify Storefront API.

@@ -2,7 +2,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { ShoppingBag, X, Check, ArrowRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
-import { createDirectShopifyCheckout } from '../lib/shopify';
+import { createDirectShopifyCheckout, getShopifyVariantId } from '../lib/shopify';
 import { useCurrency } from '../context/CurrencyContext';
 import type { Product } from '../data/products';
 import { getResponsiveProductImageSrcSet } from '../lib/responsive-product-image';
@@ -20,14 +20,19 @@ export default function AddedToBagDrawer({ product, size, onClose }: AddedToBagD
   const { items, totalItems, subtotal } = useCart();
   const { formatPrice } = useCurrency();
   const [showAgePopup, setShowAgePopup] = useState(false);
+  const [checkoutError, setCheckoutError] = useState<string | null>(null);
 
   const handleCheckout = () => {
-    onClose();
-    const itemsPayload = items.map((item) => ({
-      variantId: item.product.shopifyVariantId || item.product.id,
-      quantity: item.quantity,
-    }));
-    window.location.href = createDirectShopifyCheckout(itemsPayload);
+    try {
+      setCheckoutError(null);
+      const itemsPayload = items.map((item) => ({
+        variantId: getShopifyVariantId(item.product, item.size),
+        quantity: item.quantity,
+      }));
+      window.location.href = createDirectShopifyCheckout(itemsPayload);
+    } catch (error) {
+      setCheckoutError(error instanceof Error ? error.message : 'Checkout is unavailable. Please try again or contact us.');
+    }
   };
 
   return (
@@ -117,7 +122,7 @@ export default function AddedToBagDrawer({ product, size, onClose }: AddedToBagD
                   <span className="font-medium text-mocha-800">{totalItems} {totalItems === 1 ? 'item' : 'items'}</span>
                 </div>
                 <p className="font-lora text-[11px] text-mocha-400 italic pt-1 border-t border-mocha-200/60">
-                  Complimentary luxury packaging &amp; insured shipping included across India.
+                  Shipping options and final delivery charges are confirmed at Shopify checkout.
                 </p>
               </div>
 
@@ -154,6 +159,7 @@ export default function AddedToBagDrawer({ product, size, onClose }: AddedToBagD
 
             {/* Footer Action Buttons */}
             <div className="p-6 border-t border-mocha-100 bg-white space-y-2.5">
+              {checkoutError && <p className="font-lora text-sm text-red-700" role="alert" aria-live="polite">{checkoutError}</p>}
               <button
                 id="drawer-checkout-btn"
                 onClick={() => {
