@@ -20,121 +20,59 @@ export default function ShippingPolicy() {
           transition={{ duration: 0.6 }}
         >
           <h1 className="font-cinzel text-3xl md:text-4xl tracking-widest text-mocha-900 uppercase mb-4">
-            Shipping Policy
+            Shipping &amp; Delivery
           </h1>
           <p className="font-lora text-mocha-400 text-sm tracking-widest mb-10">
-            Effective Date: August 2025
+            Information for Brown Buti orders
           </p>
 
           <div className="font-lora text-mocha-600 space-y-6 leading-relaxed">
-            <p>
-              At {BRAND_NAME}, we take great care in packaging and dispatching every order. Each piece is wrapped with love before it reaches you.
-            </p>
+            <p>Every {BRAND_NAME} piece is prepared and packed with care before it begins its journey to you.</p>
 
-            <h2 className="font-cinzel text-xl text-mocha-900 tracking-wider uppercase mt-8 mb-4">Processing Time</h2>
-            <p>
-              All orders are processed within <strong>2–4 business days</strong> of payment confirmation (excluding weekends and public holidays). You will receive a confirmation email with tracking information once your order is dispatched.
-            </p>
-            <p>
-              For custom or bespoke orders, processing time may extend to <strong>7–14 business days</strong>. We will communicate any delays directly.
-            </p>
+            <section aria-labelledby="domestic-shipping">
+              <h2 id="domestic-shipping" className="font-cinzel text-xl text-mocha-900 tracking-wider uppercase mt-8 mb-4">
+                Domestic Shipping — India
+              </h2>
+              <p>We offer shipping across India.</p>
+              <ul className="list-disc pl-6 space-y-2 mt-3">
+                <li>Shipping charges are ₹99 per order.</li>
+                <li>Shipping is complimentary on orders above ₹2,999.</li>
+                <li>Estimated delivery is within 15 days. The applicable timeline will be displayed at checkout or communicated after your order is confirmed.</li>
+              </ul>
+            </section>
 
-            <h2 className="font-cinzel text-xl text-mocha-900 tracking-wider uppercase mt-8 mb-4">Domestic Shipping (India)</h2>
-            <table className="w-full border-collapse text-sm mt-4">
-              <thead>
-                <tr className="border-b border-mocha-200">
-                  <th className="text-left py-3 pr-4 font-cinzel text-mocha-900 uppercase tracking-wider text-xs">Order Value</th>
-                  <th className="text-left py-3 pr-4 font-cinzel text-mocha-900 uppercase tracking-wider text-xs">Shipping Charge</th>
-                  <th className="text-left py-3 font-cinzel text-mocha-900 uppercase tracking-wider text-xs">Estimated Delivery</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-mocha-100">
-                <tr>
-                  <td className="py-3 pr-4">Below ₹5,000</td>
-                  <td className="py-3 pr-4">₹150</td>
-                  <td className="py-3">5–7 business days</td>
-                </tr>
-                <tr>
-                  <td className="py-3 pr-4">₹5,000 &amp; above</td>
-                  <td className="py-3 pr-4 font-semibold text-mocha-700">FREE</td>
-                  <td className="py-3">5–7 business days</td>
-                </tr>
-                <tr>
-                  <td className="py-3 pr-4">Express delivery</td>
-                  <td className="py-3 pr-4">₹350</td>
-                  <td className="py-3">2–3 business days</td>
-                </tr>
-              </tbody>
-            </table>
-            <p className="text-sm text-mocha-400 mt-2">
-              * Delivery timelines are estimates and may vary depending on your location.
-            </p>
+            <section aria-labelledby="international-shipping">
+              <h2 id="international-shipping" className="font-cinzel text-xl text-mocha-900 tracking-wider uppercase mt-8 mb-4">
+                International Shipping
+              </h2>
+              <p>We ship internationally, including to the USA and other eligible destinations.</p>
+              <ul className="list-disc pl-6 space-y-2 mt-3">
+                <li>International shipping charges are calculated based on your delivery location and order details.</li>
+                <li>Orders typically take around one month to arrive. Delivery timelines vary by destination and customs clearance, and will be confirmed at checkout or after your order is placed.</li>
+                <li>Applicable customs duties, import taxes, and other destination charges may be payable by the customer unless explicitly included at checkout.</li>
+              </ul>
+            </section>
 
-            <h2 className="font-cinzel text-xl text-mocha-900 tracking-wider uppercase mt-8 mb-4">International Shipping</h2>
-            <table className="w-full border-collapse text-sm mt-4">
-              <thead>
-                <tr className="border-b border-mocha-200">
-                  <th className="text-left py-3 pr-4 font-cinzel text-mocha-900 uppercase tracking-wider text-xs">Region</th>
-                  <th className="text-left py-3 pr-4 font-cinzel text-mocha-900 uppercase tracking-wider text-xs">Shipping Charge</th>
-                  <th className="text-left py-3 font-cinzel text-mocha-900 uppercase tracking-wider text-xs">Estimated Delivery</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-mocha-100">
-                <tr>
-                  <td className="py-3 pr-4">USA / Canada</td>
-                  <td className="py-3 pr-4">₹2,500 (~$30)</td>
-                  <td className="py-3">10–15 business days</td>
-                </tr>
-                <tr>
-                  <td className="py-3 pr-4">UK / Europe</td>
-                  <td className="py-3 pr-4">₹2,000 (~£20)</td>
-                  <td className="py-3">10–15 business days</td>
-                </tr>
-                <tr>
-                  <td className="py-3 pr-4">Middle East / UAE</td>
-                  <td className="py-3 pr-4">₹1,500</td>
-                  <td className="py-3">7–10 business days</td>
-                </tr>
-                <tr>
-                  <td className="py-3 pr-4">Other Countries</td>
-                  <td className="py-3 pr-4">Calculated at checkout</td>
-                  <td className="py-3">12–20 business days</td>
-                </tr>
-              </tbody>
-            </table>
+            <section aria-labelledby="made-to-order">
+              <h2 id="made-to-order" className="font-cinzel text-xl text-mocha-900 tracking-wider uppercase mt-8 mb-4">
+                A Little Note
+              </h2>
+              <p>
+                Every Brown Buti piece is prepared with care. Made-to-order products may require additional processing time, which will be communicated on the relevant product page.
+              </p>
+            </section>
 
-            <h2 className="font-cinzel text-xl text-mocha-900 tracking-wider uppercase mt-8 mb-4">Customs &amp; Import Duties</h2>
-            <p>
-              For international orders, customs duties, taxes, and import fees may apply depending on your country's regulations. These charges are the responsibility of the customer and are not included in the product or shipping price.
-            </p>
-
-            <h2 className="font-cinzel text-xl text-mocha-900 tracking-wider uppercase mt-8 mb-4">Order Tracking</h2>
-            <p>
-              Once your order is shipped, you will receive an email with your tracking number and courier details. You can use this to track your package in real time.
-            </p>
-
-            <h2 className="font-cinzel text-xl text-mocha-900 tracking-wider uppercase mt-8 mb-4">Packaging</h2>
-            <p>
-              Every {BRAND_NAME} order is carefully packaged in tissue paper and sealed with our signature label. We use eco-friendly packaging materials wherever possible.
-            </p>
-
-            <h2 className="font-cinzel text-xl text-mocha-900 tracking-wider uppercase mt-8 mb-4">Issues with Delivery</h2>
-            <p>
-              If your order is significantly delayed, lost in transit, or arrives damaged, please contact us immediately at{' '}
-              <a href={`mailto:${CUSTOMER_CARE_EMAIL}`} className="text-mocha-700 underline underline-offset-2">
-                {CUSTOMER_CARE_EMAIL}
-              </a>{' '}
-              with your order number and we will resolve it promptly.
-            </p>
-
-            <h2 className="font-cinzel text-xl text-mocha-900 tracking-wider uppercase mt-8 mb-4">Contact Us</h2>
-            <p>
-              For shipping-related queries:<br />
-              <strong>Email:</strong>{' '}
-              <a href={`mailto:${CUSTOMER_CARE_EMAIL}`} className="text-mocha-700 underline underline-offset-2">
-                {CUSTOMER_CARE_EMAIL}
-              </a>
-            </p>
+            <section aria-labelledby="shipping-contact">
+              <h2 id="shipping-contact" className="font-cinzel text-xl text-mocha-900 tracking-wider uppercase mt-8 mb-4">
+                Contact Us
+              </h2>
+              <p>
+                For shipping-related queries, contact us at{' '}
+                <a href={`mailto:${CUSTOMER_CARE_EMAIL}`} className="text-mocha-700 underline underline-offset-2">
+                  {CUSTOMER_CARE_EMAIL}
+                </a>.
+              </p>
+            </section>
           </div>
         </motion.div>
       </div>
