@@ -204,7 +204,7 @@ export default function Home() {
                   className="absolute -right-6 bottom-24 bg-mocha-900 text-gold-200 px-4 py-3 shadow-lg"
                 >
                   <p className="font-cinzel text-[10px] tracking-[0.2em] uppercase">New Arrivals</p>
-                  <p className="font-playfair text-sm mt-0.5">8 Pieces</p>
+                  <p className="font-playfair text-sm mt-0.5">{products.length} Pieces</p>
                 </motion.div>
               </div>
             </motion.div>

@@ -25,3 +25,6 @@ jobs:
 
       - name: Deploy subscribe-mailchimp function
         run: supabase functions deploy subscribe-mailchimp --project-ref $PROJECT_ID
+
+      - name: Deploy contact-form function
+        run: supabase functions deploy contact-form --project-ref $PROJECT_ID
