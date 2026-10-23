@@ -45,10 +45,10 @@ export default function ShippingPolicy() {
               <h2 id="international-shipping" className="font-cinzel text-xl text-mocha-900 tracking-wider uppercase mt-8 mb-4">
                 International Shipping
               </h2>
-              <p>We ship internationally, including to the USA and other eligible destinations.</p>
+              <p>We offer international shipping to the USA and other available destinations.</p>
               <ul className="list-disc pl-6 space-y-2 mt-3">
-                <li>International shipping charges are calculated based on your delivery location and order details.</li>
-                <li>Orders typically take around one month to arrive. Delivery timelines vary by destination and customs clearance, and will be confirmed at checkout or after your order is placed.</li>
+                <li>International shipping is ₹1,499 per order, with complimentary shipping on orders above ₹25,000.</li>
+                <li>Estimated delivery is within 15 days. Delivery may vary due to customs clearance.</li>
                 <li>Applicable customs duties, import taxes, and other destination charges may be payable by the customer unless explicitly included at checkout.</li>
               </ul>
             </section>

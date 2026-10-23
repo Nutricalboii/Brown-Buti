@@ -26,7 +26,7 @@ interface ProductModalProps {
 }
 
 const DELIVERY_RETURN = [
-  'Shipping: It takes about 10-12 working days for domestic orders and 12-15 working days for international orders to be shipped from our end.',
+  'Shipping: Domestic delivery is estimated within 15 days. International delivery to the USA and other available destinations is estimated within 15 days; customs clearance may affect delivery.',
   `Return: As a company policy, we do not provide a refund/return on any product once sold. Once the ${BRAND_NAME} pieces are sold they can be exchanged either with a different product or the replacement in a bigger or smaller size, for the same product (provided the aforementioned terms and conditions are met).`,
   `We issue a credit note for our customers, only when the desired size of the product is not in stock. If the product is eligible for size exchange, you may write to us at ${CUSTOMER_CARE_EMAIL} strictly within 48 hours of delivery to request an exchange.`,
 ];

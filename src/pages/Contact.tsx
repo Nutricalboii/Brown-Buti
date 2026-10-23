@@ -390,7 +390,7 @@ export default function Contact() {
                 </h3>
                 <div className="space-y-4">
                   {[
-                    { q: 'Do you ship internationally?', a: 'Yes, we ship worldwide. Customs duties may apply.' },
+                    { q: 'Do you ship internationally?', a: 'Yes, we ship to the USA and other available international destinations. Customs duties may apply.' },
                     { q: 'Can I customise a piece?', a: 'Reach out to us — we love bespoke conversations.' },
                     { q: 'What is the fabric?', a: 'Premium silk with artisan-led machine embroidery.' },
                   ].map(({ q, a }) => (
