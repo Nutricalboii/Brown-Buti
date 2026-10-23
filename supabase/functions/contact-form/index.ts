@@ -11,6 +11,7 @@ const allowedOrigins = new Set([
   'https://mochamogra.com',
   'https://www.mochamogra.com',
   'https://mocha-and-mogra-website.vercel.app',
+  'https://mocha-and-mogra-preview.vercel.app',
   ...configuredOrigins,
 ]);
 

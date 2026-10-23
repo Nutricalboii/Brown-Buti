@@ -33,7 +33,6 @@ function isAllowedOrigin(origin, allowedOrigins) {
   if (!origin) return true;
   try {
     const parsed = new URL(origin);
-    if (parsed.protocol === 'http:' && ['localhost', '127.0.0.1'].includes(parsed.hostname)) return true;
     return allowedOrigins.has(parsed.origin);
   } catch {
     return false;

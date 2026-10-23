@@ -63,6 +63,17 @@ test('rejects unapproved origins and invalid form input', async () => {
   assert.equal(sent.length, 0);
 });
 
+test('does not implicitly allow localhost origins in production', async () => {
+  const { handler, sent } = setup();
+  const response = await handler(new Request('https://edge.example/contact-form', {
+    method: 'POST',
+    headers: { Origin: 'http://localhost:5173', 'Content-Type': 'application/json' },
+    body: JSON.stringify(validSubmission),
+  }));
+  assert.equal(response.status, 403);
+  assert.equal(sent.length, 0);
+});
+
 test('honeypot is accepted without email delivery or rate-limit use', async () => {
   let rateLimitCalls = 0;
   const { handler, sent } = setup({

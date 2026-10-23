@@ -32,8 +32,9 @@
       "headers": [
         {
           "key": "Content-Security-Policy",
-          "value": "default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'none'; form-action 'self'; script-src 'self' https://www.googletagmanager.com https://connect.facebook.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob: https://res.cloudinary.com https://www.facebook.com https://www.google-analytics.com; media-src 'self' https://res.cloudinary.com; connect-src 'self' https://*.myshopify.com https://mochamogra.com https://www.mochamogra.com https://*.supabase.co https://www.google-analytics.com https://region1.google-analytics.com https://www.facebook.com; frame-src 'self'"
+          "value": "default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'none'; form-action 'self'; script-src 'self' https://www.googletagmanager.com https://connect.facebook.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob: https://res.cloudinary.com https://www.facebook.com https://www.google-analytics.com; media-src 'self' https://res.cloudinary.com; connect-src 'self' https://*.myshopify.com https://mochamogra.com https://www.mochamogra.com https://ustlosuhdjfhvdlsrpyz.supabase.co https://www.google-analytics.com https://region1.google-analytics.com https://www.facebook.com; frame-src 'self'"
         },
+        { "key": "Strict-Transport-Security", "value": "max-age=31536000" },
         { "key": "X-Content-Type-Options", "value": "nosniff" },
         { "key": "X-Frame-Options", "value": "DENY" },
         { "key": "Referrer-Policy", "value": "strict-origin-when-cross-origin" },

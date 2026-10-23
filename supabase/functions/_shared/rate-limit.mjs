@@ -8,7 +8,7 @@ function resolveClientAddress(request, trustedHeaders) {
     const value = request.headers.get(header)?.split(',')[0]?.trim();
     if (value && value.length <= 64 && !/[\r\n]/.test(value)) return value;
   }
-  return 'unknown';
+  return null;
 }
 
 async function createIdentifier(address, token) {
@@ -74,6 +74,7 @@ export async function enforceRateLimit(request, {
     }
 
     const address = resolveClientAddress(request, trustedIpHeaders);
+    if (!address) return { configured: true, success: false, error: true };
     const identifier = await createIdentifier(address, token);
     const result = await limiter.limit(identifier);
     return { configured: true, success: result.success, reset: result.reset };

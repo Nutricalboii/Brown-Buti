@@ -10,6 +10,7 @@ const allowedOrigins = new Set([
   'https://mochamogra.com',
   'https://www.mochamogra.com',
   'https://mocha-and-mogra-website.vercel.app',
+  'https://mocha-and-mogra-preview.vercel.app',
   ...configuredOrigins,
 ]);
 
@@ -28,7 +29,6 @@ function isAllowedOrigin(origin: string | null): boolean {
   if (!origin) return true;
   try {
     const parsed = new URL(origin);
-    if (parsed.protocol === 'http:' && ['localhost', '127.0.0.1'].includes(parsed.hostname)) return true;
     return allowedOrigins.has(parsed.origin);
   } catch {
     return false;
