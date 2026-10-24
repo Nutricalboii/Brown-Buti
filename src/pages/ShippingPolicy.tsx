@@ -37,7 +37,7 @@ export default function ShippingPolicy() {
               <ul className="list-disc pl-6 space-y-2 mt-3">
                 <li>Shipping charges are ₹99 per order.</li>
                 <li>Shipping is complimentary on orders above ₹2,999.</li>
-                <li>Estimated delivery is within 15 days. The applicable timeline will be displayed at checkout or communicated after your order is confirmed.</li>
+                <li>Estimated delivery is 15 business days. The applicable timeline will be displayed at checkout or communicated after your order is confirmed.</li>
               </ul>
             </section>
 
@@ -48,7 +48,7 @@ export default function ShippingPolicy() {
               <p>We offer international shipping to the USA and other available destinations.</p>
               <ul className="list-disc pl-6 space-y-2 mt-3">
                 <li>International shipping is ₹1,499 per order, with complimentary shipping on orders above ₹25,000.</li>
-                <li>Estimated delivery is within 15 days. Delivery may vary due to customs clearance.</li>
+                <li>Estimated delivery is 20–22 business days (approximately one month). Delivery may vary due to customs clearance.</li>
                 <li>Applicable customs duties, import taxes, and other destination charges may be payable by the customer unless explicitly included at checkout.</li>
               </ul>
             </section>
