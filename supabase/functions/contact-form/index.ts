@@ -10,8 +10,8 @@ const configuredOrigins = (Deno.env.get('ALLOWED_ORIGINS') || '')
 const allowedOrigins = new Set([
   'https://mochamogra.com',
   'https://www.mochamogra.com',
-  'https://mocha-and-mogra-website.vercel.app',
-  'https://mocha-and-mogra-preview.vercel.app',
+  'https://brown-buti.vercel.app',
+  'https://brown-buti-preview.vercel.app',
   ...configuredOrigins,
 ]);
 

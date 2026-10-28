@@ -9,7 +9,7 @@ import { CUSTOMER_CARE_EMAIL, WHATSAPP_NUMBER } from './contact';
 import { BRAND_FULL_LOGO, BRAND_NAME } from './brand';
 
 const BRAND = BRAND_NAME;
-const BASE_URL = 'https://mocha-and-mogra-website.vercel.app';
+const BASE_URL = 'https://brown-buti.vercel.app';
 
 /** Inject/update a JSON-LD block by a unique ID */
 function useJsonLd(id: string, data: object) {
