@@ -205,15 +205,15 @@ export default function OurStory() {
             The name is new. The point of view remains.
           </h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-12 mb-12">
-            <div className="p-8 bg-[#FFFEF7] border border-mocha-200">
+            <div className="p-8 bg-gold-50 border border-mocha-300">
               <h4 className="font-cinzel text-xl text-mocha-900 mb-4">CRAFT</h4>
               <p className="font-lora text-mocha-600">Artisan-led / Thoughtful / Distinctive</p>
-              <p className="font-lora text-mocha-500 mt-4 text-sm">We bring careful workmanship and expressive motifs to a silhouette women have worn for generations.</p>
+              <p className="font-lora text-mocha-700 mt-4 text-sm">We bring careful workmanship and expressive motifs to a silhouette women have worn for generations.</p>
             </div>
-            <div className="p-8 bg-[#FFFEF7] border border-mocha-200">
+            <div className="p-8 bg-gold-50 border border-mocha-300">
               <h4 className="font-cinzel text-xl text-mocha-900 mb-4">POINT OF VIEW</h4>
               <p className="font-lora text-mocha-600">Contemporary / Personal / Story-led</p>
-              <p className="font-lora text-mocha-500 mt-4 text-sm">Each piece is designed to feel individual, easy to make your own, and worth returning to.</p>
+              <p className="font-lora text-mocha-700 mt-4 text-sm">Each piece is designed to feel individual, easy to make your own, and worth returning to.</p>
             </div>
           </div>
           <p className="font-lora text-lg text-mocha-700 leading-relaxed mb-6">
