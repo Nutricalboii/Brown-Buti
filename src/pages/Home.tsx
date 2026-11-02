@@ -67,7 +67,7 @@ const fadeUp = {
 
 export default function Home() {
   const navigate = useNavigate();
-  const { formatPrice } = useCurrency();
+  const { formatPrice, currency } = useCurrency();
   const featured = products.slice(0, 3);
   const [teaserInView, setTeaserInView] = useState(false);
   
@@ -339,6 +339,11 @@ export default function Home() {
             <h2 className="font-playfair text-4xl lg:text-5xl text-gold-200">
               Stories Worth Wearing
             </h2>
+            {currency === 'USD' && (
+              <p className="font-lora text-xs leading-relaxed text-gold-200/75 mt-3" role="note">
+                International display prices are fixed at $200 per garment (₹19,024 equivalent in Shopify). Shopify checkout with Razorpay charges in INR.
+              </p>
+            )}
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -368,7 +373,7 @@ export default function Home() {
                 <p className="font-cinzel text-xs tracking-[0.2em] uppercase text-gold-400 mb-1">
                   {product.name}
                 </p>
-                <p className="font-lora text-sm text-mocha-400">{formatPrice(product.price, product.priceUsd)}</p>
+                <p className="font-lora text-sm text-mocha-400">{formatPrice(product.price)}</p>
               </motion.div>
             ))}
           </div>

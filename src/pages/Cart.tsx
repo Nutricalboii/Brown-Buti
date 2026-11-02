@@ -6,22 +6,20 @@ import { useCart } from '../context/CartContext';
 import { createShopifyCheckout, getShopifyVariantId } from '../lib/shopify';
 import { useCurrency } from '../context/CurrencyContext';
 import { getResponsiveProductImageSrcSet } from '../lib/responsive-product-image';
+import { getShippingDisplay } from '../../shared/market-display.mjs';
 
 import AgePrivacyPopup from '../components/AgePrivacyPopup';
 
 export default function Cart() {
   const navigate = useNavigate();
-  const { items, removeItem, updateQuantity, subtotal } = useCart();
-  const { formatPrice, usdRate } = useCurrency();
+  const { items, totalItems, removeItem, updateQuantity, subtotal } = useCart();
+  const { formatPrice, countryCode, currency } = useCurrency();
 
   const [isCheckingOut, setIsCheckingOut] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [showAgePopup, setShowAgePopup] = useState(false);
 
-  const subtotalUsd = items.reduce(
-    (sum, i) => sum + (i.product.priceUsd ?? Math.round(i.product.price / usdRate)) * i.quantity,
-    0
-  );
+  const shippingDisplay = getShippingDisplay(countryCode, subtotal);
   const handleShopifyCheckout = async () => {
     const hasAccepted = localStorage.getItem('mocha_mogra_policy_accepted');
     if (!hasAccepted) {
@@ -147,10 +145,7 @@ export default function Cart() {
 
                           {/* Price */}
                           <p className="font-playfair text-lg text-mocha-900">
-                            {formatPrice(
-                              item.product.price * item.quantity,
-                              (item.product.priceUsd ?? Math.round(item.product.price / usdRate)) * item.quantity
-                            )}
+                            {formatPrice(item.product.price * item.quantity, item.quantity)}
                           </p>
                         </div>
                       </div>
@@ -186,11 +181,11 @@ export default function Cart() {
                 <div className="space-y-4 mb-8">
                   <div className="flex justify-between font-lora text-sm text-mocha-700">
                     <span>Subtotal ({items.reduce((s, i) => s + i.quantity, 0)} items)</span>
-                    <span>{formatPrice(subtotal, subtotalUsd)}</span>
+                    <span>{formatPrice(subtotal, totalItems)}</span>
                   </div>
                   <div className="flex justify-between font-lora text-sm text-mocha-700">
                     <span>Shipping</span>
-                    <span className="text-right">Calculated at Shopify checkout</span>
+                    <span className="text-right">{shippingDisplay.amount}</span>
                   </div>
                 </div>
 
@@ -204,13 +199,18 @@ export default function Cart() {
                       Items Total
                     </span>
                     <span className="font-playfair text-xl text-mocha-900">
-                      {formatPrice(subtotal, subtotalUsd)}
+                      {formatPrice(subtotal, totalItems)}
                     </span>
                   </div>
                 </div>
-                <p className="font-lora text-xs text-mocha-500 -mt-5 mb-6">
-                  Shipping options and final delivery charges are confirmed at Shopify checkout.
+                <p className="font-lora text-xs leading-relaxed text-mocha-600 -mt-5 mb-6" role="status" aria-live="polite">
+                  {shippingDisplay.detail}
                 </p>
+                {currency === 'USD' && (
+                  <p className="font-lora text-xs leading-relaxed text-mocha-600 -mt-3 mb-6">
+                    International display prices are fixed at $200 per garment (₹19,024 equivalent in Shopify). Shopify checkout with Razorpay charges in INR; the delivery country selected at checkout determines the shipping rate.
+                  </p>
+                )}
 
                 {/* Primary Button: Shopify Checkout */}
                 <button

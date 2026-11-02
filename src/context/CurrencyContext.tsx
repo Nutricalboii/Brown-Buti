@@ -1,51 +1,57 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useRef } from 'react';
+import { INTERNATIONAL_PRICE_USD, currencyForCountry, normalizeCountryCode, type StoreCurrency } from '../../shared/market-display.mjs';
 
-export type Currency = 'INR' | 'USD';
+export type Currency = StoreCurrency;
 
 interface CurrencyContextValue {
   currency: Currency;
   setCurrency: (currency: Currency) => void;
-  formatPrice: (inrAmount: number, usdAmount?: number) => string;
-  usdRate: number;
+  countryCode: string | null;
+  formatPrice: (inrAmount: number, itemCount?: number) => string;
 }
 
 const CurrencyContext = createContext<CurrencyContextValue | null>(null);
 
-// Approx conversion rate for now (1 USD = 83 INR)
-const USD_RATE = 83;
-
 export function CurrencyProvider({ children }: { children: React.ReactNode }) {
-  const [currency, setCurrency] = useState<Currency>('INR');
+  const [savedCurrency] = useState<Currency | null>(() => {
+    try {
+      const saved = localStorage.getItem('currency');
+      return saved === 'INR' || saved === 'USD' ? saved : null;
+    } catch {
+      return null;
+    }
+  });
+  const [currency, setCurrencyState] = useState<Currency>(savedCurrency ?? 'INR');
+  const [countryCode, setCountryCode] = useState<string | null>(null);
+  const hasManualCurrency = useRef(savedCurrency !== null);
 
   useEffect(() => {
-    // Check saved preference first
-    let saved: string | null = null;
-    try {
-      saved = localStorage.getItem('currency');
-    } catch {
-      // Continue with timezone-based defaults when storage is unavailable.
-    }
-    if (saved === 'INR' || saved === 'USD') {
-      setCurrency(saved);
-      return;
-    }
+    let active = true;
 
-    // Auto-detect based on timezone (Asia/Kolkata or Indian timezones -> INR, foreign -> USD)
-    try {
-      const tz = (Intl.DateTimeFormat().resolvedOptions().timeZone || '').toLowerCase();
-      const isIndia = tz.includes('kolkata') || tz.includes('calcutta') || new Date().getTimezoneOffset() === -330;
-      if (!isIndia) {
-        setCurrency('USD');
-      } else {
-        setCurrency('INR');
-      }
-    } catch {
-      setCurrency('INR');
-    }
-  }, []);
+    fetch('/api/market', { headers: { Accept: 'application/json' }, cache: 'no-store' })
+      .then((response) => {
+        if (!response.ok) throw new Error('Market lookup unavailable');
+        return response.json() as Promise<{ countryCode?: unknown }>;
+      })
+      .then((market) => {
+        if (!active) return;
+        const detectedCountry = normalizeCountryCode(market.countryCode);
+        setCountryCode(detectedCountry);
+        if (!hasManualCurrency.current) {
+          const detectedCurrency = currencyForCountry(detectedCountry);
+          if (detectedCurrency) setCurrencyState(detectedCurrency);
+        }
+      })
+      .catch(() => {
+        // Keep the INR store-default display when IP detection is unavailable.
+      });
+
+    return () => { active = false; };
+  }, [savedCurrency]);
 
   const handleSetCurrency = (c: Currency) => {
-    setCurrency(c);
+    hasManualCurrency.current = true;
+    setCurrencyState(c);
     try {
       localStorage.setItem('currency', c);
     } catch {
@@ -53,17 +59,15 @@ export function CurrencyProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-  const formatPrice = (inrAmount: number, usdAmount?: number) => {
+  const formatPrice = (inrAmount: number, itemCount = 1) => {
     if (currency === 'USD') {
-      const finalUsd = typeof usdAmount === 'number'
-        ? usdAmount
-        : Math.round(inrAmount / USD_RATE);
-
+      const safeItemCount = Number.isInteger(itemCount) && itemCount > 0 ? itemCount : 1;
       return new Intl.NumberFormat('en-US', {
         style: 'currency',
         currency: 'USD',
-        maximumFractionDigits: 0,
-      }).format(finalUsd);
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      }).format(INTERNATIONAL_PRICE_USD * safeItemCount);
     }
 
     return new Intl.NumberFormat('en-IN', {
@@ -74,7 +78,7 @@ export function CurrencyProvider({ children }: { children: React.ReactNode }) {
   };
 
   return (
-    <CurrencyContext.Provider value={{ currency, setCurrency: handleSetCurrency, formatPrice, usdRate: USD_RATE }}>
+    <CurrencyContext.Provider value={{ currency, setCurrency: handleSetCurrency, countryCode, formatPrice }}>
       {children}
     </CurrencyContext.Provider>
   );

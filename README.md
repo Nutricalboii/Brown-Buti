@@ -45,14 +45,18 @@ The Mocha & Mogra name remains in a few infrastructure values and legacy referen
 
 The current website shipping-policy copy in `src/pages/ShippingPolicy.tsx` states:
 
-| Destination | Charge | Free-shipping threshold | Published estimate |
-|---|---:|---:|---|
-| India | ₹99 per order | Free above ₹2,999 | 15 business days |
-| USA and other available international destinations | ₹1,499 per order | Free above ₹25,000 | 20–22 business days (about one month) |
+| Destination | Customer-facing shipping rule | Delivery timing |
+|---|---|---|
+| India | ₹99 per order; complimentary on orders above ₹2,999 | Shown at checkout or communicated after confirmation |
+| USA and other eligible international destinations | Calculated from delivery location and order details; customs/import charges may apply unless included | Varies by destination and customs clearance |
 
 International availability depends on the destinations supported by the merchant and carrier; “all countries” must not be promised unless the Shopify market and shipping profile actually support them. Customs duties, import taxes, and other destination charges may be payable by the customer unless included at checkout. Made-to-order processing can add time and should be disclosed on the relevant product page.
 
-**Important:** website policy text does not create Shopify checkout rates. Configure and verify the domestic and international rates, free-shipping thresholds, eligible countries, and delivery estimates in Shopify Shipping and delivery profiles. Test checkout with addresses in India, the USA, and any other enabled destinations before launch. Do not claim a rate is live until it appears in checkout.
+### International price display
+
+India visitors see the India catalogue prices in INR. Visitors detected outside India (including the USA, UK, Japan, Germany, and other supported markets) see a fixed `$200` display price per garment on the website. Shopify's active international catalogue uses the INR equivalent of `₹19,024` per garment because the current Razorpay connection charges checkout in INR; the customer's bank or card may show its own conversion. This website display is not a promise that Shopify checkout will charge USD. The visitor can also change the display selector manually, while Shopify checkout uses the delivery address for the final currency, shipping, tax, and payment details.
+
+**Important:** website policy text does not create Shopify checkout rates. Configure and verify the ₹99 India rate and free-shipping threshold in Shopify, plus location/order-based international rates and eligible markets. The website's IP-based currency/shipping copy is only a display hint; Shopify checkout uses the delivery address and live Shopify shipping configuration. Do not claim an international rate is calculated until the configured carrier/app or rate rules actually return it at checkout.
 
 ## Payments and the ₹1 test listing
 
@@ -133,9 +137,12 @@ The checks below intentionally separate source-code state from external account 
 ### Verify in code / deployment
 
 - [ ] Run `npm run build`, `npm run typecheck`, `npm test`, and `npm run lint` against the release commit.
+- [ ] Verify `GET /api/market` returns JSON (not the SPA HTML fallback) and that IP-derived currency is treated as display-only; this endpoint must be included in the Vercel deployment.
+- [ ] Confirm production Vercel environment variables are present. A local Storefront API request returned HTTP 401 on 28 October 2026; replace/verify the public Storefront token in Vercel before relying on customer sign-in or profile/order-history API calls. Shopify cart-permalink fallback can still hand off checkout.
+- [ ] Confirm Vercel has `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY` if contact/newsletter forms should submit online; otherwise contact falls back to an email draft and newsletter submission is unavailable.
 - [ ] Confirm every referenced product image/video exists in the deployed build and that the correct product, size, price, and Shopify variant are shown.
 - [ ] Check the Vercel deployment and every route on mobile and desktop; inspect browser console/network errors and the deployed security headers.
-- [ ] Resolve domain consistency: the current source metadata/sitemap use the legacy-named Vercel host, Shopify allowlists retain `mochamogra.com`, and Supabase function CORS lists legacy origins. Confirm the final canonical URL, redirects, SEO metadata, CSP, and exact CORS origins.
+- [ ] Confirm the canonical URL, redirects, SEO metadata, CSP, and exact CORS origins use `https://brown-buti.vercel.app`; legacy `mochamogra.com` references remain only in allowlists and should be removed only after any domain cutover is approved.
 - [ ] Verify SEO title/description, structured data, sitemap, favicon, and social previews refer to Brown Buti and the selected public URL.
 - [ ] Review untracked media before release. Product photography/video under `public/product-media/` and some additional launch assets are local untracked files in this checkout; they are not automatically included in a Git push or deployment. Approve, optimize, and add only the intended files—do not stage the entire media folder blindly.
 
@@ -143,8 +150,8 @@ The checks below intentionally separate source-code state from external account 
 
 - [ ] In Shopify, confirm the Atelier theme is the intended published theme (not just a draft), Brown Buti logo and brand details are correct, intended product listings are active, and any test-only listing is not customer-facing.
 - [ ] Reconcile any test checkout against Shopify Orders and Razorpay transactions before launch. Preserve accounting records and handle any unintended live charge appropriately; remove test listings without deleting transaction records.
-- [ ] Configure and test Shopify shipping profiles: India ₹99 / free over ₹2,999; international ₹1,499 / free over ₹25,000 for USA and other enabled destinations. Ensure rates at checkout match the policy copy.
-- [ ] Complete a full checkout-path test for representative India and international addresses. Confirm payment method, total/tax/shipping, order creation, inventory behavior, notification emails, and fulfillment flow. Do not use a live payment unless the owner explicitly intends to charge and can reconcile/refund it.
+- [ ] Configure and test Shopify shipping profiles: India ₹99 / free above ₹2,999; international rates based on destination and order details for eligible destinations. Ensure checkout results match the policy copy.
+- [ ] Complete a full checkout-path test for representative India and international addresses using a payment provider's test mode or Shopify checkout preview. Confirm payment method, total/tax/shipping, order creation, inventory behavior, notification emails, and fulfillment flow. Never run a live charge as a connectivity check.
 - [ ] Verify the customer-care email and reply-to in Shopify notifications, test delivery to `hello.brownbuti@gmail.com`, and confirm contact/newsletter function delivery from the deployed site.
 - [ ] Confirm Razorpay website approvals and account access with the account owner. The stable storefront URL is what should be registered; checkout URLs vary by order. Never share API secrets or OTPs.
 - [ ] Confirm Vercel project/repository/production branch/domain, Supabase hosted project and function deployment, social links, and the correct production environment variables.

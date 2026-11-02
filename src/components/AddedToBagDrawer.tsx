@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import { createDirectShopifyCheckout, getShopifyVariantId } from '../lib/shopify';
 import { useCurrency } from '../context/CurrencyContext';
+import { getShippingDisplay } from '../../shared/market-display.mjs';
 import type { Product } from '../data/products';
 import { getResponsiveProductImageSrcSet } from '../lib/responsive-product-image';
 import { useState } from 'react';
@@ -18,9 +19,10 @@ interface AddedToBagDrawerProps {
 export default function AddedToBagDrawer({ product, size, onClose }: AddedToBagDrawerProps) {
   const navigate = useNavigate();
   const { items, totalItems, subtotal } = useCart();
-  const { formatPrice } = useCurrency();
+  const { formatPrice, countryCode, currency } = useCurrency();
   const [showAgePopup, setShowAgePopup] = useState(false);
   const [checkoutError, setCheckoutError] = useState<string | null>(null);
+  const shippingDisplay = getShippingDisplay(countryCode, subtotal);
 
   const handleCheckout = () => {
     try {
@@ -104,8 +106,8 @@ export default function AddedToBagDrawer({ product, size, onClose }: AddedToBagD
                     {size && <span className="block font-lora text-xs text-mocha-500 mt-1">Size: {size}</span>}
                   </div>
                   <div>
-                    <span className="font-lora text-sm font-semibold text-mocha-800">
-                      {formatPrice(product.price, product.priceUsd)}
+                  <span className="font-lora text-sm font-semibold text-mocha-800">
+                      {formatPrice(product.price)}
                     </span>
                   </div>
                 </div>
@@ -115,15 +117,20 @@ export default function AddedToBagDrawer({ product, size, onClose }: AddedToBagD
               <div className="bg-mocha-50/80 p-4 rounded-lg border border-mocha-100 space-y-2">
                 <div className="flex items-center justify-between text-xs font-cinzel tracking-wider text-mocha-600">
                   <span>Shopping Bag Subtotal</span>
-                  <span className="font-lora text-sm font-semibold text-mocha-900">{formatPrice(subtotal)}</span>
+                  <span className="font-lora text-sm font-semibold text-mocha-900">{formatPrice(subtotal, totalItems)}</span>
                 </div>
                 <div className="flex items-center justify-between text-xs font-lora text-mocha-500">
                   <span>Total Items</span>
                   <span className="font-medium text-mocha-800">{totalItems} {totalItems === 1 ? 'item' : 'items'}</span>
                 </div>
-                <p className="font-lora text-[11px] text-mocha-400 italic pt-1 border-t border-mocha-200/60">
-                  Shipping options and final delivery charges are confirmed at Shopify checkout.
+                <p className="font-lora text-[11px] leading-relaxed text-mocha-600 pt-1 border-t border-mocha-200/60" role="status" aria-live="polite">
+                  {shippingDisplay.detail}
                 </p>
+                {currency === 'USD' && (
+                  <p className="font-lora text-[11px] leading-relaxed text-mocha-600">
+                    International display prices are fixed at $200 per garment (₹19,024 equivalent in Shopify). Shopify checkout with Razorpay charges in INR; the delivery country selected at checkout determines the shipping rate.
+                  </p>
+                )}
               </div>
 
               {/* Quick view of items already in bag */}

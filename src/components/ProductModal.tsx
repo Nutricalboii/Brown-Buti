@@ -17,7 +17,6 @@ import ImageCarousel from './ImageCarousel';
 import { useCurrency } from '../context/CurrencyContext';
 import { SizeChartModal } from './SizeChart';
 import { CUSTOMER_CARE_EMAIL, WHATSAPP_DISPLAY_NUMBER, WHATSAPP_NUMBER } from '../lib/contact';
-import { BRAND_NAME } from '../lib/brand';
 
 interface ProductModalProps {
   product: Product | null;
@@ -26,9 +25,9 @@ interface ProductModalProps {
 }
 
 const DELIVERY_RETURN = [
-  'Shipping: Domestic delivery is estimated at 15 business days. International delivery to available destinations is estimated at 20–22 business days; customs clearance may affect delivery.',
-  `Return: As a company policy, we do not provide a refund/return on any product once sold. Once the ${BRAND_NAME} pieces are sold they can be exchanged either with a different product or the replacement in a bigger or smaller size, for the same product (provided the aforementioned terms and conditions are met).`,
-  `We issue a credit note for our customers, only when the desired size of the product is not in stock. If the product is eligible for size exchange, you may write to us at ${CUSTOMER_CARE_EMAIL} strictly within 48 hours of delivery to request an exchange.`,
+  'Shipping: India orders are ₹99 per order, with complimentary shipping above ₹2,999. International shipping is calculated at checkout based on destination and order details. Delivery timing is shared at checkout or after confirmation; customs clearance may affect delivery.',
+  `Returns: Eligible items must be unused, unworn, and unwashed, with original tags and packaging intact. Request a return within 7 days of delivery. Sale and custom/bespoke items are not eligible.`,
+  `We notify you of a refund decision within 3–5 business days after receiving and inspecting a return. Approved refunds are processed to the original payment method within 7–10 business days. Original shipping charges are non-refundable; Brown Buti covers return shipping for a defect or error on our part. Exchanges are subject to availability. For a damaged, defective, or incorrect item, contact ${CUSTOMER_CARE_EMAIL} within 48 hours with photographs for a replacement or full refund at no additional cost.`,
 ];
 
 const BRAND_CONTACTS = {
@@ -49,7 +48,7 @@ const drawerVariants = {
 
 export default function ProductModal({ product, onClose, onAddedToCart }: ProductModalProps) {
   const { addItem } = useCart();
-  const { formatPrice } = useCurrency();
+  const { formatPrice, currency } = useCurrency();
   const [added, setAdded] = useState(false);
   const [customizeOpen, setCustomizeOpen] = useState(false);
   const [sizeChartOpen, setSizeChartOpen] = useState(false);
@@ -176,7 +175,12 @@ export default function ProductModal({ product, onClose, onAddedToCart }: Produc
               </div>
 
               <h2 className="font-playfair text-3xl text-mocha-900 mb-1">{product.name}</h2>
-              <p className="font-lora text-xl text-mocha-600 mb-5">{formatPrice(product.price, product.priceUsd)}</p>
+              <p className="font-lora text-xl text-mocha-600 mb-5">{formatPrice(product.price)}</p>
+              {currency === 'USD' && (
+                <p className="font-lora text-xs leading-relaxed text-mocha-500 -mt-3 mb-5">
+                  International display prices are fixed at $200 per garment (₹19,024 equivalent in Shopify). Shopify checkout with Razorpay charges in INR; the delivery country selected at checkout determines the shipping rate.
+                </p>
+              )}
 
               {product.sizes?.length ? (
                 <fieldset className="mb-5" aria-describedby={sizeError ? `size-error-${product.id}` : undefined}>
@@ -219,7 +223,7 @@ export default function ProductModal({ product, onClose, onAddedToCart }: Produc
                   className="w-full flex items-center justify-center gap-2 py-3.5 bg-mocha-900 text-gold-200 font-cinzel text-xs tracking-[0.2em] uppercase hover:bg-mocha-800 transition-colors shadow-md"
                 >
                   <ArrowRight size={14} strokeWidth={1.5} />
-                  Buy Now — {formatPrice(product.price, product.priceUsd)}
+                  Buy Now — {formatPrice(product.price)}
                 </button>
                 <button
                   id="modal-add-to-bag-btn"

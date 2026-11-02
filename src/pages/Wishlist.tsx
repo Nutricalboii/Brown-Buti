@@ -9,7 +9,7 @@ import { getResponsiveProductImageSrcSet } from '../lib/responsive-product-image
 export default function Wishlist() {
   const { items, toggleWishlist } = useWishlist();
   const { addItem } = useCart();
-  const { formatPrice } = useCurrency();
+  const { formatPrice, currency } = useCurrency();
 
   return (
     <div className="pt-24 pb-20 min-h-screen">
@@ -36,6 +36,11 @@ export default function Wishlist() {
               </span>
             )}
           </div>
+          {currency === 'USD' && items.length > 0 && (
+            <p className="font-lora text-xs leading-relaxed text-mocha-500 -mt-6 mb-8" role="note">
+              International display prices are fixed at $200 per garment (₹19,024 equivalent in Shopify). Shopify checkout with Razorpay charges in INR.
+            </p>
+          )}
 
           {items.length === 0 ? (
             /* Empty state */
@@ -104,7 +109,7 @@ export default function Wishlist() {
                     </h3>
                     <div className="flex items-center justify-between">
                       <span className="font-lora text-mocha-700 font-medium">
-                        {formatPrice(product.price, product.priceUsd)}
+                        {formatPrice(product.price)}
                       </span>
                       <button
                         id={`wishlist-add-to-cart-${product.id}`}

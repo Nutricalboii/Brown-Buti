@@ -7,6 +7,7 @@ import type { Product } from '../data/products';
 import { ImageCarousel, ProductModal, AddedToBagDrawer } from '../components';
 import { useCurrency, useWishlist } from '../context';
 import { ShopItemListJsonLd, BreadcrumbJsonLd } from '../lib/jsonld';
+import { INTERNATIONAL_PRICE_USD } from '../../shared/market-display.mjs';
 
 const CATEGORIES = ['Blouses', 'Sarees', 'Underskirt'];
 const COLLECTIONS = ['The Occasion Edit', 'The Café Collection'];
@@ -14,6 +15,10 @@ const PRICE_RANGES = [
   { label: 'Under ₹5,000', min: 0, max: 4999 },
   { label: '₹5,000 – ₹10,000', min: 5000, max: 10000 },
   { label: 'Above ₹10,000', min: 10001, max: Infinity },
+];
+const INTERNATIONAL_PRICE_RANGES = [
+  { label: 'Under $200', min: 0, max: 199.99 },
+  { label: '$200', min: 200, max: 200 },
 ];
 const PERSONALITIES = ['Elegant', 'Refined', 'Confident', 'Intelligent', 'Heritage', 'Regal', 'Playful', 'Romantic', 'Bold', 'Sunny'];
 
@@ -38,7 +43,8 @@ export default function Shop() {
   const [addedSize, setAddedSize] = useState<string | undefined>();
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [filters, setFilters] = useState<Filters>(EMPTY_FILTERS);
-  const { formatPrice } = useCurrency();
+  const { formatPrice, currency } = useCurrency();
+  const priceRanges = currency === 'USD' ? INTERNATIONAL_PRICE_RANGES : PRICE_RANGES;
   const { toggleWishlist: wishlistToggle, isWishlisted: checkWishlisted } = useWishlist();
   const [searchParams, setSearchParams] = useSearchParams();
 
@@ -68,6 +74,10 @@ export default function Shop() {
     }
   }, [searchParams]);
 
+  useEffect(() => {
+    setFilters((current) => current.priceRanges.length ? { ...current, priceRanges: [] } : current);
+  }, [currency]);
+
   const activeFilterCount =
     filters.categories.length + filters.collections.length + filters.priceRanges.length + filters.personalities.length;
 
@@ -83,8 +93,9 @@ export default function Shop() {
       }
       if (filters.collections.length > 0 && (!p.collection || !filters.collections.includes(p.collection))) return false;
       if (filters.priceRanges.length > 0) {
-        const match = PRICE_RANGES.filter((r) => filters.priceRanges.includes(r.label))
-          .some((r) => p.price >= r.min && p.price <= r.max);
+        const displayedPrice = currency === 'USD' ? INTERNATIONAL_PRICE_USD : p.price;
+        const match = priceRanges.filter((r) => filters.priceRanges.includes(r.label))
+          .some((r) => displayedPrice >= r.min && displayedPrice <= r.max);
         if (!match) return false;
       }
       if (filters.personalities.length > 0) {
@@ -93,7 +104,7 @@ export default function Shop() {
       }
       return true;
     });
-  }, [filters, products]);
+  }, [currency, filters, priceRanges, products]);
 
   return (
     <div className="pt-24 pb-20 min-h-screen">
@@ -126,6 +137,11 @@ export default function Shop() {
           >
             Each piece carries a personality. Find yours.
           </motion.p>
+          {currency === 'USD' && (
+            <p className="font-lora text-xs leading-relaxed text-mocha-500 mt-3" role="note">
+              International display prices are fixed at $200 per garment (₹19,024 equivalent in Shopify). Shopify checkout with Razorpay charges in INR.
+            </p>
+          )}
         </div>
 
         {/* Filters Bar */}
@@ -348,7 +364,7 @@ export default function Shop() {
                     Price
                   </h3>
                   <div className="space-y-3">
-                    {PRICE_RANGES.map((range) => (
+                    {priceRanges.map((range) => (
                       <CheckboxItem
                         key={range.label}
                         label={range.label}
@@ -448,7 +464,7 @@ interface ProductCardProps {
   product: Product;
   index: number;
   onSelect: (p: Product) => void;
-  formatPrice: (price: number, priceUsd?: number) => string;
+  formatPrice: (price: number) => string;
   onToggleWishlist: (p: Product) => void;
   isWishlisted: boolean;
 }
@@ -516,7 +532,7 @@ const ProductCard = forwardRef<HTMLDivElement, ProductCardProps>(function Produc
         <p className="font-cinzel text-xs tracking-[0.2em] uppercase text-mocha-800 mb-1">
           {product.name}
         </p>
-        <p className="font-lora text-sm text-mocha-500">{formatPrice(product.price, product.priceUsd)}</p>
+        <p className="font-lora text-sm text-mocha-500">{formatPrice(product.price)}</p>
         <p className="font-lora text-xs italic text-mocha-400 mt-1">
           {product.collection || `${product.motif} Motif`}
         </p>

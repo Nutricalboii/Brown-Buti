@@ -99,6 +99,9 @@ export default function Navbar({ onSearchOpen }: NavbarProps) {
                 </button>
                 <button
                   onClick={() => setCurrency('USD')}
+                  title="International display prices are fixed at $200 per garment; Shopify checkout charges in INR"
+                  aria-label="Show international prices in US dollars"
+                  aria-pressed={currency === 'USD'}
                   className={`px-2 py-1 rounded-full transition-colors ${currency === 'USD' ? 'bg-mocha-800 text-gold-200' : 'hover:bg-mocha-100'}`}
                 >
                   USD
@@ -188,6 +191,9 @@ export default function Navbar({ onSearchOpen }: NavbarProps) {
               </button>
               <button
                 onClick={() => setCurrency('USD')}
+                title="International display prices are fixed at $200 per garment; Shopify checkout charges in INR"
+                aria-label="Show international prices in US dollars"
+                aria-pressed={currency === 'USD'}
                 className={`px-4 py-2 border transition-colors ${currency === 'USD' ? 'border-mocha-800 bg-mocha-800 text-gold-200' : 'border-mocha-200 hover:border-mocha-400'}`}
               >
                 USD
