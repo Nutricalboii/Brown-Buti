@@ -6,7 +6,6 @@ export interface Product {
   name: string;
   motif: string;
   price: number;
-  priceUsd?: number;
   category: 'Blouses' | 'Sarees' | 'Underskirt';
   collection?: 'The Occasion Edit' | 'The Café Collection';
   personality: string[];
@@ -34,7 +33,6 @@ export const products: Product[] = [
     name: 'SAPPHIRE MOGRA',
     motif: 'Cage',
     price: PRODUCT_PRICES_INR['7'],
-    priceUsd: 200,
     category: 'Sarees',
     collection: 'The Occasion Edit',
     sizes: ['One Size'],
@@ -43,8 +41,8 @@ export const products: Product[] = [
     story:
       'The cage motif was my little way of playing with the idea of freedom — because what’s more fun than putting a cage on a saree and then wearing it exactly how you want?',
     wearFor: 'I see this one on the woman who likes her classics with a little bit of edge. Dinner dates, cocktails, gallery evenings — basically anywhere you want someone to stop and ask, “Wait, is that a cage on your saree?”',
-    image: productMedia('sapphire-mogra', 'DSC08199.webp'),
-    images: [productMedia('sapphire-mogra', 'DSC08199.webp'), productMedia('sapphire-mogra', 'DSC08227.webp'), productMedia('sapphire-mogra', 'C5795.browser.webm'), productMedia('sapphire-mogra', 'C5813.browser.webm')],
+    image: productMedia('sapphire-mogra', 'IMG_3378.webp'),
+    images: [productMedia('sapphire-mogra', 'IMG_3378.webp'), productMedia('sapphire-mogra', 'DSC08227.webp'), productMedia('sapphire-mogra', 'C5795.browser.webm'), productMedia('sapphire-mogra', 'C5813.browser.webm')],
     color: '#8898B8',
     shopifyVariantId: '48988074541305', // SAPPHIRE MOGRA
   },
@@ -53,7 +51,6 @@ export const products: Product[] = [
     name: 'BUTTER MOGRA',
     motif: 'Pineapple',
     price: PRODUCT_PRICES_INR['6'],
-    priceUsd: 200,
     category: 'Sarees',
     collection: 'The Occasion Edit',
     sizes: ['One Size'],
@@ -72,7 +69,6 @@ export const products: Product[] = [
     name: 'RUBY DOE',
     motif: 'Deer',
     price: PRODUCT_PRICES_INR['5'],
-    priceUsd: 200,
     category: 'Sarees',
     collection: 'The Occasion Edit',
     sizes: ['One Size'],
@@ -91,7 +87,6 @@ export const products: Product[] = [
     name: 'JALPARIÉ',
     motif: 'Seahorse',
     price: PRODUCT_PRICES_INR['1'],
-    priceUsd: 200,
     category: 'Sarees',
     collection: 'The Occasion Edit',
     sizes: ['One Size'],
@@ -110,7 +105,6 @@ export const products: Product[] = [
     name: 'ROSÉ MOGRA',
     motif: 'Owl',
     price: PRODUCT_PRICES_INR['2'],
-    priceUsd: 200,
     category: 'Sarees',
     collection: 'The Occasion Edit',
     sizes: ['One Size'],
@@ -129,7 +123,6 @@ export const products: Product[] = [
     name: 'RIWAAYAT',
     motif: 'Elephant',
     price: PRODUCT_PRICES_INR['3'],
-    priceUsd: 200,
     category: 'Sarees',
     collection: 'The Occasion Edit',
     sizes: ['One Size'],
@@ -148,7 +141,6 @@ export const products: Product[] = [
     name: 'SUNDOWNER SILK',
     motif: 'Fish',
     price: PRODUCT_PRICES_INR['4'],
-    priceUsd: 200,
     category: 'Sarees',
     collection: 'The Occasion Edit',
     sizes: ['One Size'],
@@ -167,7 +159,6 @@ export const products: Product[] = [
     name: 'Pistachio',
     motif: 'Polka dot',
     price: PRODUCT_PRICES_INR.pistachio,
-    priceUsd: 200,
     category: 'Sarees',
     collection: 'The Café Collection',
     sizes: ['One Size'],
@@ -185,13 +176,13 @@ export const products: Product[] = [
     image: productMedia('pistachio', 'model-cover.webp'),
     images: [productMedia('pistachio', 'model-cover.webp'), productMedia('pistachio', 'C8907.browser.webm'), productMedia('pistachio', 'C8919.browser.webm'), productMedia('pistachio', 'C8925.browser.webm')],
     color: '#B9C6A0',
+    shopifyVariantId: '67365851070713', // PISTACHIO · One Size
   },
   {
     id: 'strawberry-latte',
     name: 'Strawberry Latte',
     motif: 'Polka dot',
     price: PRODUCT_PRICES_INR['strawberry-latte'],
-    priceUsd: 200,
     category: 'Sarees',
     collection: 'The Café Collection',
     sizes: ['One Size'],
@@ -210,13 +201,13 @@ export const products: Product[] = [
     // The shared album has no model-worn Strawberry Latte photos or video yet.
     images: [productMedia('strawberry-latte', 'DSC03388.webp'), productMedia('strawberry-latte', 'DSC03421.webp')],
     color: '#D5A6A7',
+    shopifyVariantId: '67365889736953', // STRAWBERRY LATTE · One Size
   },
   {
     id: 8,
     name: 'Chandini',
     motif: 'Designer Underskirt',
     price: PRODUCT_PRICES_INR['8'],
-    priceUsd: 120,
     category: 'Underskirt',
     sizes: ['S', 'M', 'L', 'XL', 'XXL'],
     personality: ['Regal', 'Elegant'],
@@ -234,7 +225,6 @@ export const products: Product[] = [
     name: 'Chandi — Silver',
     motif: 'Metallic',
     price: PRODUCT_PRICES_INR.chandi,
-    priceUsd: 100,
     category: 'Blouses',
     personality: ['Versatile', 'Easy to style', 'Polished'],
     keywords: ['Metallic finish', 'Silver', 'Versatile', 'Easy to style'],
@@ -261,7 +251,6 @@ export const products: Product[] = [
     name: 'Tamara — Copper',
     motif: 'Metallic',
     price: PRODUCT_PRICES_INR.tamara,
-    priceUsd: 100,
     category: 'Blouses',
     personality: ['Warm', 'Versatile', 'Effortless'],
     keywords: ['Metallic finish', 'Copper', 'Versatile', 'Easy to style'],
