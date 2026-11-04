@@ -25,6 +25,11 @@ export default function AddedToBagDrawer({ product, size, onClose }: AddedToBagD
   const shippingDisplay = getShippingDisplay(countryCode, subtotal);
 
   const handleCheckout = () => {
+    if (currency === 'USD') {
+      onClose();
+      navigate('/cart');
+      return;
+    }
     try {
       setCheckoutError(null);
       const itemsPayload = items.map((item) => ({
@@ -128,7 +133,7 @@ export default function AddedToBagDrawer({ product, size, onClose }: AddedToBagD
                 </p>
                 {currency === 'USD' && (
                   <p className="font-lora text-[11px] leading-relaxed text-mocha-600">
-                    International display prices are fixed at $200 per garment (₹19,024 equivalent in Shopify). Shopify checkout with Razorpay charges in INR; the delivery country selected at checkout determines the shipping rate.
+                    International visitors see $200 per garment and use the secure USD checkout; India visitors use Shopify checkout in INR.
                   </p>
                 )}
               </div>
@@ -179,7 +184,7 @@ export default function AddedToBagDrawer({ product, size, onClose }: AddedToBagD
                 }}
                 className="w-full py-3.5 bg-mocha-900 text-gold-200 font-cinzel text-xs tracking-[0.25em] uppercase hover:bg-mocha-800 transition-colors flex items-center justify-center gap-2 shadow-md"
               >
-                <ArrowRight size={15} /> Checkout Now
+                <ArrowRight size={15} /> {currency === 'USD' ? 'Review USD checkout' : 'Checkout Now'}
               </button>
 
               <div className="grid grid-cols-2 gap-2">

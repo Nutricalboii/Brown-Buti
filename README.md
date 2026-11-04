@@ -21,7 +21,8 @@ The Mocha & Mogra name remains in a few infrastructure values and legacy referen
 
 - Responsive home, shop, story, contact, cart, wishlist, sign-in/profile, size guide, and policy pages.
 - Catalogue categories for Sarees, Blouses, and Underskirt, with product details, sizing, media, search, and filters.
-- Shopify Storefront Cart API checkout with a Shopify cart-permalink fallback. Shopify owns checkout, orders, inventory, taxes, and payment-provider processing.
+- Shopify Storefront Cart API checkout with a Shopify cart-permalink fallback. India delivery addresses use Shopify checkout with Razorpay in INR.
+- A separate, server-gated international path is implemented for Razorpay USD Payment Links. It validates the cart on the server, stores a pending order, creates a USD link with destination shipping, verifies the Razorpay webhook, and then creates a paid Shopify Admin order. It remains disabled until the required production secrets and approved shipping-rate table are configured.
 - Contact and newsletter forms backed by Supabase Edge Functions. If the Supabase client is not configured or online contact delivery fails, the contact page offers a prepared email draft instead of claiming the message was sent.
 - Organization/product structured data, Vercel response headers, and analytics hooks for GA4 and Meta where configured.
 
@@ -50,17 +51,19 @@ The current website shipping-policy copy in `src/pages/ShippingPolicy.tsx` state
 | India | ₹99 per order; complimentary on orders above ₹2,999 | Shown at checkout or communicated after confirmation |
 | USA and other eligible international destinations | Calculated from delivery location and order details; customs/import charges may apply unless included | Varies by destination and customs clearance |
 
-International availability depends on the destinations supported by the merchant and carrier; “all countries” must not be promised unless the Shopify market and shipping profile actually support them. Customs duties, import taxes, and other destination charges may be payable by the customer unless included at checkout. Made-to-order processing can add time and should be disclosed on the relevant product page.
+International availability depends on the destinations supported by the merchant and carrier; “all countries” must not be promised unless the approved USD shipping-rate table and payment account support them. Customs duties, import taxes, and other destination charges may be payable by the customer unless included at checkout. Made-to-order processing can add time and should be disclosed on the relevant product page.
 
 ### International price display
 
-India visitors see the India catalogue prices in INR. Visitors detected outside India (including the USA, UK, Japan, Germany, and other supported markets) see a fixed `$200` display price per garment on the website. Shopify's active international catalogue uses the INR equivalent of `₹19,024` per garment because the current Razorpay connection charges checkout in INR; the customer's bank or card may show its own conversion. This website display is not a promise that Shopify checkout will charge USD. The visitor can also change the display selector manually, while Shopify checkout uses the delivery address for the final currency, shipping, tax, and payment details.
+India visitors see the India catalogue prices in INR and use Shopify checkout. Visitors detected outside India (including the USA, UK, Japan, Germany, and other supported markets) see a fixed `$200` price per garment and use the separate USD Payment Link flow. The final destination address is collected before the link is created so the server can apply the approved USD shipping rate for that country.
 
-**Important:** website policy text does not create Shopify checkout rates. Configure and verify the ₹99 India rate and free-shipping threshold in Shopify, plus location/order-based international rates and eligible markets. The website's IP-based currency/shipping copy is only a display hint; Shopify checkout uses the delivery address and live Shopify shipping configuration. Do not claim an international rate is calculated until the configured carrier/app or rate rules actually return it at checkout.
+**Important:** website policy text does not create checkout rates. India remains on Shopify/Razorpay INR. International customers use the separate Razorpay USD Payment Link, where the server chooses USD shipping from `INTERNATIONAL_SHIPPING_RATES_USD` using the submitted destination country. The IP-based storefront mode is a display/route hint; the delivery address is authoritative for the payment route. Do not enable the USD path until every supported destination has an approved rate and the webhook has been tested.
 
-## Payments and the ₹1 test listing
+## Payments, dual checkout, and the ₹1 test listing
 
-Payment is initiated in Shopify checkout; there is no direct Razorpay payment flow in the React storefront. Shopify's payment-provider connection and Razorpay account approval are external settings. The repository cannot confirm whether Razorpay is currently in test or live mode, whether a payment actually settled, or which sites Razorpay has approved.
+India payment is initiated in Shopify checkout. International USD payment is initiated through a server-created Razorpay Payment Link. The browser never receives a Razorpay secret and never sets a price. The server validates product IDs, size variants, quantity, country, shipping, and the fixed `$200` per-garment international price; the signed Razorpay webhook is the only event that marks the payment paid and creates the corresponding Shopify order.
+
+The USD path is deliberately fail-closed. It returns a clear unavailable message and leaves the Shopify INR fallback available when any of the following are missing: test/live Razorpay credentials, `RAZORPAY_WEBHOOK_SECRET`, Supabase order storage, Shopify Admin `write_orders` access, or the approved shipping-rate JSON. A Razorpay redirect page alone is not treated as proof of payment.
 
 If a test-only listing or test transaction was used, complete these checks before launch:
 
@@ -101,7 +104,12 @@ Set only the integrations needed for the environment. Keep `.env` out of Git and
 | `VITE_SUPABASE_ANON_KEY` | Browser Supabase client | Publishable/anon key only; never use a service-role key in a `VITE_` variable. |
 | `VITE_GA4_MEASUREMENT_ID` | Optional GA4 analytics | Configure only when the brand's analytics property is approved. |
 | `VITE_META_PIXEL_ID` | Optional Meta Pixel | Configure only when the brand's pixel is approved. |
-| `VITE_RAZORPAY_KEY_ID`, `RAZORPAY_KEY_ID`, `RAZORPAY_KEY_SECRET`, `VITE_RAZORPAY_CHECKOUT_ENABLED`, `RAZORPAY_CHECKOUT_ENABLED` | Reserved/example variables only | No active Razorpay implementation exists in this website source. Both enable flags default to `false`; do not enable them without implementing and approving a separate server-side order-persistence and fulfilment flow. Shopify checkout remains the current storefront flow. |
+| `RAZORPAY_MODE`, `RAZORPAY_INTERNATIONAL_ENABLED`, `RAZORPAY_KEY_ID`, `RAZORPAY_KEY_SECRET` | Server-side international Payment Links | Keep `RAZORPAY_MODE=test` and the enable flag `false` until the complete test flow passes. The key ID/secret never belong in the browser or repository. |
+| `RAZORPAY_WEBHOOK_SECRET` | Signed webhook verification | Must match the secret configured for the Razorpay `payment_link.paid` webhook. |
+| `INTERNATIONAL_SHIPPING_RATES_USD` | Destination-based USD shipping | JSON object with a required `DEFAULT` amount and optional ISO-2 country overrides, e.g. `{"US":35,"GB":40,"DEFAULT":50}`. Values are USD per order; final rates require owner approval. |
+| `SHOPIFY_ADMIN_STORE_DOMAIN`, `SHOPIFY_ADMIN_ACCESS_TOKEN` | Paid international order sync | Server-side Shopify Admin token with `write_orders`; never use this token in a `VITE_` variable. |
+| `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY` | Pending/paid international order state | Server-side only; apply `supabase/migrations/20261104000000_international_orders.sql`. |
+| `PUBLIC_SITE_URL` | Razorpay callback URL | Use the canonical production URL `https://brown-buti.vercel.app`. |
 | `RESEND_API_KEY`, `CONTACT_FROM_EMAIL`, `CONTACT_TO_EMAIL` | Supabase contact function | Sender must be verified with Resend. Recipient defaults to `hello.brownbuti@gmail.com`. |
 | `MAILCHIMP_API_KEY`, `MAILCHIMP_LIST_ID`, `MAILCHIMP_DC` | Supabase newsletter function | Server-side Mailchimp credentials. |
 | `UPSTASH_REDIS_REST_URL`, `UPSTASH_REDIS_REST_TOKEN` | Shared Edge Function rate limiting | Server-side only; configure in the function runtime. |
@@ -141,6 +149,8 @@ The checks below intentionally separate source-code state from external account 
 - [ ] Confirm production Vercel environment variables are present. A local Storefront API request returned HTTP 401 on 28 October 2026; replace/verify the public Storefront token in Vercel before relying on customer sign-in or profile/order-history API calls. Shopify cart-permalink fallback can still hand off checkout.
 - [ ] Confirm Vercel has `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY` if contact/newsletter forms should submit online; otherwise contact falls back to an email draft and newsletter submission is unavailable.
 - [ ] Confirm every referenced product image/video exists in the deployed build and that the correct product, size, price, and Shopify variant are shown.
+- [ ] Configure the USD flow in test mode only: apply the international-orders migration, add approved shipping rates, set the Razorpay webhook to `POST /api/razorpay-webhook`, and add the Shopify Admin token with `write_orders`.
+- [ ] Test an international Payment Link end to end: verify the link is in USD, the destination shipping amount is correct, the signed webhook is accepted once, a paid Shopify order is created once, and a duplicate webhook does not duplicate the order.
 - [ ] Check the Vercel deployment and every route on mobile and desktop; inspect browser console/network errors and the deployed security headers.
 - [ ] Confirm the canonical URL, redirects, SEO metadata, CSP, and exact CORS origins use `https://brown-buti.vercel.app`; legacy `mochamogra.com` references remain only in allowlists and should be removed only after any domain cutover is approved.
 - [ ] Verify SEO title/description, structured data, sitemap, favicon, and social previews refer to Brown Buti and the selected public URL.

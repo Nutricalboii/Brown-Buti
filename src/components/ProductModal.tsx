@@ -178,7 +178,7 @@ export default function ProductModal({ product, onClose, onAddedToCart }: Produc
               <p className="font-lora text-xl text-mocha-600 mb-5">{formatPrice(product.price)}</p>
               {currency === 'USD' && (
                 <p className="font-lora text-xs leading-relaxed text-mocha-500 -mt-3 mb-5">
-                  International display prices are fixed at $200 per garment (₹19,024 equivalent in Shopify). Shopify checkout with Razorpay charges in INR; the delivery country selected at checkout determines the shipping rate.
+                  International visitors see $200 per garment and use the secure USD checkout; India visitors use Shopify checkout in INR.
                 </p>
               )}
 

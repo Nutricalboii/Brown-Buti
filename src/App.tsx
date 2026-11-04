@@ -26,6 +26,7 @@ const ReturnPolicy = lazy(() => import('./pages/ReturnPolicy'));
 const ShippingPolicy = lazy(() => import('./pages/ShippingPolicy'));
 const SizeGuide = lazy(() => import('./pages/SizeGuide'));
 const WishlistPage = lazy(() => import('./pages/Wishlist'));
+const InternationalPaymentComplete = lazy(() => import('./pages/InternationalPaymentComplete'));
 
 import type { Product } from './data/products';
 import { trackPageView } from './lib/analytics';
@@ -81,6 +82,7 @@ function Layout() {
             <Route path="/shipping-policy" element={<ShippingPolicy />} />
             <Route path="/size-guide" element={<SizeGuide />} />
             <Route path="/wishlist" element={<WishlistPage />} />
+            <Route path="/international-payment/complete" element={<InternationalPaymentComplete />} />
             <Route path="*" element={<Home />} />
           </Routes>
         </Suspense>
