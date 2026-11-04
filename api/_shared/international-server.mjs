@@ -147,6 +147,23 @@ export async function supabaseRequest(config, path, { method = 'GET', body, head
   return parsed;
 }
 
+export function buildInternationalOrderClaimPath(referenceId, now) {
+  const params = new URLSearchParams();
+  params.set('reference_id', `eq.${referenceId}`);
+  params.set('or', `(status.in.(payment_link_created,sync_failed),and(status.eq.syncing,sync_lease_until.lt.${now}))`);
+  params.set('select', 'reference_id');
+  return `international_orders?${params.toString()}`;
+}
+
+export function buildInternationalOrderLeasePath(referenceId, leaseUntil) {
+  const params = new URLSearchParams();
+  params.set('reference_id', `eq.${referenceId}`);
+  params.set('status', 'eq.syncing');
+  params.set('sync_lease_until', `eq.${leaseUntil}`);
+  params.set('select', 'reference_id');
+  return `international_orders?${params.toString()}`;
+}
+
 export async function createRazorpayPaymentLink(config, { referenceId, shippingAddress, calculation }) {
   const auth = Buffer.from(`${config.razorpayKeyId}:${config.razorpayKeySecret}`).toString('base64');
   const response = await fetch('https://api.razorpay.com/v1/payment_links', {
@@ -279,4 +296,36 @@ export async function createShopifyInternationalOrder(config, order) {
     throw new Error(userError || 'Shopify could not create the paid international order.');
   }
   return payload.order;
+}
+
+export async function findShopifyInternationalOrder(config, referenceId) {
+  if (!/^bb-[a-z0-9-]{4,40}$/i.test(referenceId)) throw new Error('Shopify order reference is invalid.');
+
+  const query = `query findInternationalOrder($search: String!) {
+    orders(first: 2, query: $search) {
+      edges { node { id name displayFinancialStatus sourceIdentifier } }
+    }
+  }`;
+  const response = await fetch(shopifyAdminUrl(config), {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'X-Shopify-Access-Token': config.shopifyAdminAccessToken,
+    },
+    body: JSON.stringify({
+      query,
+      variables: { search: `source_identifier:${referenceId}` },
+    }),
+    signal: AbortSignal.timeout(10000),
+  });
+  const data = await response.json().catch(() => null);
+  if (!response.ok || data?.errors?.length) {
+    throw new Error('Shopify could not verify whether this payment already has an order.');
+  }
+
+  const matches = (data?.data?.orders?.edges || [])
+    .map((edge) => edge?.node)
+    .filter((order) => order?.sourceIdentifier === referenceId);
+  if (matches.length > 1) throw new Error('Multiple Shopify orders share this payment reference; manual reconciliation is required.');
+  return matches[0] || null;
 }

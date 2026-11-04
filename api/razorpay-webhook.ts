@@ -1,6 +1,9 @@
 import { createHmac, timingSafeEqual } from 'node:crypto';
 import {
+  buildInternationalOrderClaimPath,
+  buildInternationalOrderLeasePath,
   createShopifyInternationalOrder,
+  findShopifyInternationalOrder,
   getInternationalConfig,
   isInternationalConfigReady,
   jsonResponse,
@@ -46,41 +49,76 @@ async function handler(request: Request) {
 
   const paymentLink = paymentLinkEntity(event);
   const referenceId = typeof paymentLink?.reference_id === 'string' ? paymentLink.reference_id : '';
-  if (!referenceId || !/^bb-[a-z0-9-]{4,40}$/i.test(referenceId)) return new Response('Missing reference.', { status: 400 });
+  const paymentLinkId = typeof paymentLink?.id === 'string' ? paymentLink.id : '';
+  if (!referenceId || !/^bb-[a-z0-9-]{4,40}$/i.test(referenceId) || !paymentLinkId) {
+    return new Response('Missing payment reference.', { status: 400 });
+  }
 
+  const now = new Date();
+  const leaseUntil = new Date(now.getTime() + 3 * 60 * 1000).toISOString();
   try {
     const records = await supabaseRequest(config, `international_orders?reference_id=eq.${encodeURIComponent(referenceId)}&limit=1`);
     const order = Array.isArray(records) ? records[0] : null;
     if (!order) return new Response('Order not found.', { status: 404 });
-    if (order.status === 'shopify_synced' && order.shopify_order_id) return new Response('Already synced.', { status: 200 });
-    if (order.razorpay_payment_link_id && order.razorpay_payment_link_id !== paymentLink.id) return new Response('Payment link mismatch.', { status: 409 });
+    if (order.razorpay_payment_link_id && order.razorpay_payment_link_id !== paymentLinkId) return new Response('Payment link mismatch.', { status: 409 });
     if (paymentLink.currency !== 'USD' || Number(paymentLink.amount) !== Number(order.amount_minor)) return new Response('Payment amount mismatch.', { status: 409 });
+    if (order.status === 'shopify_synced' && order.shopify_order_id) return new Response('Already synced.', { status: 200 });
+
+    // This conditional update is the single-writer claim. Concurrent webhook
+    // deliveries cannot both create a Shopify order for the same reference.
+    const claimed = await supabaseRequest(config, buildInternationalOrderClaimPath(referenceId, now.toISOString()), {
+      method: 'PATCH',
+      body: { status: 'syncing', sync_lease_until: leaseUntil, last_error: null },
+      headers: { Prefer: 'return=representation' },
+    });
+    if (!Array.isArray(claimed) || claimed.length !== 1) {
+      const latestRecords = await supabaseRequest(config, `international_orders?reference_id=eq.${encodeURIComponent(referenceId)}&limit=1`);
+      const latest = Array.isArray(latestRecords) ? latestRecords[0] : null;
+      if (latest?.status === 'shopify_synced' && latest.shopify_order_id) return new Response('Already synced.', { status: 200 });
+      // Keep a retry in Razorpay's queue in case the active worker dies.
+      return new Response('Order sync is already in progress; retry later.', { status: 503 });
+    }
 
     const paymentId = event?.payload?.payment?.entity?.id || null;
-    const shopifyOrder = await createShopifyInternationalOrder(config, {
+    // If Shopify accepted a prior attempt but Supabase did not record it, find
+    // that order by sourceIdentifier and repair the link instead of duplicating it.
+    const existingShopifyOrder = await findShopifyInternationalOrder(config, referenceId);
+    if (existingShopifyOrder && existingShopifyOrder.displayFinancialStatus !== 'PAID') {
+      throw new Error('The existing Shopify order is not marked paid; manual reconciliation is required.');
+    }
+    const shopifyOrder = existingShopifyOrder || await createShopifyInternationalOrder(config, {
       ...order,
-      razorpay_payment_link_id: paymentLink.id,
+      reference_id: referenceId,
+      razorpay_payment_link_id: paymentLinkId,
       razorpay_payment_id: paymentId,
     });
 
-    await supabaseRequest(config, `international_orders?reference_id=eq.${encodeURIComponent(referenceId)}`, {
+    const synced = await supabaseRequest(config, buildInternationalOrderLeasePath(referenceId, leaseUntil), {
       method: 'PATCH',
       body: {
         status: 'shopify_synced',
-        razorpay_payment_link_id: paymentLink.id,
+        razorpay_payment_link_id: paymentLinkId,
         razorpay_payment_id: paymentId,
         shopify_order_id: shopifyOrder.id,
         paid_at: new Date().toISOString(),
         synced_at: new Date().toISOString(),
+        sync_lease_until: null,
         last_error: null,
       },
-      headers: { Prefer: 'return=minimal' },
+      headers: { Prefer: 'return=representation' },
     });
+    if (!Array.isArray(synced) || synced.length !== 1) {
+      return new Response('Order sync lease expired; retrying reconciliation.', { status: 503 });
+    }
     return jsonResponse(request, { received: true, shopifyOrderId: shopifyOrder.id });
   } catch (error) {
-    await supabaseRequest(config, `international_orders?reference_id=eq.${encodeURIComponent(referenceId)}`, {
+    await supabaseRequest(config, buildInternationalOrderLeasePath(referenceId, leaseUntil), {
       method: 'PATCH',
-      body: { status: 'sync_failed', last_error: error instanceof Error ? error.message : 'Shopify sync failed.' },
+      body: {
+        status: 'sync_failed',
+        sync_lease_until: null,
+        last_error: error instanceof Error ? error.message : 'Shopify sync failed.',
+      },
       headers: { Prefer: 'return=minimal' },
     }).catch(() => undefined);
     // 503 makes Razorpay retry after a transient Shopify/Supabase failure.
