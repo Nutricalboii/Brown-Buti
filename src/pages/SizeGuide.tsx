@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
-import { SizeChartContent } from '../components/SizeChart';
+import { ChandiniSizeChartContent, SizeChartContent } from '../components/SizeChart';
 import type { SizeUnit } from '../data/sizeChart';
 import { BRAND_NAME } from '../lib/brand';
 import { CUSTOMER_CARE_EMAIL } from '../lib/contact';
@@ -15,14 +15,6 @@ const sareeGuide = [
     fits: 'Fits most body types — the drape style adjusts to you',
     note: `All ${BRAND_NAME} sarees come in a single standard length, as is traditional in silk sarees.`,
   },
-];
-
-const underskirtGuide = [
-  { size: 'S',   waist: '24"–28"', length: '38"–40"' },
-  { size: 'M',   waist: '28"–32"', length: '40"–42"' },
-  { size: 'L',   waist: '32"–36"', length: '40"–42"' },
-  { size: 'XL',  waist: '36"–40"', length: '40"–42"' },
-  { size: 'XXL', waist: '40"–44"', length: '40"–42"' },
 ];
 
 const howToMeasure = [
@@ -109,30 +101,8 @@ export default function SizeGuide() {
             <h2 className="font-cinzel text-lg tracking-widest text-mocha-900 uppercase mb-2 pb-3 border-b border-mocha-200">
               Chaandini (Underskirt) Size Chart
             </h2>
-            <p className="font-lora text-sm text-mocha-400 mb-6">
-              Chaandini features an adjustable drawstring waist — choose by your natural waist measurement.
-            </p>
-            <div className="overflow-x-auto">
-              <table className="w-full border-collapse text-sm">
-                <thead>
-                  <tr className="border-b border-mocha-200">
-                    {['Size', 'Waist (fits)', 'Length'].map((h) => (
-                      <th key={h} className="text-left py-3 pr-6 font-cinzel text-mocha-900 uppercase tracking-wider text-xs">
-                        {h}
-                      </th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody className="font-lora text-mocha-600 divide-y divide-mocha-100">
-                  {underskirtGuide.map((row) => (
-                    <tr key={row.size} className="hover:bg-mocha-50 transition-colors">
-                      <td className="py-3 pr-6 font-semibold text-mocha-800">{row.size}</td>
-                      <td className="py-3 pr-6">{row.waist}</td>
-                      <td className="py-3">{row.length}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+            <div className="max-w-xl">
+              <ChandiniSizeChartContent unit={unit} onUnitChange={setUnit} />
             </div>
           </section>
 

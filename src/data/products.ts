@@ -1,5 +1,6 @@
 import { PRODUCT_PRICES_INR } from '../../shared/product-prices.mjs';
 import { shopifySizeVariantIds } from '../../shared/shopify-product-variant.mjs';
+import { CHANDINI_SIZE_ROWS } from './sizeChart';
 
 export interface Product {
   id: number | string;
@@ -18,6 +19,8 @@ export interface Product {
   washingInstructions?: string;
   modelSize?: string;
   sizes?: string[];
+  sizeChart?: 'blouse' | 'chandini';
+  colorLabel?: string;
   shopifyVariantIds?: Record<string, string>;
   image: string;
   images: string[];
@@ -209,7 +212,9 @@ export const products: Product[] = [
     motif: 'Designer Underskirt',
     price: PRODUCT_PRICES_INR['8'],
     category: 'Underskirt',
-    sizes: ['S', 'M', 'L', 'XL', 'XXL'],
+    sizes: CHANDINI_SIZE_ROWS.map(({ size }) => size),
+    sizeChart: 'chandini',
+    colorLabel: 'White with a golden border',
     personality: ['Regal', 'Elegant'],
     keywords: ['Underskirt', 'Silk Lining', 'Petticoat', 'Essential'],
     story:

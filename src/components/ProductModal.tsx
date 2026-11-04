@@ -54,6 +54,8 @@ export default function ProductModal({ product, onClose, onAddedToCart }: Produc
   const [sizeChartOpen, setSizeChartOpen] = useState(false);
   const [selectedSize, setSelectedSize] = useState<string | undefined>();
   const [sizeError, setSizeError] = useState<string | null>(null);
+  const sizeChartType = product?.sizeChart ?? (product?.category === 'Blouses' ? 'blouse' : undefined);
+  const hasUnmappedSizes = Boolean(product?.shopifyVariantIds && product.sizes?.some((size) => !product.shopifyVariantIds?.[size]));
 
   useEffect(() => {
     if (product) {
@@ -186,32 +188,39 @@ export default function ProductModal({ product, onClose, onAddedToCart }: Produc
                 <fieldset className="mb-5" aria-describedby={sizeError ? `size-error-${product.id}` : undefined}>
                   <legend className="mb-3 font-cinzel text-[11px] tracking-[0.16em] uppercase text-mocha-700">Select Size</legend>
                   <div className="flex flex-wrap gap-2">
-                    {product.sizes.map((size) => (
-                      <label key={size} className={`cursor-pointer border px-4 py-2.5 font-lora text-sm transition-colors ${selectedSize === size ? 'border-mocha-900 bg-mocha-900 text-gold-200' : 'border-mocha-200 text-mocha-700 hover:border-mocha-700'}`}>
-                        <input
-                          type="radio"
-                          name={`size-${product.id}`}
-                          value={size}
-                          checked={selectedSize === size}
-                          onChange={() => { setSelectedSize(size); setSizeError(null); }}
-                          className="sr-only"
-                        />
-                        {size}
-                      </label>
-                    ))}
+                    {product.sizes.map((size) => {
+                      const hasVariant = product.shopifyVariantIds
+                        ? Boolean(product.shopifyVariantIds[size])
+                        : product.sizes?.length === 1 && Boolean(product.shopifyVariantId);
+                      return (
+                        <label key={size} className={`min-h-11 border px-4 py-2.5 font-lora text-sm transition-colors focus-within:ring-2 focus-within:ring-gold-500 focus-within:ring-offset-2 ${hasVariant ? 'cursor-pointer' : 'cursor-not-allowed opacity-50'} ${selectedSize === size ? 'border-mocha-900 bg-mocha-900 text-gold-200' : 'border-mocha-200 text-mocha-700 hover:border-mocha-700'}`}>
+                          <input
+                            type="radio"
+                            name={`size-${product.id}`}
+                            value={size}
+                            checked={selectedSize === size}
+                            disabled={!hasVariant}
+                            onChange={() => { setSelectedSize(size); setSizeError(null); }}
+                            className="sr-only"
+                          />
+                          {size}{!hasVariant && <span className="sr-only">, not available to order yet</span>}
+                        </label>
+                      );
+                    })}
                   </div>
+                  {hasUnmappedSizes && <p className="mt-2 font-lora text-xs text-mocha-500">Some sizes are not available to order yet.</p>}
                   {sizeError && <p id={`size-error-${product.id}`} className="mt-2 font-lora text-sm text-red-700" role="alert" aria-live="polite">{sizeError}</p>}
                 </fieldset>
               ) : null}
 
-              {product.category === 'Blouses' && (
+              {sizeChartType && (
                 <div className="mb-5">
                   <button
                     type="button"
                     onClick={() => setSizeChartOpen(true)}
                     className="inline-flex min-h-11 items-center gap-2 border-b border-mocha-400 pb-1 text-left font-cinzel text-[11px] tracking-[0.16em] uppercase text-mocha-700 hover:border-mocha-900 hover:text-mocha-900 transition-colors"
                   >
-                    Size Chart
+                    {sizeChartType === 'chandini' ? 'Chandini Size Guide' : 'Size Chart'}
                   </button>
                 </div>
               )}
@@ -280,7 +289,7 @@ export default function ProductModal({ product, onClose, onAddedToCart }: Produc
                 <p className="font-lora text-sm leading-relaxed text-mocha-700">
                   Category: {product.category}{product.collection ? ` · Collection: ${product.collection}` : ''}
                 </p>
-                {product.color && <p className="font-lora text-sm leading-relaxed text-mocha-700 mt-3">Colour: {product.color}</p>}
+                {product.color && <p className="font-lora text-sm leading-relaxed text-mocha-700 mt-3">Colour: {product.colorLabel ?? product.color}</p>}
               </InfoAccordion>
 
               <div className="pt-6 mt-2 border-t border-mocha-100 text-center">
@@ -292,7 +301,7 @@ export default function ProductModal({ product, onClose, onAddedToCart }: Produc
           </motion.div>
 
           <CustomizeOrderModal open={customizeOpen} onClose={() => setCustomizeOpen(false)} />
-          <SizeChartModal open={sizeChartOpen} onClose={() => setSizeChartOpen(false)} />
+          <SizeChartModal open={sizeChartOpen} onClose={() => setSizeChartOpen(false)} chart={sizeChartType ?? 'blouse'} />
         </>
       )}
     </AnimatePresence>

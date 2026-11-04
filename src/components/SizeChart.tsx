@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { X } from 'lucide-react';
-import { BLOUSE_SIZE_ROWS, KURTIS_SIZE_ROWS, type SizeRow, type SizeUnit } from '../data/sizeChart';
+import { BLOUSE_SIZE_ROWS, CHANDINI_SIZE_ROWS, KURTIS_SIZE_ROWS, type SizeRow, type SizeUnit } from '../data/sizeChart';
 
 function displayValue(inches: number, unit: SizeUnit) {
   return unit === 'inches' ? inches : Math.round(inches * 2.54 * 10) / 10;
@@ -76,22 +76,78 @@ export function SizeChartContent({ unit, onUnitChange }: { unit: SizeUnit; onUni
   );
 }
 
-export function SizeChartModal({ open, onClose }: { open: boolean; onClose: () => void }) {
+export function ChandiniSizeChartContent({ unit, onUnitChange }: { unit: SizeUnit; onUnitChange: (unit: SizeUnit) => void }) {
+  const unitLabel = unit === 'inches' ? 'in' : 'cm';
+
+  return (
+    <div className="font-lora text-mocha-800">
+      <p className="mb-5 max-w-[540px] text-sm leading-relaxed text-mocha-700 sm:text-base">
+        Body measurements: choose by your waist and hip. Allow 1–2 inches of ease in the finished garment.
+      </p>
+
+      <div className="mb-5 inline-flex rounded-full border border-mocha-300 p-1" role="group" aria-label="Measurement unit">
+        {(['inches', 'centimeters'] as const).map((option) => {
+          const selected = unit === option;
+          return (
+            <button
+              key={option}
+              type="button"
+              onClick={() => onUnitChange(option)}
+              aria-pressed={selected}
+              className={`min-h-11 min-w-20 rounded-full px-4 font-cinzel text-xs tracking-[0.12em] uppercase transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold-500 ${selected ? 'bg-mocha-900 text-gold-200' : 'text-mocha-700 hover:bg-mocha-50'}`}
+            >
+              {option === 'inches' ? 'Inches' : 'Centimetres'}
+            </button>
+          );
+        })}
+      </div>
+
+      <div className="overflow-x-auto rounded-sm border border-mocha-200">
+        <table className="w-full min-w-[320px] border-collapse text-sm sm:text-base" aria-label={`Chandini body measurements in ${unitLabel}`}>
+          <thead>
+            <tr className="bg-mocha-50 text-left font-cinzel text-[11px] tracking-[0.14em] uppercase text-mocha-700 sm:text-xs">
+              <th scope="col" className="px-4 py-3">Size</th>
+              <th scope="col" className="px-4 py-3">Waist ({unitLabel})</th>
+              <th scope="col" className="px-4 py-3">Hips ({unitLabel})</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-mocha-100 text-mocha-900">
+            {CHANDINI_SIZE_ROWS.map((row) => (
+              <tr key={row.size} className="odd:bg-[#FFFEF7] even:bg-mocha-50/60">
+                <th scope="row" className="px-4 py-3 text-left font-medium">{row.size}</th>
+                <td className="px-4 py-3 tabular-nums">{displayValue(row.waist, unit)}</td>
+                <td className="px-4 py-3 tabular-nums">{displayValue(row.hip, unit)}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+}
+
+export function SizeChartModal({ open, onClose, chart = 'blouse' }: { open: boolean; onClose: () => void; chart?: 'blouse' | 'chandini' }) {
   const [unit, setUnit] = useState<SizeUnit>('inches');
 
   if (!open) return null;
 
+  const title = chart === 'chandini' ? 'Chandini size guide' : 'Blouse size chart';
+
   return (
     <div className="fixed inset-0 z-[80] flex items-center justify-center bg-mocha-900/60 p-0 sm:p-6" role="presentation">
       <button className="absolute inset-0" onClick={onClose} aria-label="Close size chart" />
-      <div className="relative z-10 max-h-[94vh] w-full max-w-[700px] overflow-y-auto bg-white shadow-2xl" role="dialog" aria-modal="true" aria-labelledby="size-chart-title">
-        <h2 id="size-chart-title" className="sr-only">Size Chart</h2>
-        <button onClick={onClose} className="absolute right-4 top-4 z-10 p-2 text-[#ed7b44] hover:text-black" aria-label="Close size chart">
-          <X size={28} strokeWidth={1.5} />
-        </button>
-        <div className="px-5 py-12 sm:px-10 sm:py-14">
-          <SizeChartContent unit={unit} onUnitChange={setUnit} />
+      <div className="relative z-10 max-h-[94vh] w-full max-w-[700px] overflow-y-auto bg-[#FFFEF7] p-5 shadow-2xl sm:p-8" role="dialog" aria-modal="true" aria-labelledby="size-chart-title">
+        <div className="mb-6 flex items-start justify-between gap-4 border-b border-mocha-200 pb-4">
+          <h2 id="size-chart-title" className="font-cinzel text-lg tracking-[0.12em] text-mocha-900 sm:text-xl">{title}</h2>
+          <button onClick={onClose} className="inline-flex min-h-11 min-w-11 items-center justify-center text-mocha-700 hover:text-mocha-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold-500" aria-label="Close size chart">
+            <X size={22} strokeWidth={1.5} />
+          </button>
         </div>
+        {chart === 'chandini' ? (
+          <ChandiniSizeChartContent unit={unit} onUnitChange={setUnit} />
+        ) : (
+          <SizeChartContent unit={unit} onUnitChange={setUnit} />
+        )}
       </div>
     </div>
   );
