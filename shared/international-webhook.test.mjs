@@ -4,6 +4,8 @@ import {
   buildInternationalOrderClaimPath,
   buildInternationalOrderLeasePath,
   findShopifyInternationalOrder,
+  getInternationalConfig,
+  isAllowedOrigin,
 } from '../api/_shared/international-server.mjs';
 
 const referenceId = 'bb-mock1234-a1b2c3';
@@ -29,6 +31,26 @@ test('webhook completion update is scoped to the current unexpired lease', () =>
   assert.equal(params.get('reference_id'), `eq.${referenceId}`);
   assert.equal(params.get('status'), 'eq.syncing');
   assert.equal(params.get('sync_lease_until'), `eq.${leaseUntil}`);
+});
+
+test('Vercel preview allows only its exact deployment and branch origins', () => {
+  const branchHost = 'brown-buti-git-codex-setup.vercel.app';
+  const branchRequest = new Request(`https://${branchHost}/api/international-checkout`, {
+    headers: { origin: `https://${branchHost}` },
+  });
+  const otherPreviewRequest = new Request('https://unrelated-project.vercel.app/api/international-checkout', {
+    headers: { origin: 'https://unrelated-project.vercel.app' },
+  });
+
+  assert.equal(isAllowedOrigin(branchRequest, { VERCEL_BRANCH_URL: branchHost }), true);
+  assert.equal(isAllowedOrigin(otherPreviewRequest, { VERCEL_BRANCH_URL: branchHost }), false);
+});
+
+test('Vercel preview payment callbacks return to that preview, not production', () => {
+  const branchHost = 'brown-buti-git-codex-setup.vercel.app';
+  const config = getInternationalConfig({ VERCEL_ENV: 'preview', VERCEL_BRANCH_URL: branchHost });
+
+  assert.equal(config.publicSiteUrl, `https://${branchHost}`);
 });
 
 test('Shopify order recovery searches by the unique third-party source identifier', async () => {

@@ -17,9 +17,16 @@ const ALLOWED_ORIGINS = new Set([
   'http://localhost:5173',
 ]);
 
-export function isAllowedOrigin(request) {
+function vercelOrigin(host) {
+  const value = typeof host === 'string' ? host.trim().toLowerCase() : '';
+  return /^[a-z0-9.-]+\.vercel\.app$/.test(value) ? `https://${value}` : '';
+}
+
+export function isAllowedOrigin(request, env = process.env) {
   const origin = request.headers.get('origin');
-  return !origin || ALLOWED_ORIGINS.has(origin);
+  if (!origin || ALLOWED_ORIGINS.has(origin)) return true;
+  const deploymentOrigins = [vercelOrigin(env.VERCEL_BRANCH_URL), vercelOrigin(env.VERCEL_URL)];
+  return deploymentOrigins.includes(origin.toLowerCase());
 }
 
 export function jsonResponse(request, body, status = 200) {
@@ -56,6 +63,9 @@ export function getInternationalConfig(env = process.env) {
   const shippingRates = parseShippingRates(env.INTERNATIONAL_SHIPPING_RATES_USD);
   const expectedPrefix = mode === 'live' ? 'rzp_live_' : 'rzp_test_';
   const enabled = env.RAZORPAY_INTERNATIONAL_ENABLED === 'true';
+  const previewOrigin = env.VERCEL_ENV === 'preview'
+    ? vercelOrigin(env.VERCEL_BRANCH_URL) || vercelOrigin(env.VERCEL_URL)
+    : '';
 
   return {
     mode,
@@ -68,7 +78,7 @@ export function getInternationalConfig(env = process.env) {
     supabaseServiceRoleKey: env.SUPABASE_SERVICE_ROLE_KEY?.trim() || '',
     shopifyDomain: env.SHOPIFY_ADMIN_STORE_DOMAIN?.trim() || DEFAULT_SHOPIFY_DOMAIN,
     shopifyAdminAccessToken: env.SHOPIFY_ADMIN_ACCESS_TOKEN?.trim() || '',
-    publicSiteUrl: env.PUBLIC_SITE_URL?.trim().replace(/\/$/, '') || DEFAULT_PUBLIC_SITE_URL,
+    publicSiteUrl: env.PUBLIC_SITE_URL?.trim().replace(/\/$/, '') || previewOrigin || DEFAULT_PUBLIC_SITE_URL,
     keyModeValid: razorpayKeyId.startsWith(expectedPrefix),
     persistenceConfigured: Boolean(env.SUPABASE_URL && env.SUPABASE_SERVICE_ROLE_KEY),
   };
