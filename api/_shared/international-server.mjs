@@ -1,5 +1,6 @@
 import {
   calculateInternationalTotal,
+  INTERNATIONAL_PRICE_USD,
   parseShippingRates,
   normalizeInternationalCountry,
 } from '../../shared/international-checkout.mjs';
@@ -159,7 +160,7 @@ export async function createRazorpayPaymentLink(config, { referenceId, shippingA
       currency: 'USD',
       accept_partial: false,
       reference_id: referenceId,
-      description: `Brown Buti international order ${referenceId}`,
+      description: `Brown Buti: ${calculation.itemCount} garment${calculation.itemCount === 1 ? '' : 's'} at $${INTERNATIONAL_PRICE_USD.toFixed(2)} each + $${calculation.shippingUsd.toFixed(2)} international shipping`,
       customer: {
         name: shippingAddress.name,
         email: shippingAddress.email,
