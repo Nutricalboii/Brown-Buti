@@ -341,7 +341,7 @@ export default function Home() {
             </h2>
             {currency === 'USD' && (
               <p className="font-lora text-xs leading-relaxed text-gold-200/75 mt-3" role="note">
-                International display prices are fixed at $200 per garment (₹19,024 equivalent in Shopify). Shopify checkout with Razorpay charges in INR.
+                International visitors see $200 per garment and use the secure USD checkout; India visitors use Shopify checkout in INR.
               </p>
             )}
           </div>

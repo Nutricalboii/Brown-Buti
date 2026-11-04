@@ -38,7 +38,7 @@ export default function Wishlist() {
           </div>
           {currency === 'USD' && items.length > 0 && (
             <p className="font-lora text-xs leading-relaxed text-mocha-500 -mt-6 mb-8" role="note">
-              International display prices are fixed at $200 per garment (₹19,024 equivalent in Shopify). Shopify checkout with Razorpay charges in INR.
+              International visitors see $200 per garment and use the secure USD checkout; India visitors use Shopify checkout in INR.
             </p>
           )}
 

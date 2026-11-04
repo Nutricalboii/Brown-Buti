@@ -9,24 +9,23 @@ import { getResponsiveProductImageSrcSet } from '../lib/responsive-product-image
 import { getShippingDisplay } from '../../shared/market-display.mjs';
 
 import AgePrivacyPopup from '../components/AgePrivacyPopup';
+import InternationalCheckoutForm from '../components/InternationalCheckoutForm';
+
+type CheckoutIntent = 'shopify' | 'international';
 
 export default function Cart() {
   const navigate = useNavigate();
   const { items, totalItems, removeItem, updateQuantity, subtotal } = useCart();
-  const { formatPrice, countryCode, currency } = useCurrency();
+  const { formatPrice, countryCode, currency, setCurrency } = useCurrency();
 
   const [isCheckingOut, setIsCheckingOut] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [showAgePopup, setShowAgePopup] = useState(false);
+  const [showInternationalForm, setShowInternationalForm] = useState(false);
+  const [pendingCheckout, setPendingCheckout] = useState<CheckoutIntent | null>(null);
 
   const shippingDisplay = getShippingDisplay(countryCode, subtotal);
-  const handleShopifyCheckout = async () => {
-    const hasAccepted = localStorage.getItem('mocha_mogra_policy_accepted');
-    if (!hasAccepted) {
-      setShowAgePopup(true);
-      return;
-    }
-
+  const performShopifyCheckout = async () => {
     try {
       setErrorMessage(null);
       setIsCheckingOut(true);
@@ -41,6 +40,27 @@ export default function Cart() {
     } finally {
       setIsCheckingOut(false);
     }
+  };
+
+  const handleShopifyCheckout = () => {
+    const hasAccepted = localStorage.getItem('mocha_mogra_policy_accepted');
+    if (!hasAccepted) {
+      setPendingCheckout('shopify');
+      setShowAgePopup(true);
+      return;
+    }
+    void performShopifyCheckout();
+  };
+
+  const handleInternationalCheckout = () => {
+    const hasAccepted = localStorage.getItem('mocha_mogra_policy_accepted');
+    if (!hasAccepted) {
+      setPendingCheckout('international');
+      setShowAgePopup(true);
+      return;
+    }
+    setErrorMessage(null);
+    setShowInternationalForm(true);
   };
 
   return (
@@ -178,6 +198,26 @@ export default function Cart() {
                   </div>
                 )}
 
+                <div className="mb-7" aria-label="Choose displayed currency">
+                  <p className="font-cinzel text-[10px] tracking-[0.16em] uppercase text-mocha-600 mb-2">Display currency</p>
+                  <div className={`grid ${countryCode ? 'grid-cols-1' : 'grid-cols-2'} gap-2 border border-mocha-200 p-1`}>
+                    {(['INR', 'USD'] as const).filter((option) => !countryCode || (countryCode === 'IN' ? option === 'INR' : option === 'USD')).map((option) => (
+                      <button
+                        key={option}
+                        type="button"
+                        onClick={() => { setCurrency(option); setErrorMessage(null); }}
+                        aria-pressed={currency === option}
+                        className={`min-h-11 font-cinzel text-[10px] tracking-[0.14em] uppercase transition-colors ${currency === option ? 'bg-mocha-800 text-gold-100' : 'text-mocha-600 hover:bg-mocha-50'}`}
+                      >
+                        {option === 'INR' ? 'India · INR' : 'International · USD'}
+                      </button>
+                    ))}
+                  </div>
+                  <p className="font-lora text-xs leading-relaxed text-mocha-500 mt-2">
+                    Currency here is a display choice. Your delivery country in the secure checkout determines the final route and shipping rate.
+                  </p>
+                </div>
+
                 <div className="space-y-4 mb-8">
                   <div className="flex justify-between font-lora text-sm text-mocha-700">
                     <span>Subtotal ({items.reduce((s, i) => s + i.quantity, 0)} items)</span>
@@ -208,28 +248,55 @@ export default function Cart() {
                 </p>
                 {currency === 'USD' && (
                   <p className="font-lora text-xs leading-relaxed text-mocha-600 -mt-3 mb-6">
-                    International display prices are fixed at $200 per garment (₹19,024 equivalent in Shopify). Shopify checkout with Razorpay charges in INR; the delivery country selected at checkout determines the shipping rate.
+                    International garments are $200 each. Choose the USD checkout below to enter the delivery country and pay through a Razorpay USD Payment Link. India orders should use Shopify checkout in INR.
                   </p>
                 )}
 
-                {/* Primary Button: Shopify Checkout */}
-                <button
-                  onClick={handleShopifyCheckout}
-                  disabled={isCheckingOut}
-                  className="w-full btn-primary-filled justify-center py-4 text-sm flex items-center gap-2 mb-3"
-                >
-                  {isCheckingOut ? (
-                    <>
-                      Processing Checkout...
-                      <Loader2 size={14} className="animate-spin" strokeWidth={1.5} />
-                    </>
-                  ) : (
-                    <>
-                      Checkout via Shopify
+                {currency === 'USD' ? (
+                  <>
+                    <button
+                      onClick={handleInternationalCheckout}
+                      disabled={isCheckingOut}
+                      className="w-full btn-primary-filled justify-center py-4 text-sm flex items-center gap-2 mb-3"
+                    >
+                      Pay in USD with Razorpay
                       <ArrowRight size={14} strokeWidth={1.5} />
-                    </>
-                  )}
-                </button>
+                    </button>
+                    {(!countryCode || countryCode === 'IN') && <button
+                      onClick={handleShopifyCheckout}
+                      disabled={isCheckingOut}
+                      className="w-full btn-primary justify-center py-3 text-xs flex items-center gap-2"
+                    >
+                      Use Shopify checkout (INR fallback)
+                    </button>}
+                  </>
+                ) : (
+                  <button
+                    onClick={handleShopifyCheckout}
+                    disabled={isCheckingOut}
+                    className="w-full btn-primary-filled justify-center py-4 text-sm flex items-center gap-2 mb-3"
+                  >
+                    {isCheckingOut ? (
+                      <>
+                        Processing Checkout...
+                        <Loader2 size={14} className="animate-spin" strokeWidth={1.5} />
+                      </>
+                    ) : (
+                      <>
+                        Checkout via Shopify
+                        <ArrowRight size={14} strokeWidth={1.5} />
+                      </>
+                    )}
+                  </button>
+                )}
+
+                {showInternationalForm && (
+                  <InternationalCheckoutForm
+                    items={items}
+                    onClose={() => setShowInternationalForm(false)}
+                    onError={(message) => setErrorMessage(message || null)}
+                  />
+                )}
 
                 <div className="flex items-center justify-center gap-2 text-mocha-400 mt-5">
                   <ShieldCheck size={14} strokeWidth={1.5} />
@@ -247,7 +314,10 @@ export default function Cart() {
         isOpen={showAgePopup}
         onAccept={() => {
           setShowAgePopup(false);
-          handleShopifyCheckout();
+          const intent = pendingCheckout;
+          setPendingCheckout(null);
+          if (intent === 'international') setShowInternationalForm(true);
+          else void performShopifyCheckout();
         }}
       />
     </div>

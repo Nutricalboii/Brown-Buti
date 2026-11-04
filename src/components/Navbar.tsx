@@ -25,7 +25,7 @@ export default function Navbar({ onSearchOpen }: NavbarProps) {
   const location = useLocation();
   const navigate = useNavigate();
   const { totalItems } = useCart();
-  const { currency, setCurrency } = useCurrency();
+  const { currency, setCurrency, countryCode } = useCurrency();
   const { totalWishlisted } = useWishlist();
 
   useEffect(() => {
@@ -91,21 +91,17 @@ export default function Navbar({ onSearchOpen }: NavbarProps) {
               {/* Currency Toggle */}
               {location.pathname === '/shop' && (
                 <div className="hidden md:flex items-center gap-1 font-cinzel text-[10px] tracking-[0.1em] text-mocha-600 bg-mocha-50/50 rounded-full px-2 py-1 border border-mocha-200">
-                <button
+                {(!countryCode || countryCode === 'IN') && <button
                   onClick={() => setCurrency('INR')}
+                  aria-pressed={currency === 'INR'}
                   className={`px-2 py-1 rounded-full transition-colors ${currency === 'INR' ? 'bg-mocha-800 text-gold-200' : 'hover:bg-mocha-100'}`}
-                >
-                  INR
-                </button>
-                <button
+                >INR</button>}
+                {(!countryCode || countryCode !== 'IN') && <button
                   onClick={() => setCurrency('USD')}
-                  title="International display prices are fixed at $200 per garment; Shopify checkout charges in INR"
                   aria-label="Show international prices in US dollars"
                   aria-pressed={currency === 'USD'}
                   className={`px-2 py-1 rounded-full transition-colors ${currency === 'USD' ? 'bg-mocha-800 text-gold-200' : 'hover:bg-mocha-100'}`}
-                >
-                  USD
-                </button>
+                >USD</button>}
               </div>
               )}
 
@@ -183,21 +179,21 @@ export default function Navbar({ onSearchOpen }: NavbarProps) {
               ))}
             </nav>
             <div className="mt-12 flex items-center justify-center gap-2 font-cinzel text-xs tracking-[0.15em] text-mocha-600">
-              <button
+              {(!countryCode || countryCode === 'IN') && <button
                 onClick={() => setCurrency('INR')}
                 className={`px-4 py-2 border transition-colors ${currency === 'INR' ? 'border-mocha-800 bg-mocha-800 text-gold-200' : 'border-mocha-200 hover:border-mocha-400'}`}
               >
                 INR
-              </button>
-              <button
+              </button>}
+              {(!countryCode || countryCode !== 'IN') && <button
                 onClick={() => setCurrency('USD')}
-                title="International display prices are fixed at $200 per garment; Shopify checkout charges in INR"
+                title="International visitors see $200 per garment and pay through the secure USD checkout"
                 aria-label="Show international prices in US dollars"
                 aria-pressed={currency === 'USD'}
                 className={`px-4 py-2 border transition-colors ${currency === 'USD' ? 'border-mocha-800 bg-mocha-800 text-gold-200' : 'border-mocha-200 hover:border-mocha-400'}`}
               >
                 USD
-              </button>
+              </button>}
             </div>
             <div className="mt-8 border-t border-mocha-100 pt-8 text-mocha-500 font-lora text-sm">
               {CUSTOMER_CARE_EMAIL}

@@ -7,6 +7,7 @@ interface CurrencyContextValue {
   currency: Currency;
   setCurrency: (currency: Currency) => void;
   countryCode: string | null;
+  marketResolved: boolean;
   formatPrice: (inrAmount: number, itemCount?: number) => string;
 }
 
@@ -23,6 +24,7 @@ export function CurrencyProvider({ children }: { children: React.ReactNode }) {
   });
   const [currency, setCurrencyState] = useState<Currency>(savedCurrency ?? 'INR');
   const [countryCode, setCountryCode] = useState<string | null>(null);
+  const [marketResolved, setMarketResolved] = useState(false);
   const hasManualCurrency = useRef(savedCurrency !== null);
 
   useEffect(() => {
@@ -37,19 +39,28 @@ export function CurrencyProvider({ children }: { children: React.ReactNode }) {
         if (!active) return;
         const detectedCountry = normalizeCountryCode(market.countryCode);
         setCountryCode(detectedCountry);
-        if (!hasManualCurrency.current) {
-          const detectedCurrency = currencyForCountry(detectedCountry);
-          if (detectedCurrency) setCurrencyState(detectedCurrency);
+        const detectedCurrency = currencyForCountry(detectedCountry);
+        if (detectedCurrency) {
+          // The edge-detected market is authoritative in production. This
+          // prevents an old localStorage choice from exposing INR to a visitor
+          // outside India (or USD to an India visitor).
+          setCurrencyState(detectedCurrency);
+          hasManualCurrency.current = false;
+          try { localStorage.removeItem('currency'); } catch { /* storage is optional */ }
         }
+        setMarketResolved(true);
       })
       .catch(() => {
         // Keep the INR store-default display when IP detection is unavailable.
+        if (active) setMarketResolved(true);
       });
 
     return () => { active = false; };
   }, [savedCurrency]);
 
   const handleSetCurrency = (c: Currency) => {
+    const detectedCurrency = currencyForCountry(countryCode);
+    if (detectedCurrency && detectedCurrency !== c) return;
     hasManualCurrency.current = true;
     setCurrencyState(c);
     try {
@@ -78,7 +89,7 @@ export function CurrencyProvider({ children }: { children: React.ReactNode }) {
   };
 
   return (
-    <CurrencyContext.Provider value={{ currency, setCurrency: handleSetCurrency, countryCode, formatPrice }}>
+    <CurrencyContext.Provider value={{ currency, setCurrency: handleSetCurrency, countryCode, marketResolved, formatPrice }}>
       {children}
     </CurrencyContext.Provider>
   );
