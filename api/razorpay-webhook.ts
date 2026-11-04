@@ -27,7 +27,7 @@ function paymentLinkEntity(event: RazorpayEvent) {
   return event?.payload?.payment_link?.entity || null;
 }
 
-export default async function handler(request: Request) {
+async function handler(request: Request) {
   if (request.method !== 'POST') return new Response('Method not allowed.', { status: 405, headers: { Allow: 'POST' } });
   const config = getInternationalConfig();
   if (!isInternationalConfigReady(config, { requireWebhook: true, requireShopify: true })) {
@@ -87,3 +87,5 @@ export default async function handler(request: Request) {
     return new Response('Order sync is pending retry.', { status: 503 });
   }
 }
+
+export default { fetch: handler };

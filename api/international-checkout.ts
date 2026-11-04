@@ -10,7 +10,7 @@ import {
 } from './_shared/international-server.mjs';
 import { makeReferenceId } from '../shared/international-checkout.mjs';
 
-export default async function handler(request: Request) {
+async function handler(request: Request) {
   if (request.method === 'OPTIONS') return optionsResponse(request);
   if (request.method !== 'POST') return jsonResponse(request, { error: 'Method not allowed.' }, 405);
   if (!isAllowedOrigin(request)) return jsonResponse(request, { error: 'Origin not allowed.' }, 403);
@@ -82,3 +82,5 @@ export default async function handler(request: Request) {
     return jsonResponse(request, { error: message }, 400);
   }
 }
+
+export default { fetch: handler };
